@@ -5,7 +5,7 @@ Sistema completo para gestionar una tienda digital tipo convenience store, inclu
 ### 🚀 Instalación rápida
 ```bash
 # Clonar el repositorio
-git clone https://github.com/tuusuario/la-economica.git
+git clone https://github.com/Migue1-n4varrete/ECO.git
 cd la-economica
 
 # Instalar dependencias del backend y frontend

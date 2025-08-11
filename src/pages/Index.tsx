@@ -313,7 +313,7 @@ const Index = () => {
       {/* Delivery Options */}
       <section className="pb-5">
         <div className="container px-4">
-          <h2 className="font-display font-bold text-3xl text-gray-900 self-stretch pb-5 pl-87.5">
+          <h2 className="font-sans font-bold text-3xl text-gray-900 self-stretch pb-5 pl-87.5">
             <br />
             ¿Cómo quieres recibir tu pedido?
           </h2>
@@ -355,7 +355,7 @@ const Index = () => {
         <div className="container px-4">
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h2 className="font-display font-bold text-3xl text-gray-900 mb-2">
+              <h2 className="font-sans font-bold text-3xl text-gray-900 mb-2">
                 Explora por categorías
               </h2>
               <p className="text-gray-600">
@@ -386,7 +386,7 @@ const Index = () => {
       <section className="py-12 bg-white">
         <div className="container px-4">
           <div className="text-center mb-12">
-            <h2 className="font-display font-bold text-3xl text-gray-900 mb-4">
+            <h2 className="font-sans font-bold text-3xl text-gray-900 mb-4">
               ¿Por qué elegir La Economica?
             </h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
@@ -442,7 +442,7 @@ const Index = () => {
       <section className="py-12 bg-gradient-to-r from-brand-50 to-yellow-50">
         <div className="container px-4">
           <div className="text-center mb-8">
-            <h2 className="font-display font-bold text-3xl text-gray-900 mb-2">
+            <h2 className="font-sans font-bold text-3xl text-gray-900 mb-2">
               Nuestro Inventario
             </h2>
             <p className="text-gray-600">
@@ -481,7 +481,7 @@ const Index = () => {
       {/* CTA Section */}
       <section className="py-16 bg-gradient-to-r from-brand-500 to-fresh-500">
         <div className="container px-4 text-center">
-          <h2 className="font-display font-bold text-3xl lg:text-4xl text-white mb-4">
+          <h2 className="font-sans font-bold text-3xl lg:text-4xl text-white mb-4">
             ¿Listo para tu primer pedido?
           </h2>
           <p className="text-white/90 text-lg mb-8 max-w-2xl mx-auto">
@@ -511,7 +511,7 @@ const Index = () => {
                 <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-brand-500 to-fresh-500 flex items-center justify-center">
                   <span className="text-white font-bold text-sm">LE</span>
                 </div>
-                <span className="font-display font-bold text-xl">
+                <span className="font-sans font-bold text-xl">
                   La Economica
                 </span>
               </div>

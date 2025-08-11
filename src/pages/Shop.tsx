@@ -30,7 +30,7 @@ import ProductDiagnostic from "@/components/ProductDiagnostic";
 
 const Shop = () => {
   // Debug products on development
-  if (process.env.NODE_ENV === "development") {
+  if (import.meta.env.DEV) {
     useDebugProducts();
   }
 

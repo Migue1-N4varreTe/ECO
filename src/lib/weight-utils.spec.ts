@@ -295,8 +295,10 @@ describe('Weight Utils', () => {
     });
 
     it('should handle very large quantities', () => {
+      // Large quantities should be limited by max weight (10kg from constants)
       const validation = validateWeightQuantity(1000, mockWeightProduct);
-      expect(validation.isValid).toBe(true);
+      expect(validation.isValid).toBe(false);
+      expect(validation.adjustedQuantity).toBe(10); // Max weight from constants
     });
 
     it('should handle missing product properties', () => {

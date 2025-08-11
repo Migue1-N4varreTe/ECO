@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { Product, allProducts } from "@/lib/data";
 import { validateWeightQuantity, checkWeightStock } from "@/lib/weight-utils";
+import { CART_CONFIG } from "@/lib/constants";
 
 export interface CartItem {
   id: string;
@@ -46,7 +47,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
 
   // Load cart from localStorage on mount
   useEffect(() => {
-    const savedCart = localStorage.getItem("la_economica_cart");
+    const savedCart = localStorage.getItem(CART_CONFIG.STORAGE_KEY);
     if (savedCart) {
       try {
         const parsedCart = JSON.parse(savedCart);
@@ -58,14 +59,14 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
         setCartItems(cartWithDates);
       } catch (error) {
         console.error("Error loading cart from localStorage:", error);
-        localStorage.removeItem("la_economica_cart");
+        localStorage.removeItem(CART_CONFIG.STORAGE_KEY);
       }
     }
   }, []);
 
   // Save cart to localStorage whenever it changes
   useEffect(() => {
-    localStorage.setItem("la_economica_cart", JSON.stringify(cartItems));
+    localStorage.setItem(CART_CONFIG.STORAGE_KEY, JSON.stringify(cartItems));
   }, [cartItems]);
 
   // Get product details for cart items

@@ -161,12 +161,22 @@ export function validateWeightQuantity(
   }
   
   // Check maximum weight if applicable
-  const maxWeight = calculation.baseUnit === "litro" ? PRODUCT_CONFIG.WEIGHT.MAX_VOLUME : PRODUCT_CONFIG.WEIGHT.MAX_WEIGHT;
-  if (quantity > maxWeight) {
+  let maxAllowed: number;
+  if (calculation.baseUnit === "litro") {
+    maxAllowed = PRODUCT_CONFIG.WEIGHT.MAX_VOLUME;
+  } else if (calculation.baseUnit === "gramo") {
+    // Convert 10kg to grams: 10 * 1000 = 10000g
+    maxAllowed = PRODUCT_CONFIG.WEIGHT.MAX_WEIGHT * 1000;
+  } else {
+    // kg
+    maxAllowed = PRODUCT_CONFIG.WEIGHT.MAX_WEIGHT;
+  }
+
+  if (quantity > maxAllowed) {
     return {
       isValid: false,
-      adjustedQuantity: maxWeight,
-      errorMessage: `Cantidad máxima: ${formatWeight(maxWeight, product.unit)}`
+      adjustedQuantity: maxAllowed,
+      errorMessage: `Cantidad máxima: ${formatWeight(maxAllowed, product.unit)}`
     };
   }
   

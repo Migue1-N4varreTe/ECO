@@ -196,39 +196,51 @@ export function QuantitySelector({
 
   // Default: buttons mode
   return (
-    <div className="space-y-2">
+    <div className="space-y-2" role="group" aria-label="Selector de cantidad">
       <div className="flex items-center gap-1">
         {calculation.isWeightBased ? (
-          <Scale className="h-3 w-3 text-gray-500 mr-1" />
+          <Scale className="h-3 w-3 text-gray-500 mr-1" aria-hidden="true" />
         ) : (
-          <Package className="h-3 w-3 text-gray-500 mr-1" />
+          <Package className="h-3 w-3 text-gray-500 mr-1" aria-hidden="true" />
         )}
-        
+
         <Button
           variant="outline"
           size="sm"
           className={cn(classes.button, "rounded-full")}
           onClick={decrementQuantity}
           disabled={disabled || quantity <= (calculation.isWeightBased ? calculation.minWeightStep : 1)}
+          aria-label={`Disminuir cantidad de ${product.name}`}
+          aria-describedby={`quantity-display-${product.id}`}
         >
-          <Minus className="h-3 w-3" />
+          <Minus className="h-3 w-3" aria-hidden="true" />
         </Button>
         
-        <div className={cn("min-w-[3rem] text-center font-medium", classes.text)}>
-          {calculation.isWeightBased 
+        <div
+          className={cn("min-w-[3rem] text-center font-medium", classes.text)}
+          id={`quantity-display-${product.id}`}
+          aria-live="polite"
+          aria-label={`Cantidad actual: ${calculation.isWeightBased
+            ? formatWeight(quantity, product.unit)
+            : `${quantity} ${product.unit}${quantity !== 1 ? 's' : ''}`
+          }`}
+        >
+          {calculation.isWeightBased
             ? formatWeight(quantity, product.unit)
             : `${quantity} ${product.unit}${quantity !== 1 ? 's' : ''}`
           }
         </div>
-        
+
         <Button
           variant="outline"
           size="sm"
           className={cn(classes.button, "rounded-full")}
           onClick={incrementQuantity}
           disabled={disabled || !stockCheck.hasStock}
+          aria-label={`Aumentar cantidad de ${product.name}`}
+          aria-describedby={`quantity-display-${product.id}`}
         >
-          <Plus className="h-3 w-3" />
+          <Plus className="h-3 w-3" aria-hidden="true" />
         </Button>
       </div>
       

@@ -1,4 +1,5 @@
 import { Product } from "./data";
+import { PRODUCT_CONFIG } from "./constants";
 
 /**
  * Utility functions for handling weight-based products (gramage)
@@ -39,22 +40,22 @@ export function getWeightCalculation(product: Product): WeightProductCalculation
     };
   }
 
-  let minWeightStep = 0.1; // Default 100g minimum
+  let minWeightStep = PRODUCT_CONFIG.WEIGHT.KG_MIN_STEP; // Default 100g minimum
   let baseUnit: "kg" | "gramo" | "litro" = "kg";
   let displayUnit = product.unit;
 
   switch (product.unit) {
     case "kg":
-      minWeightStep = 0.1; // 100g steps
+      minWeightStep = PRODUCT_CONFIG.WEIGHT.KG_MIN_STEP; // 100g steps
       baseUnit = "kg";
       break;
     case "gramo":
-      minWeightStep = 100; // 100g steps
+      minWeightStep = PRODUCT_CONFIG.WEIGHT.GRAM_MIN_STEP; // 100g steps
       baseUnit = "gramo";
       displayUnit = "g";
       break;
     case "litro":
-      minWeightStep = 0.1; // 100ml steps
+      minWeightStep = PRODUCT_CONFIG.WEIGHT.LITER_MIN_STEP; // 100ml steps
       baseUnit = "litro";
       break;
   }
@@ -160,11 +161,12 @@ export function validateWeightQuantity(
   }
   
   // Check maximum weight if applicable
-  if (calculation.maxWeight && quantity > calculation.maxWeight) {
+  const maxWeight = calculation.baseUnit === "litro" ? PRODUCT_CONFIG.WEIGHT.MAX_VOLUME : PRODUCT_CONFIG.WEIGHT.MAX_WEIGHT;
+  if (quantity > maxWeight) {
     return {
       isValid: false,
-      adjustedQuantity: calculation.maxWeight,
-      errorMessage: `Cantidad máxima: ${formatWeight(calculation.maxWeight, product.unit)}`
+      adjustedQuantity: maxWeight,
+      errorMessage: `Cantidad máxima: ${formatWeight(maxWeight, product.unit)}`
     };
   }
   

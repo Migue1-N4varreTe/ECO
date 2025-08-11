@@ -160,7 +160,7 @@ export const UI_CONFIG = {
 
 // API Configuration
 export const API_CONFIG = {
-  BASE_URL: process.env.REACT_APP_API_URL || "http://localhost:5000",
+  BASE_URL: import.meta.env.VITE_API_URL || "http://localhost:5000",
   ENDPOINTS: {
     AUTH: "/api/auth",
     PRODUCTS: "/api/products",
@@ -278,10 +278,10 @@ export const SEO_CONFIG = {
 
 // Development Configuration
 export const DEV_CONFIG = {
-  DEBUG: process.env.NODE_ENV === "development",
-  VERBOSE_LOGGING: process.env.NODE_ENV === "development",
+  DEBUG: import.meta.env.DEV,
+  VERBOSE_LOGGING: import.meta.env.DEV,
   MOCK_API: false,
-  ENABLE_DEVTOOLS: process.env.NODE_ENV === "development",
+  ENABLE_DEVTOOLS: import.meta.env.DEV,
   HOT_RELOAD: true,
 } as const;
 

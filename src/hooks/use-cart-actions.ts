@@ -1,6 +1,7 @@
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
 import { allProducts } from "@/lib/data";
+import { formatWeight, getWeightCalculation } from "@/lib/weight-utils";
 
 export const useCartActions = () => {
   const {
@@ -16,7 +17,7 @@ export const useCartActions = () => {
     productId: string,
     quantity: number = 1,
     productName?: string,
-  ) => {
+  ): boolean => {
     // Find the product to validate before adding
     const product = allProducts.find((p) => p.id === productId);
 
@@ -30,35 +31,35 @@ export const useCartActions = () => {
       return false;
     }
 
-    if (!product.inStock) {
+    // Try to add to cart with all validations
+    const success = addToCart(productId, quantity);
+
+    if (!success) {
+      // The cart context already logged the specific error
+      // We'll show a generic error message
+      const calculation = getWeightCalculation(product);
+      const quantityText = calculation.isWeightBased
+        ? formatWeight(quantity, product.unit)
+        : `${quantity} ${product.unit}${quantity !== 1 ? 's' : ''}`;
+
       toast({
-        title: "Producto agotado",
-        description: `${productName || product.name} está agotado`,
+        title: "No se pudo agregar",
+        description: `No se pudo agregar ${quantityText} de ${productName || product.name}`,
         variant: "destructive",
         duration: 3000,
       });
       return false;
     }
 
-    const currentQuantity = getItemQuantity(productId);
-    const newTotalQuantity = currentQuantity + quantity;
-
-    if (product.stock && newTotalQuantity > product.stock) {
-      toast({
-        title: "Stock insuficiente",
-        description: `Solo quedan ${product.stock} unidades disponibles${currentQuantity > 0 ? `. Ya tienes ${currentQuantity} en tu carrito` : ""}`,
-        variant: "destructive",
-        duration: 3000,
-      });
-      return false;
-    }
-
-    // Add to cart if all validations pass
-    addToCart(productId, quantity);
+    // Success notification
+    const calculation = getWeightCalculation(product);
+    const quantityText = calculation.isWeightBased
+      ? formatWeight(quantity, product.unit)
+      : `${quantity} ${product.unit}${quantity !== 1 ? 's' : ''}`;
 
     toast({
       title: "Producto agregado",
-      description: `${productName || product.name} se agregó al carrito`,
+      description: `${quantityText} de ${productName || product.name} se agregó al carrito`,
       duration: 2000,
     });
 
@@ -89,24 +90,42 @@ export const useCartActions = () => {
   const updateQuantityWithValidation = (
     productId: string,
     quantity: number,
-    maxStock?: number,
-  ) => {
+  ): boolean => {
     if (quantity < 1) {
       removeFromCart(productId);
-      return;
+      return true;
     }
 
-    if (maxStock && quantity > maxStock) {
+    const product = allProducts.find((p) => p.id === productId);
+    if (!product) {
       toast({
-        title: "Stock insuficiente",
-        description: `Solo quedan ${maxStock} unidades disponibles`,
+        title: "Error",
+        description: "Producto no encontrado",
         variant: "destructive",
         duration: 3000,
       });
-      return;
+      return false;
     }
 
-    updateQuantity(productId, quantity);
+    // Try to update quantity with validations
+    const success = updateQuantity(productId, quantity);
+
+    if (!success) {
+      const calculation = getWeightCalculation(product);
+      const quantityText = calculation.isWeightBased
+        ? formatWeight(quantity, product.unit)
+        : `${quantity} ${product.unit}${quantity !== 1 ? 's' : ''}`;
+
+      toast({
+        title: "No se pudo actualizar",
+        description: `No se pudo actualizar a ${quantityText}`,
+        variant: "destructive",
+        duration: 3000,
+      });
+      return false;
+    }
+
+    return true;
   };
 
   return {

@@ -22,7 +22,7 @@ export const PermissionGuard: React.FC<PermissionGuardProps> = ({
 
   if (!user) {
     // In development, provide helpful message for protected routes
-    if (process.env.NODE_ENV === "development") {
+    if (import.meta.env.DEV) {
       if (permission === "staff:view") {
         console.warn(
           "Employee management access requires login with staff permissions. Use a user with LEVEL_2_SUPERVISOR or higher role.",
@@ -51,7 +51,7 @@ export const PermissionGuard: React.FC<PermissionGuardProps> = ({
     checks.push(hasPermissionResult);
 
     // Debug logging for protected routes in development
-    if (process.env.NODE_ENV === "development") {
+    if (import.meta.env.DEV) {
       if (
         [
           "reports:view",

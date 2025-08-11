@@ -42,7 +42,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
     });
 
     // Log error to console in development
-    if (process.env.NODE_ENV === "development") {
+    if (import.meta.env.DEV) {
       console.error("ErrorBoundary caught an error:", error, errorInfo);
     }
 
@@ -79,7 +79,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
 }
 
 function DefaultErrorFallback({ error, resetError }: ErrorFallbackProps) {
-  const isDevelopment = process.env.NODE_ENV === "development";
+  const isDevelopment = import.meta.env.DEV;
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">

@@ -2,24 +2,36 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { ProductImage } from "@/components/ui/optimized-image";
-import { Heart, ShoppingCart, Star, Clock, MapPin } from "lucide-react";
+import { Heart, ShoppingCart, Star, Clock, MapPin, Scale, Package } from "lucide-react";
 import { Product } from "@/lib/data";
 import { useFavorites } from "@/contexts/FavoritesContext";
 import { useCart } from "@/contexts/CartContext";
 import { useCartActions } from "@/hooks/use-cart-actions";
+import QuantitySelector from "@/components/ui/quantity-selector";
+import { getWeightCalculation, formatWeight } from "@/lib/weight-utils";
 import { cn } from "@/lib/utils";
 
-interface ProductCardProps {
+interface ProductCardWithQuantityProps {
   product: Product;
   className?: string;
+  showQuantitySelector?: boolean;
 }
 
-const ProductCard = ({ product, className }: ProductCardProps) => {
+const ProductCardWithQuantity = ({ 
+  product, 
+  className,
+  showQuantitySelector = true
+}: ProductCardWithQuantityProps) => {
   const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites();
   const { isInCart, getItemQuantity } = useCart();
   const { addToCartWithNotification } = useCartActions();
   const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const [selectedQuantity, setSelectedQuantity] = useState(
+    getWeightCalculation(product).isWeightBased ? 0.1 : 1
+  );
+
+  const calculation = getWeightCalculation(product);
+  const currentCartQuantity = getItemQuantity(product.id);
 
   const handleAddToCart = async () => {
     if (!product.inStock) {
@@ -32,11 +44,11 @@ const ProductCard = ({ product, className }: ProductCardProps) => {
       // Simulate API call delay
       await new Promise((resolve) => setTimeout(resolve, 300));
 
-      // Try to add to cart with validations
-      const success = addToCartWithNotification(product.id, 1, product.name);
+      // Use selected quantity for weight-based products
+      const quantityToAdd = showQuantitySelector ? selectedQuantity : 1;
+      const success = addToCartWithNotification(product.id, quantityToAdd, product.name);
 
       if (!success) {
-        // Error was already shown in the toast, just log for debugging
         console.log(`Failed to add ${product.name} to cart`);
       }
     } catch (error) {
@@ -72,12 +84,10 @@ const ProductCard = ({ product, className }: ProductCardProps) => {
       <CardContent className="p-0">
         {/* Image Container */}
         <div className="relative aspect-square overflow-hidden bg-gray-50">
-          <ProductImage
+          <img
             src={product.image}
-            alt={`${product.name} - ${product.brand || 'La Económica'}`}
+            alt={product.name}
             className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-            priority={false}
-            showSkeleton={true}
           />
 
           {/* Badges */}
@@ -90,6 +100,12 @@ const ProductCard = ({ product, className }: ProductCardProps) => {
             {product.isOffer && discountPercentage > 0 && (
               <Badge className="bg-red-500 hover:bg-red-600 text-white text-xs">
                 -{discountPercentage}%
+              </Badge>
+            )}
+            {calculation.isWeightBased && (
+              <Badge className="bg-blue-500 hover:bg-blue-600 text-white text-xs flex items-center gap-1">
+                <Scale className="h-2 w-2" />
+                Por peso
               </Badge>
             )}
             {!product.inStock && (
@@ -110,10 +126,6 @@ const ProductCard = ({ product, className }: ProductCardProps) => {
                 : "bg-white/80 hover:bg-white/90",
             )}
             onClick={toggleFavorite}
-            aria-label={isFavorite(product.id)
-              ? `Remover ${product.name} de favoritos`
-              : `Agregar ${product.name} a favoritos`
-            }
           >
             <Heart
               className={cn(
@@ -129,7 +141,10 @@ const ProductCard = ({ product, className }: ProductCardProps) => {
           {product.inStock && product.stock <= 5 && (
             <div className="absolute bottom-2 left-2">
               <Badge variant="outline" className="bg-white/90 text-xs">
-                Últimas {product.stock} unidades
+                {calculation.isWeightBased 
+                  ? `Disponible: ${formatWeight(product.stock, product.unit)}`
+                  : `Últimas ${product.stock} unidades`
+                }
               </Badge>
             </div>
           )}
@@ -181,11 +196,7 @@ const ProductCard = ({ product, className }: ProductCardProps) => {
           {/* Price */}
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
-              <span
-                className="font-bold text-lg text-gray-900"
-                id={`product-${product.id}-price`}
-                aria-label={`Precio: ${product.price} pesos`}
-              >
+              <span className="font-bold text-lg text-gray-900">
                 ${product.price}
               </span>
               {product.unit && (
@@ -201,18 +212,42 @@ const ProductCard = ({ product, className }: ProductCardProps) => {
             </div>
           </div>
 
+          {/* Quantity Selector for weight-based products */}
+          {showQuantitySelector && calculation.isWeightBased && product.inStock && !isInCart(product.id) && (
+            <div className="mb-3 p-2 bg-gray-50 rounded-lg">
+              <label className="text-xs text-gray-600 mb-2 block flex items-center gap-1">
+                <Scale className="h-3 w-3" />
+                Seleccionar cantidad:
+              </label>
+              <QuantitySelector
+                product={product}
+                quantity={selectedQuantity}
+                onQuantityChange={setSelectedQuantity}
+                currentCartQuantity={currentCartQuantity}
+                size="sm"
+                mode="buttons"
+                showPrice={true}
+              />
+            </div>
+          )}
+
+          {/* Current cart quantity display */}
+          {isInCart(product.id) && (
+            <div className="mb-3 p-2 bg-green-50 rounded-lg">
+              <div className="text-xs text-green-700 flex items-center gap-1">
+                <ShoppingCart className="h-3 w-3" />
+                En carrito: {calculation.isWeightBased 
+                  ? formatWeight(currentCartQuantity, product.unit)
+                  : `${currentCartQuantity} ${product.unit}${currentCartQuantity !== 1 ? 's' : ''}`
+                }
+              </div>
+            </div>
+          )}
+
           {/* Add to Cart Button */}
           <Button
             onClick={handleAddToCart}
-            disabled={!product.inStock || isAddingToCart}
-            aria-label={
-              !product.inStock
-                ? `${product.name} está agotado`
-                : isInCart(product.id)
-                ? `${product.name} ya está en el carrito, agregar más`
-                : `Agregar ${product.name} al carrito por $${product.price}`
-            }
-            aria-describedby={`product-${product.id}-price`}
+            disabled={!product.inStock || isAddingToCart || (showQuantitySelector && calculation.isWeightBased && selectedQuantity <= 0)}
             className={cn(
               "w-full h-10 sm:h-9 text-sm font-medium transition-all duration-200 mobile-btn sm:btn-auto",
               product.inStock
@@ -230,12 +265,15 @@ const ProductCard = ({ product, className }: ProductCardProps) => {
             ) : isInCart(product.id) ? (
               <>
                 <ShoppingCart className="h-4 w-4 mr-2" />
-                En carrito ({getItemQuantity(product.id)})
+                Agregar más
               </>
             ) : (
               <>
                 <ShoppingCart className="h-4 w-4 mr-2" />
-                Agregar al carrito
+                {calculation.isWeightBased && showQuantitySelector
+                  ? `Agregar ${formatWeight(selectedQuantity, product.unit)}`
+                  : "Agregar al carrito"
+                }
               </>
             )}
           </Button>
@@ -245,4 +283,4 @@ const ProductCard = ({ product, className }: ProductCardProps) => {
   );
 };
 
-export default ProductCard;
+export default ProductCardWithQuantity;

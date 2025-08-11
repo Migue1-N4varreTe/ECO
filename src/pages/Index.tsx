@@ -193,12 +193,12 @@ const Index = () => {
             {/* Hero Content */}
             <div className="text-white space-y-6 animate-slide-in">
               <Badge className="bg-white/20 text-white border-white/20 w-fit mx-auto py-1.5">
-                <span className="font-happy text-xl">
+                <span className="font-sans text-xl">
                   🚀 Entrega en 15 minutos
                 </span>
               </Badge>
 
-              <h1 className="font-display font-bold text-4xl lg:text-6xl leading-tight">
+              <h1 className="font-sans font-bold text-4xl lg:text-6xl leading-tight">
                 Todo lo que necesitas,
                 <span className="block text-yellow-300 text-xl pb-1.5">
                   <br />
@@ -218,7 +218,7 @@ const Index = () => {
                   asChild
                 >
                   <Link to="/shop" target="_blank">
-                    <span className="font-happy text-xl">Explorar tienda</span>
+                    <span className="font-sans text-xl">Explorar tienda</span>
                     <ArrowRight className="ml-2 h-4 w-4 text-3xl" />
                   </Link>
                 </Button>
@@ -226,7 +226,7 @@ const Index = () => {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="bg-transparent border-white text-white shadow-sm text-shadow font-happy text-xl p-0"
+                  className="bg-transparent border-white text-white shadow-sm text-shadow font-sans text-xl p-0"
                   style={{
                     boxShadow: "1px 1px 3px 0px rgba(0, 0, 0, 1)",
                     textShadow: "1px 1px 3px rgba(0, 0, 0, 1)",

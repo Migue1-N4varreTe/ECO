@@ -1,6 +1,13 @@
 📘 README.md
-## La Económica - App Base
-Sistema completo para gestionar una tienda digital tipo convenience store, incluyendo ventas, inventario, clientes, empleados y reportes.
+# La Económica - Fullstack E-commerce Platform
+
+Sistema completo para gestionar una tienda digital tipo convenience store con **arquitectura separada** entre frontend y backend.
+
+## 🏗️ Arquitectura
+
+- **Frontend**: React 18 + TypeScript + Vite (Puerto 8080)
+- **Backend**: Node.js + Express API (Puerto 5000)
+- **Deployment**: Netlify (Frontend) + Railway (Backend)
 
 ### 🚀 Instalación rápida
 ```bash
@@ -8,20 +15,22 @@ Sistema completo para gestionar una tienda digital tipo convenience store, inclu
 git clone https://github.com/Migue1-n4varrete/ECO.git
 cd la-economica
 
-# Instalar dependencias del backend y frontend
-cd backend && npm install && cd ../frontend && npm install
+# Setup automático
+./scripts/setup-deployment.sh
+
+# O manual:
+npm ci
+cd backend && npm ci && cd ..
 ```
 
-#
 ### ▶️ Ejecutar en desarrollo
 ```bash
-# Backend (Puerto 5000)
-cd backend
+# Ambos servicios simultáneamente
 npm run dev
 
-# Frontend (Puerto 5173)
-cd frontend
-npm run dev
+# O por separado:
+npm run dev:frontend  # Frontend (Puerto 8080)
+npm run dev:backend   # Backend (Puerto 5000)
 ```
 
 ### 📦 Tecnologías principales

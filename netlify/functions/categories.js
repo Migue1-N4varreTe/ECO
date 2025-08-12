@@ -1,4 +1,4 @@
-const { categories } = require("../../src/lib/data.ts");
+const { categories } = require("../../src/lib/data.js");
 
 exports.handler = async (event, context) => {
   const headers = {

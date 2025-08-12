@@ -33,12 +33,44 @@ npm run dev:frontend  # Frontend (Puerto 8080)
 npm run dev:backend   # Backend (Puerto 5000)
 ```
 
+## 🚀 Deployment
+
+### Opción 1: Netlify + Railway (Recomendada)
+```bash
+# Backend → Railway
+cd backend
+railway login
+railway deploy
+
+# Frontend → Netlify
+npm run build
+netlify deploy --prod
+
+# O ambos simultáneamente
+npm run deploy:all
+```
+
+### Opción 2: Docker Compose
+```bash
+# Build y deploy con Docker
+docker-compose up --build -d
+
+# Verificar servicios
+docker-compose ps
+```
+
+### URLs de Producción
+- **Frontend**: https://la-economica.netlify.app
+- **Backend**: https://api.la-economica.railway.app
+- **Health Check**: https://api.la-economica.railway.app/api/health
+
 ### 📦 Tecnologías principales
 - **Frontend:** React + Vite + TailwindCSS
 - **Backend:** Node.js + Express + MongoDB
 - **Auth:** JWT + bcryptjs
 - **UI Extra:** React Router, Context API
-- **Test:** Jest + Supertest (por integrar)
+- **Test:** Jest + Supertest
+- **Deploy:** Netlify + Railway + GitHub Actions
 
 ### 📁 Estructura Modular
 Separación por dominios funcionales: `auth`, `products`, `sales`, `clients`, `employees`, `reports`.

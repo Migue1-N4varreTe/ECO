@@ -24,7 +24,9 @@
     "deploy:all": "npm run build:all && npm run deploy:backend && npm run deploy:frontend",
     "status:backend": "cd backend && railway status",
     "logs:backend": "cd backend && railway logs",
-    "health:check": "curl -f $VITE_API_URL/api/health || curl -f http://localhost:5000/api/health"
+    "health:check": "curl -f $VITE_API_URL/api/health || curl -f http://localhost:5000/api/health",
+    "verify:secrets": "node scripts/verify-secrets.js",
+    "setup:secrets": "echo 'Abre: https://github.com/Migue1-N4varreTe/ECO/settings/secrets/actions'"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",

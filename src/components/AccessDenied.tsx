@@ -29,6 +29,8 @@ const AccessDenied: React.FC<AccessDeniedProps> = ({
         return "gestión de clientes";
       case "system:config":
         return "configuración del sistema";
+      case "system:deploy":
+        return "gestión de deployments";
       case "inventory:view":
         return "gestión de inventario";
       case "sales:create":

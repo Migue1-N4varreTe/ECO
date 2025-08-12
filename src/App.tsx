@@ -45,6 +45,7 @@ const Reports = lazy(() => import("./pages/Reports"));
 const Employees = lazy(() => import("./pages/Employees"));
 const Clients = lazy(() => import("./pages/Clients"));
 const SystemConfig = lazy(() => import("./pages/SystemConfig"));
+const Deployment = lazy(() => import("./pages/Deployment"));
 
 // User onboarding pages (lazy loaded)
 const TutorialPrimerPedido = lazy(() => import("./pages/TutorialPrimerPedido"));
@@ -193,6 +194,19 @@ const App = () => (
                             }
                           >
                             <SystemConfig />
+                          </PermissionGuard>
+                        }
+                      />
+                      <Route
+                        path="/deployment"
+                        element={
+                          <PermissionGuard
+                            permission="system:deploy"
+                            fallback={
+                              <AccessDenied requiredPermission="system:deploy" />
+                            }
+                          >
+                            <Deployment />
                           </PermissionGuard>
                         }
                       />

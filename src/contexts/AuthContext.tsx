@@ -71,6 +71,7 @@ const ROLE_PERMISSIONS = {
     "customers:manage_loyalty",
     "customers:handle_complaints",
     "system:config",
+    "system:deploy",
   ],
   LEVEL_3_MANAGER: [
     "sales:create",

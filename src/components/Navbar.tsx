@@ -321,6 +321,14 @@ const Navbar: React.FC = () => {
                       </Link>
                     </DropdownMenuItem>
                   </PermissionGuard>
+                  <PermissionGuard permission="system:deploy">
+                    <DropdownMenuItem asChild>
+                      <Link to="/deployment" className="flex items-center">
+                        🚀
+                        <span className="ml-2">Deployment</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  </PermissionGuard>
                   <PermissionGuard permission="staff:view">
                     <DropdownMenuItem asChild>
                       <Link to="/admin" className="flex items-center">
@@ -499,6 +507,19 @@ const Navbar: React.FC = () => {
                 >
                   <Settings className="inline h-4 w-4 mr-2" />
                   Configuración
+                </Link>
+              </PermissionGuard>
+              <PermissionGuard permission="system:deploy">
+                <Link
+                  to="/deployment"
+                  className={`block px-3 py-2 text-base font-medium transition-colors ${
+                    location.pathname === "/deployment"
+                      ? "text-green-600 bg-green-50"
+                      : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                  }`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  🚀 <span className="ml-2">Deployment</span>
                 </Link>
               </PermissionGuard>
               <PermissionGuard permission="staff:view">

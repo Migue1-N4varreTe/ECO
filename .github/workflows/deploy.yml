@@ -49,7 +49,7 @@ jobs:
     name: 🔧 Deploy Backend
     runs-on: ubuntu-latest
     needs: test
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/swoosh-studio' || github.ref == 'refs/heads/ai_Web-Site_7fce72a55f62'
     
     steps:
       - name: Checkout código
@@ -68,7 +68,7 @@ jobs:
     name: 🎨 Deploy Frontend
     runs-on: ubuntu-latest
     needs: [test, deploy-backend]
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/swoosh-studio' || github.ref == 'refs/heads/ai_Web-Site_7fce72a55f62'
     
     steps:
       - name: Checkout código
@@ -103,7 +103,7 @@ jobs:
     name: 🏥 Health Check
     runs-on: ubuntu-latest
     needs: [deploy-backend, deploy-frontend]
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/swoosh-studio' || github.ref == 'refs/heads/ai_Web-Site_7fce72a55f62'
     
     steps:
       - name: Verificar Backend

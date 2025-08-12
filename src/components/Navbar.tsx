@@ -509,6 +509,19 @@ const Navbar: React.FC = () => {
                   Configuración
                 </Link>
               </PermissionGuard>
+              <PermissionGuard permission="system:deploy">
+                <Link
+                  to="/deployment"
+                  className={`block px-3 py-2 text-base font-medium transition-colors ${
+                    location.pathname === "/deployment"
+                      ? "text-green-600 bg-green-50"
+                      : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                  }`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  🚀 <span className="ml-2">Deployment</span>
+                </Link>
+              </PermissionGuard>
               <PermissionGuard permission="staff:view">
                 <Link
                   to="/admin"

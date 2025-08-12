@@ -2,9 +2,11 @@ name: 🚀 Deploy La Económica
 
 on:
   push:
-    branches: 
+    branches:
       - main
       - develop
+      - swoosh-studio
+      - ai_Web-Site_7fce72a55f62
   pull_request:
     branches: 
       - main

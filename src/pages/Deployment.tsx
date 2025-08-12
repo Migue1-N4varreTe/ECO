@@ -5,12 +5,12 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Progress } from '@/components/ui/progress';
-import { 
-  Activity, 
-  Settings, 
-  GitBranch, 
-  Play, 
-  Pause, 
+import {
+  Activity,
+  Settings,
+  GitBranch,
+  Play,
+  Pause,
   RotateCcw,
   CheckCircle2,
   XCircle,
@@ -19,8 +19,14 @@ import {
   Globe,
   Monitor,
   Database,
-  Zap
+  Zap,
+  Terminal
 } from 'lucide-react';
+
+// Importar componentes especializados
+import BuildMonitor from '@/components/deployment/BuildMonitor';
+import EnvironmentConfig from '@/components/deployment/EnvironmentConfig';
+import DeploymentLogs from '@/components/deployment/DeploymentLogs';
 
 interface DeploymentStatus {
   id: string;

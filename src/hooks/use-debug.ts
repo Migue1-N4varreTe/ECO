@@ -10,7 +10,7 @@ import {
 
 export const useDebugProducts = () => {
   useEffect(() => {
-    if (import.meta.env.DEV) {
+    if (process.env.NODE_ENV === "development") {
       console.group("🛒 COMPREHENSIVE PRODUCT DEBUG ANALYSIS");
 
       // Basic Product Validation

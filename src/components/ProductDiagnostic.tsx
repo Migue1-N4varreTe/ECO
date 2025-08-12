@@ -16,7 +16,7 @@ const ProductDiagnostic = () => {
   const [isVisible, setIsVisible] = useState(false);
 
   // Solo mostrar en desarrollo
-  if (!import.meta.env.DEV) {
+  if (process.env.NODE_ENV !== "development") {
     return null;
   }
 

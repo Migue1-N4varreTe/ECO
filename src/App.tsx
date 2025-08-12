@@ -6,7 +6,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Suspense, lazy } from "react";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { PageLoader } from "@/components/LoadingSpinner";
-import OfflineIndicator from "@/components/OfflineIndicator";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { FavoritesProvider } from "@/contexts/FavoritesContext";
 import { CartProvider } from "@/contexts/CartContext";
@@ -63,7 +62,6 @@ const App = () => (
           <FavoritesProvider>
             <CartProvider>
               <SafeWebSocketProvider>
-                <OfflineIndicator position="top" variant="banner" />
                 <Toaster />
                 <Sonner />
                 <BrowserRouter>

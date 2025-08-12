@@ -30,7 +30,7 @@ import ProductDiagnostic from "@/components/ProductDiagnostic";
 
 const Shop = () => {
   // Debug products on development
-  if (import.meta.env.DEV) {
+  if (process.env.NODE_ENV === "development") {
     useDebugProducts();
   }
 
@@ -66,7 +66,7 @@ const Shop = () => {
 
         {/* Header */}
         <div className="mb-8">
-          <h1 className="font-sans font-bold text-3xl text-gray-900 mb-2">
+          <h1 className="font-display font-bold text-3xl text-gray-900 mb-2">
             Tienda
           </h1>
           <p className="text-gray-600">

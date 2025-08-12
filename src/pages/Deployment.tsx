@@ -234,7 +234,7 @@ export default function Deployment() {
         </div>
 
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="overview" className="flex items-center gap-2">
               <Activity className="h-4 w-4" />
               Overview
@@ -245,11 +245,15 @@ export default function Deployment() {
             </TabsTrigger>
             <TabsTrigger value="builds" className="flex items-center gap-2">
               <GitBranch className="h-4 w-4" />
-              Builds
+              Monitor
+            </TabsTrigger>
+            <TabsTrigger value="logs" className="flex items-center gap-2">
+              <Terminal className="h-4 w-4" />
+              Logs
             </TabsTrigger>
             <TabsTrigger value="settings" className="flex items-center gap-2">
               <Settings className="h-4 w-4" />
-              Configuración
+              Config
             </TabsTrigger>
           </TabsList>
 

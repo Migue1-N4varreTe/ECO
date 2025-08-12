@@ -367,63 +367,19 @@ export default function Deployment() {
           </TabsContent>
 
           <TabsContent value="environments">
-            <Card>
-              <CardHeader>
-                <CardTitle>Gestión de Ambientes</CardTitle>
-                <CardDescription>
-                  Configuración y monitoreo de ambientes de deployment
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Alert>
-                  <Database className="h-4 w-4" />
-                  <AlertDescription>
-                    Esta sección estará disponible en la siguiente fase de desarrollo.
-                    Incluirá configuración de variables de entorno, webhooks y políticas de deployment.
-                  </AlertDescription>
-                </Alert>
-              </CardContent>
-            </Card>
+            <EnvironmentConfig />
           </TabsContent>
 
           <TabsContent value="builds">
-            <Card>
-              <CardHeader>
-                <CardTitle>Historial de Builds</CardTitle>
-                <CardDescription>
-                  Registro completo de todos los deployments y builds
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Alert>
-                  <GitBranch className="h-4 w-4" />
-                  <AlertDescription>
-                    El historial detallado de builds se implementará en la siguiente iteración.
-                    Incluirá logs completos, métricas de performance y comparaciones entre builds.
-                  </AlertDescription>
-                </Alert>
-              </CardContent>
-            </Card>
+            <BuildMonitor />
+          </TabsContent>
+
+          <TabsContent value="logs">
+            <DeploymentLogs />
           </TabsContent>
 
           <TabsContent value="settings">
-            <Card>
-              <CardHeader>
-                <CardTitle>Configuración de Deployment</CardTitle>
-                <CardDescription>
-                  Configuración global del sistema de deployments
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Alert>
-                  <Settings className="h-4 w-4" />
-                  <AlertDescription>
-                    Las configuraciones de deployment se implementarán próximamente.
-                    Incluirá integración con Netlify, webhooks de GitHub y configuración de notificaciones.
-                  </AlertDescription>
-                </Alert>
-              </CardContent>
-            </Card>
+            <EnvironmentConfig />
           </TabsContent>
         </Tabs>
       </div>

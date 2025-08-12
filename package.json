@@ -8,6 +8,7 @@
     "dev:backend": "nodemon backend/server.js",
     "build": "vite build",
     "build:backend": "echo 'Backend build complete'",
+    "build:all": "npm run build:backend && npm run build",
     "test": "vitest --run",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
@@ -17,7 +18,13 @@
     "typecheck": "tsc",
     "start:backend": "node backend/server.js",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy:frontend": "netlify deploy --prod --dir=dist",
+    "deploy:backend": "cd backend && railway deploy",
+    "deploy:all": "npm run build:all && npm run deploy:backend && npm run deploy:frontend",
+    "status:backend": "cd backend && railway status",
+    "logs:backend": "cd backend && railway logs",
+    "health:check": "curl -f $VITE_API_URL/api/health || curl -f http://localhost:5000/api/health"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",

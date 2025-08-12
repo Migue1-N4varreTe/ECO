@@ -1,7 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { Product, allProducts } from "@/lib/data";
-import { validateWeightQuantity, checkWeightStock } from "@/lib/weight-utils";
-import { CART_CONFIG } from "@/lib/constants";
 
 export interface CartItem {
   id: string;
@@ -21,10 +19,9 @@ interface CartContextType {
   cartCount: number;
   cartTotal: number;
   cartSubtotal: number;
-  totalItems: number;
-  addToCart: (productId: string, quantity?: number) => boolean;
+  addToCart: (productId: string, quantity?: number) => void;
   removeFromCart: (productId: string) => void;
-  updateQuantity: (productId: string, quantity: number) => boolean;
+  updateQuantity: (productId: string, quantity: number) => void;
   clearCart: () => void;
   isInCart: (productId: string) => boolean;
   getItemQuantity: (productId: string) => number;
@@ -47,7 +44,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
 
   // Load cart from localStorage on mount
   useEffect(() => {
-    const savedCart = localStorage.getItem(CART_CONFIG.STORAGE_KEY);
+    const savedCart = localStorage.getItem("la_economica_cart");
     if (savedCart) {
       try {
         const parsedCart = JSON.parse(savedCart);
@@ -59,14 +56,14 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
         setCartItems(cartWithDates);
       } catch (error) {
         console.error("Error loading cart from localStorage:", error);
-        localStorage.removeItem(CART_CONFIG.STORAGE_KEY);
+        localStorage.removeItem("la_economica_cart");
       }
     }
   }, []);
 
   // Save cart to localStorage whenever it changes
   useEffect(() => {
-    localStorage.setItem(CART_CONFIG.STORAGE_KEY, JSON.stringify(cartItems));
+    localStorage.setItem("la_economica_cart", JSON.stringify(cartItems));
   }, [cartItems]);
 
   // Get product details for cart items
@@ -81,56 +78,54 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
 
   // Calculate cart metrics
   const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
-  const totalItems = cartItems.length; // Number of different products
   const cartSubtotal = cartProducts.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0,
   );
   const cartTotal = cartSubtotal; // Can add taxes, delivery, etc. later
 
-  const addToCart = (productId: string, quantity: number = 1): boolean => {
+  const addToCart = (productId: string, quantity: number = 1) => {
     // Find the product to validate stock
     const product = allProducts.find((p) => p.id === productId);
 
     if (!product) {
       console.error(`Product with id ${productId} not found`);
-      return false;
+      return;
     }
 
     if (!product.inStock) {
       console.error(`Product ${productId} is out of stock`);
-      return false;
+      return;
     }
 
-    // Validate quantity for weight-based products
-    const quantityValidation = validateWeightQuantity(quantity, product);
-    if (!quantityValidation.isValid) {
-      console.error(`Invalid quantity for ${productId}: ${quantityValidation.errorMessage}`);
-      return false;
-    }
-
-    const existingItem = cartItems.find((item) => item.id === productId);
-    const currentCartQuantity = existingItem ? existingItem.quantity : 0;
-    const newTotalQuantity = currentCartQuantity + quantity;
-
-    // Check stock availability
-    const stockCheck = checkWeightStock(product, quantity, currentCartQuantity);
-    if (!stockCheck.hasStock) {
-      console.error(`Stock check failed for ${productId}: ${stockCheck.errorMessage}`);
-      return false;
-    }
-
-    let success = false;
     setCartItems((prev) => {
+      const existingItem = prev.find((item) => item.id === productId);
+
       if (existingItem) {
+        const newQuantity = existingItem.quantity + quantity;
+
+        // Check if new quantity exceeds available stock
+        if (product.stock && newQuantity > product.stock) {
+          console.error(
+            `Cannot add ${quantity} more of ${productId}. Stock: ${product.stock}, Current in cart: ${existingItem.quantity}`,
+          );
+          return prev;
+        }
+
         // Update quantity of existing item
-        success = true;
         return prev.map((item) =>
-          item.id === productId ? { ...item, quantity: newTotalQuantity } : item,
+          item.id === productId ? { ...item, quantity: newQuantity } : item,
         );
       } else {
+        // Check if initial quantity exceeds stock
+        if (product.stock && quantity > product.stock) {
+          console.error(
+            `Cannot add ${quantity} of ${productId}. Available stock: ${product.stock}`,
+          );
+          return prev;
+        }
+
         // Add new item to cart
-        success = true;
         return [
           ...prev,
           {
@@ -141,38 +136,16 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
         ];
       }
     });
-
-    return success;
   };
 
   const removeFromCart = (productId: string) => {
     setCartItems((prev) => prev.filter((item) => item.id !== productId));
   };
 
-  const updateQuantity = (productId: string, quantity: number): boolean => {
+  const updateQuantity = (productId: string, quantity: number) => {
     if (quantity <= 0) {
       removeFromCart(productId);
-      return true;
-    }
-
-    const product = allProducts.find((p) => p.id === productId);
-    if (!product) {
-      console.error(`Product with id ${productId} not found`);
-      return false;
-    }
-
-    // Validate quantity for weight-based products
-    const quantityValidation = validateWeightQuantity(quantity, product);
-    if (!quantityValidation.isValid) {
-      console.error(`Invalid quantity for ${productId}: ${quantityValidation.errorMessage}`);
-      return false;
-    }
-
-    // Check stock availability
-    const stockCheck = checkWeightStock(product, quantity, 0);
-    if (!stockCheck.hasStock) {
-      console.error(`Stock check failed for ${productId}: ${stockCheck.errorMessage}`);
-      return false;
+      return;
     }
 
     setCartItems((prev) =>
@@ -180,8 +153,6 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
         item.id === productId ? { ...item, quantity } : item,
       ),
     );
-
-    return true;
   };
 
   const clearCart = () => {
@@ -203,7 +174,6 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({
     cartCount,
     cartTotal,
     cartSubtotal,
-    totalItems,
     addToCart,
     removeFromCart,
     updateQuantity,

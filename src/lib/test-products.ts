@@ -97,7 +97,7 @@ export const testProducts: Product[] = [
 
 // Función para agregar productos de prueba en desarrollo
 export const addTestProducts = (): Product[] => {
-  if (import.meta.env.DEV) {
+  if (process.env.NODE_ENV === "development") {
     console.log("🧪 Agregando productos de prueba para desarrollo");
     return testProducts;
   }

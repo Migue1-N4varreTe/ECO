@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { ProductImage } from "@/components/ui/optimized-image";
 import { Heart, ShoppingCart, Star, Clock, MapPin } from "lucide-react";
 import { Product } from "@/lib/data";
 import { useFavorites } from "@/contexts/FavoritesContext";
@@ -72,12 +71,10 @@ const ProductCard = ({ product, className }: ProductCardProps) => {
       <CardContent className="p-0">
         {/* Image Container */}
         <div className="relative aspect-square overflow-hidden bg-gray-50">
-          <ProductImage
+          <img
             src={product.image}
-            alt={`${product.name} - ${product.brand || 'La Económica'}`}
+            alt={product.name}
             className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-            priority={false}
-            showSkeleton={true}
           />
 
           {/* Badges */}
@@ -110,10 +107,6 @@ const ProductCard = ({ product, className }: ProductCardProps) => {
                 : "bg-white/80 hover:bg-white/90",
             )}
             onClick={toggleFavorite}
-            aria-label={isFavorite(product.id)
-              ? `Remover ${product.name} de favoritos`
-              : `Agregar ${product.name} a favoritos`
-            }
           >
             <Heart
               className={cn(
@@ -181,11 +174,7 @@ const ProductCard = ({ product, className }: ProductCardProps) => {
           {/* Price */}
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
-              <span
-                className="font-bold text-lg text-gray-900"
-                id={`product-${product.id}-price`}
-                aria-label={`Precio: ${product.price} pesos`}
-              >
+              <span className="font-bold text-lg text-gray-900">
                 ${product.price}
               </span>
               {product.unit && (
@@ -205,14 +194,6 @@ const ProductCard = ({ product, className }: ProductCardProps) => {
           <Button
             onClick={handleAddToCart}
             disabled={!product.inStock || isAddingToCart}
-            aria-label={
-              !product.inStock
-                ? `${product.name} está agotado`
-                : isInCart(product.id)
-                ? `${product.name} ya está en el carrito, agregar más`
-                : `Agregar ${product.name} al carrito por $${product.price}`
-            }
-            aria-describedby={`product-${product.id}-price`}
             className={cn(
               "w-full h-10 sm:h-9 text-sm font-medium transition-all duration-200 mobile-btn sm:btn-auto",
               product.inStock

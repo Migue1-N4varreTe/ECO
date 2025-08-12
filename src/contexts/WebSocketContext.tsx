@@ -46,7 +46,7 @@ interface WebSocketProviderProps {
 
 export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
   children,
-  url = import.meta.env.PROD
+  url = process.env.NODE_ENV === "production"
     ? `wss://${window.location.hostname}/ws`
     : `ws://${window.location.hostname}:5001`,
   autoReconnect = true,
@@ -170,7 +170,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
         } else if (connectionAttempts >= maxReconnectAttempts) {
           setConnectionStatus("error");
           // Only show error toast in production or if user was previously connected
-          if (import.meta.env.PROD || connectionAttempts > 1) {
+          if (process.env.NODE_ENV === "production" || connectionAttempts > 1) {
             toast({
               title: "Servidor en tiempo real no disponible",
               description:
@@ -193,7 +193,7 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
       setConnectionStatus("error");
 
       // Don't show toast in development if it's just a connection failure
-      if (import.meta.env.PROD) {
+      if (process.env.NODE_ENV === "production") {
         toast({
           title: "Error de conexión WebSocket",
           description: "No se pudo conectar al servidor en tiempo real",
@@ -302,8 +302,8 @@ export const WebSocketProvider: React.FC<WebSocketProviderProps> = ({
   useEffect(() => {
     // Only auto-connect in production or if explicitly enabled
     if (
-      import.meta.env.PROD ||
-      import.meta.env.VITE_ENABLE_WEBSOCKET === "true"
+      process.env.NODE_ENV === "production" ||
+      process.env.REACT_APP_ENABLE_WEBSOCKET === "true"
     ) {
       try {
         connect();

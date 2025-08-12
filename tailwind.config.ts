@@ -322,6 +322,17 @@ export default {
           "Arial",
           "sans-serif",
         ],
+        display: [
+          "Poppins",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          '"Segoe UI"',
+          "Roboto",
+          '"Helvetica Neue"',
+          "Arial",
+          "sans-serif",
+        ],
+        happy: ["Happy Monkey", "cursive"],
       },
       borderRadius: {
         lg: "var(--radius)",

@@ -197,6 +197,19 @@ const App = () => (
                           </PermissionGuard>
                         }
                       />
+                      <Route
+                        path="/deployment"
+                        element={
+                          <PermissionGuard
+                            permission="system:deploy"
+                            fallback={
+                              <AccessDenied requiredPermission="system:deploy" />
+                            }
+                          >
+                            <Deployment />
+                          </PermissionGuard>
+                        }
+                      />
                       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                       <Route path="*" element={<NotFound />} />
                     </Routes>

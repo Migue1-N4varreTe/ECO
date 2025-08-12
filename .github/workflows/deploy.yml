@@ -1,0 +1,158 @@
+name: 🚀 Deploy La Económica
+
+on:
+  push:
+    branches: 
+      - main
+      - develop
+  pull_request:
+    branches: 
+      - main
+
+jobs:
+  # Job 1: Tests y validaciones
+  test:
+    name: 🧪 Tests y Validaciones
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          
+      - name: Instalar dependencias
+        run: npm ci
+        
+      - name: TypeScript Check
+        run: npm run typecheck
+        
+      - name: Linting
+        run: npm run lint
+        
+      - name: Tests unitarios
+        run: npm run test
+        
+      - name: Build frontend
+        run: npm run build
+        env:
+          VITE_API_URL: https://api.la-economica.railway.app
+
+  # Job 2: Deploy Backend
+  deploy-backend:
+    name: 🔧 Deploy Backend
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+        
+      - name: Deploy a Railway
+        uses: railway-project/cli@v3
+        with:
+          command: deploy
+          service: backend
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+
+  # Job 3: Deploy Frontend
+  deploy-frontend:
+    name: 🎨 Deploy Frontend
+    runs-on: ubuntu-latest
+    needs: [test, deploy-backend]
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          
+      - name: Instalar dependencias
+        run: npm ci
+        
+      - name: Build frontend
+        run: npm run build
+        env:
+          VITE_API_URL: https://api.la-economica.railway.app
+          VITE_STRIPE_PUBLISHABLE_KEY: ${{ secrets.STRIPE_PUBLISHABLE_KEY }}
+          VITE_SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+          
+      - name: Deploy a Netlify
+        uses: netlify/actions/cli@master
+        with:
+          args: deploy --prod --dir=dist
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+
+  # Job 4: Health Check
+  health-check:
+    name: 🏥 Health Check
+    runs-on: ubuntu-latest
+    needs: [deploy-backend, deploy-frontend]
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Verificar Backend
+        run: |
+          sleep 30  # Esperar a que el servicio esté disponible
+          curl -f https://api.la-economica.railway.app/api/health
+          
+      - name: Verificar Frontend
+        run: |
+          curl -f https://la-economica.netlify.app
+          
+      - name: Notificar resultado
+        if: always()
+        run: |
+          if [ $? -eq 0 ]; then
+            echo "✅ Deployment exitoso - Todos los servicios están funcionando"
+          else
+            echo "❌ Deployment falló - Revisar servicios"
+            exit 1
+          fi
+
+  # Job 5: Deploy Staging (solo en develop)
+  deploy-staging:
+    name: 🚧 Deploy Staging
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.ref == 'refs/heads/develop'
+    
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          
+      - name: Instalar dependencias
+        run: npm ci
+        
+      - name: Build para staging
+        run: npm run build
+        env:
+          VITE_API_URL: https://api-staging.la-economica.railway.app
+          VITE_STRIPE_PUBLISHABLE_KEY: ${{ secrets.STRIPE_TEST_PUBLISHABLE_KEY }}
+          
+      - name: Deploy staging a Netlify
+        uses: netlify/actions/cli@master
+        with:
+          args: deploy --alias=staging --dir=dist
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}

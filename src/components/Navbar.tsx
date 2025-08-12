@@ -321,6 +321,14 @@ const Navbar: React.FC = () => {
                       </Link>
                     </DropdownMenuItem>
                   </PermissionGuard>
+                  <PermissionGuard permission="system:deploy">
+                    <DropdownMenuItem asChild>
+                      <Link to="/deployment" className="flex items-center">
+                        🚀
+                        <span className="ml-2">Deployment</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  </PermissionGuard>
                   <PermissionGuard permission="staff:view">
                     <DropdownMenuItem asChild>
                       <Link to="/admin" className="flex items-center">

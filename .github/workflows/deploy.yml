@@ -7,6 +7,8 @@ on:
       - develop
       - swoosh-studio
       - ai_Web-Site_7fce72a55f62
+      - web-site
+      - "web site"
   pull_request:
     branches: 
       - main

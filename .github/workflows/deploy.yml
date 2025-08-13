@@ -10,8 +10,9 @@ on:
       - web-site
       - "web site"
   pull_request:
-    branches: 
+    branches:
       - main
+      - swoosh-studio
 
 jobs:
   # Job 1: Tests y validaciones

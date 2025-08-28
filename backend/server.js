@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import morgan from "morgan";
 import dotenv from "dotenv";
-import { sentryRequestHandler, sentryTracingHandler, sentryErrorHandler } from "./config/sentry.js";
+import { sentryRequestHandler, sentryErrorHandler } from "./config/sentry.js";
 import {
   generalLimiter,
   authLimiter,
@@ -53,7 +53,6 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 // Sentry request/tracing handlers (must be before routes)
 app.use(sentryRequestHandler);
-app.use(sentryTracingHandler);
 
 // Input sanitization
 app.use(sanitizeInput);

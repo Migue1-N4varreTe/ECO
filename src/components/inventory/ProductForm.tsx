@@ -131,6 +131,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
         stock_quantity: parseInt(formData.stock_quantity),
         min_stock: parseInt(formData.min_stock),
         expiry_date: formData.expiry_date || null,
+        image_url: formData.image_url || null,
       };
 
       const response = await fetch(url, {

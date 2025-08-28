@@ -85,7 +85,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
         sku: product.sku || "",
         barcode: product.barcode || "",
         category_id: product.categories?.id || "",
-        stock_quantity: product.stock_quantity?.toString() || "",
+        stock_quantity: (product as any).stock_quantity?.toString() || "",
         min_stock: product.min_stock?.toString() || "10",
         unit: product.unit || "unidad",
         brand: product.brand || "",
@@ -94,6 +94,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
           ? product.expiry_date.split("T")[0]
           : "",
         is_active: product.is_active ?? true,
+        image_url: (product as any).image_url || "",
       });
     }
   }, [product]);

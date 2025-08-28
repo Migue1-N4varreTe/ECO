@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import paymentService from "@/services/stripe";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -98,6 +99,8 @@ const Checkout = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [isGuestCheckout, setIsGuestCheckout] = useState(!isAuthenticated);
+  const [cardElement, setCardElement] = useState<any>(null);
+  const cardContainerId = "card-element-container";
   const [guestInfo, setGuestInfo] = useState({
     email: "",
     name: "",
@@ -129,6 +132,38 @@ const Checkout = () => {
 
   // Get cart data
   const { cartProducts, cartCount, cartSubtotal } = useCart();
+
+  // Mount Stripe Card Element when needed
+  useEffect(() => {
+    let mounted = true;
+    const setup = async () => {
+      if (selectedPayment === "card" && !cardElement) {
+        try {
+          const element = await paymentService.createElement("card", {
+            hidePostalCode: true,
+            style: {
+              base: {
+                fontSize: "16px",
+              },
+            },
+          });
+          if (mounted) {
+            const container = document.getElementById(cardContainerId);
+            if (container && !container.childElementCount) {
+              element.mount(`#${cardContainerId}`);
+            }
+            setCardElement(element);
+          }
+        } catch (e) {
+          console.error("Stripe init failed", e);
+        }
+      }
+    };
+    setup();
+    return () => {
+      mounted = false;
+    };
+  }, [selectedPayment, cardElement]);
 
   // Calculate totals
   const subtotal = cartSubtotal;
@@ -221,39 +256,52 @@ const Checkout = () => {
     setIsProcessing(true);
 
     try {
-      // Prepare order data
-      const orderData = {
-        customer: isAuthenticated ? { id: user?.id } : guestInfo,
-        items: cartProducts,
-        address: addressData,
-        delivery: deliveryOption,
-        payment: {
-          method: selectedPayment,
-          ...(selectedPayment === "card" && { cardDetails: cardData }),
-        },
-        totals: {
-          subtotal,
-          delivery: deliveryCost,
-          fees: paymentFees,
-          total,
-        },
-        isGuest: !isAuthenticated,
+      if (selectedPayment === "card") {
+        if (!cardElement) throw new Error("Tarjeta no lista");
+        const pi = await paymentService.createPaymentIntent(total, "mxn", {
+          source: "checkout",
+        });
+        if (!pi?.clientSecret) throw new Error("No se pudo crear el pago");
+        const result = await paymentService.confirmCardPayment(
+          pi.clientSecret,
+          cardElement,
+          {
+            name: isAuthenticated ? user?.name : guestInfo.name,
+            email: isAuthenticated ? user?.email : guestInfo.email,
+          },
+        );
+        if ((result as any).error) {
+          throw new Error((result as any).error.message || "Pago fallido");
+        }
+      }
+
+      // Build local receipt
+      const receipt = {
+        id: Math.random().toString(36).slice(2, 10).toUpperCase(),
+        date: new Date().toISOString(),
+        items: cartProducts.map((p) => ({
+          id: p.id,
+          name: p.name,
+          price: p.price,
+          quantity: p.quantity,
+          image: p.image,
+        })),
+        subtotal,
+        delivery: deliveryCost,
+        fees: paymentFees,
+        total,
+        payment_method: selectedPayment || "card",
+        customer: isAuthenticated
+          ? { name: user?.name, email: (user as any)?.email }
+          : { name: guestInfo.name, email: guestInfo.email },
       };
+      localStorage.setItem("last_order_receipt", JSON.stringify(receipt));
 
-      // Simulate payment processing
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      // Clear cart after successful order
-      // clearCart(); // Uncomment when cart clear function is available
-
-      // Show success message
-      alert(
-        `¡Pedido realizado con éxito! 🎉\n\n${isAuthenticated ? 'Puedes ver el estado de tu pedido en "Mis Pedidos"' : "Recibirás un email de confirmación en " + guestInfo.email}`,
-      );
-
-      navigate("/");
+      navigate("/checkout/success");
     } catch (error) {
-      alert("Error procesando el pago. Inténtalo de nuevo.");
+      alert(
+        error instanceof Error ? error.message : "Error procesando el pago.",
+      );
     } finally {
       setIsProcessing(false);
     }
@@ -625,68 +673,11 @@ const Checkout = () => {
 
                   {/* Card Details */}
                   {selectedPayment === "card" && (
-                    <div className="space-y-4 p-4 bg-gray-50 rounded-lg">
+                    <div className="space-y-3 p-4 bg-gray-50 rounded-lg">
                       <Label className="text-sm font-medium">
                         Detalles de la tarjeta
                       </Label>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="md:col-span-2">
-                          <Label htmlFor="cardNumber" className="text-xs">
-                            Número de tarjeta
-                          </Label>
-                          <Input
-                            id="cardNumber"
-                            value={cardData.number}
-                            onChange={(e) =>
-                              handleCardChange("number", e.target.value)
-                            }
-                            placeholder="1234 5678 9012 3456"
-                            className="mt-1"
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="expiry" className="text-xs">
-                            Fecha de vencimiento
-                          </Label>
-                          <Input
-                            id="expiry"
-                            value={cardData.expiry}
-                            onChange={(e) =>
-                              handleCardChange("expiry", e.target.value)
-                            }
-                            placeholder="MM/AA"
-                            className="mt-1"
-                          />
-                        </div>
-                        <div>
-                          <Label htmlFor="cvv" className="text-xs">
-                            CVV
-                          </Label>
-                          <Input
-                            id="cvv"
-                            value={cardData.cvv}
-                            onChange={(e) =>
-                              handleCardChange("cvv", e.target.value)
-                            }
-                            placeholder="123"
-                            className="mt-1"
-                          />
-                        </div>
-                        <div className="md:col-span-2">
-                          <Label htmlFor="cardName" className="text-xs">
-                            Nombre del titular
-                          </Label>
-                          <Input
-                            id="cardName"
-                            value={cardData.name}
-                            onChange={(e) =>
-                              handleCardChange("name", e.target.value)
-                            }
-                            placeholder="Juan Pérez"
-                            className="mt-1"
-                          />
-                        </div>
-                      </div>
+                      <div id={cardContainerId} className="p-3 bg-white rounded border" />
                     </div>
                   )}
 

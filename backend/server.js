@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import morgan from "morgan";
 import dotenv from "dotenv";
+import { sentryRequestHandler, sentryTracingHandler, sentryErrorHandler } from "./config/sentry.js";
 import {
   generalLimiter,
   authLimiter,
@@ -50,6 +51,10 @@ app.use(cors(corsOptions));
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
+// Sentry request/tracing handlers (must be before routes)
+app.use(sentryRequestHandler);
+app.use(sentryTracingHandler);
+
 // Input sanitization
 app.use(sanitizeInput);
 
@@ -87,6 +92,9 @@ app.use("/api/bi", biRoutes);
 app.get("/api/health", (req, res) => {
   res.json({ status: "OK", message: "La Económica API is running" });
 });
+
+// Sentry error handler (before generic handler)
+app.use(sentryErrorHandler);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

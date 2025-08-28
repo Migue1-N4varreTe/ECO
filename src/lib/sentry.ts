@@ -1,6 +1,7 @@
 import * as Sentry from "@sentry/react";
 
 import * as Sentry from "@sentry/react";
+import { browserTracingIntegration } from "@sentry/react";
 
 const sentryDsn = import.meta.env.VITE_SENTRY_DSN;
 const environment = import.meta.env.NODE_ENV || "development";
@@ -10,7 +11,7 @@ if (sentryDsn) {
   Sentry.init({
     dsn: sentryDsn,
     environment,
-    integrations: [Sentry.browserTracingIntegration()],
+    integrations: [browserTracingIntegration()],
 
     // Performance monitoring
     tracesSampleRate: environment === "production" ? 0.1 : 1.0,

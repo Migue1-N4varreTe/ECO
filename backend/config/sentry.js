@@ -107,9 +107,6 @@ function sanitizeRequestData(data) {
   return sanitized;
 }
 
-// Express middleware for Sentry (SDK v9)
-export const sentryRequestHandler = Sentry.expressRequestMiddleware();
-export const sentryErrorHandler = Sentry.expressErrorHandler();
 
 // Helper functions for manual error reporting
 export const captureError = (error, context = {}) => {

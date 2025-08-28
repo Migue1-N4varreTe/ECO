@@ -70,6 +70,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
     supplier: "",
     expiry_date: "",
     is_active: true,
+    image_url: "",
   });
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();

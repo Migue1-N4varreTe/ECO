@@ -131,110 +131,14 @@ const App = () => (
                       />
                       <Route path="/terms" element={<Terms />} />
                       <Route path="/privacy" element={<Privacy />} />
-                      <Route
-                        path="/admin"
-                        element={
-                          <PermissionGuard
-                            permission="staff:view"
-                            fallback={
-                              <AccessDenied requiredPermission="staff:view" />
-                            }
-                          >
-                            <Admin />
-                          </PermissionGuard>
-                        }
-                      />
-                      <Route
-                        path="/inventory"
-                        element={
-                          <PermissionGuard
-                            permission="inventory:view"
-                            fallback={
-                              <AccessDenied requiredPermission="inventory:view" />
-                            }
-                          >
-                            <Inventory />
-                          </PermissionGuard>
-                        }
-                      />
-                      <Route
-                        path="/pos"
-                        element={
-                          <PermissionGuard
-                            permission="sales:create"
-                            fallback={
-                              <AccessDenied requiredPermission="sales:create" />
-                            }
-                          >
-                            <POS />
-                          </PermissionGuard>
-                        }
-                      />
-                      <Route
-                        path="/reports"
-                        element={
-                          <PermissionGuard
-                            permission="reports:view"
-                            fallback={
-                              <AccessDenied requiredPermission="reports:view" />
-                            }
-                          >
-                            <Reports />
-                          </PermissionGuard>
-                        }
-                      />
-                      <Route
-                        path="/employees"
-                        element={
-                          <PermissionGuard
-                            permission="staff:view"
-                            fallback={
-                              <AccessDenied requiredPermission="staff:view" />
-                            }
-                          >
-                            <Employees />
-                          </PermissionGuard>
-                        }
-                      />
-                      <Route
-                        path="/clients"
-                        element={
-                          <PermissionGuard
-                            permission="clients:view"
-                            fallback={
-                              <AccessDenied requiredPermission="clients:view" />
-                            }
-                          >
-                            <Clients />
-                          </PermissionGuard>
-                        }
-                      />
-                      <Route
-                        path="/system-config"
-                        element={
-                          <PermissionGuard
-                            permission="system:config"
-                            fallback={
-                              <AccessDenied requiredPermission="system:config" />
-                            }
-                          >
-                            <SystemConfig />
-                          </PermissionGuard>
-                        }
-                      />
-                      <Route
-                        path="/deployment"
-                        element={
-                          <PermissionGuard
-                            permission="system:deploy"
-                            fallback={
-                              <AccessDenied requiredPermission="system:deploy" />
-                            }
-                          >
-                            <Deployment />
-                          </PermissionGuard>
-                        }
-                      />
+                      <Route path="/admin" element={<Admin />} />
+                      <Route path="/inventory" element={<Inventory />} />
+                      <Route path="/pos" element={<POS />} />
+                      <Route path="/reports" element={<Reports />} />
+                      <Route path="/employees" element={<Employees />} />
+                      <Route path="/clients" element={<Clients />} />
+                      <Route path="/system-config" element={<SystemConfig />} />
+                      <Route path="/deployment" element={<Deployment />} />
                       <Route path="/shopping-list" element={<ShoppingList />} />
                       <Route path="/addresses" element={<Addresses />} />
                       <Route path="/reviews" element={<Reviews />} />

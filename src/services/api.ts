@@ -201,6 +201,10 @@ class ApiService {
     return this.request(`/products/${id}`);
   }
 
+  async getSimilarProducts(id: string) {
+    return this.request(`/products/${id}/similar`);
+  }
+
   async createProduct(productData: any) {
     return this.request("/products", {
       method: "POST",

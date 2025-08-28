@@ -1,5 +1,4 @@
 import * as Sentry from "@sentry/node";
-import { ProfilingIntegration } from "@sentry/profiling-node";
 
 const sentryDsn = process.env.VITE_SENTRY_DSN;
 const environment = process.env.NODE_ENV || "development";
@@ -11,13 +10,11 @@ if (sentryDsn) {
     environment,
 
     // Performance monitoring
-    integrations: [new ProfilingIntegration()],
+    integrations: [],
 
     // Performance sampling
     tracesSampleRate: environment === "production" ? 0.1 : 1.0,
 
-    // Profiling sampling (lower rate for production)
-    profilesSampleRate: environment === "production" ? 0.01 : 0.1,
 
     // Error sampling
     sampleRate: 1.0,

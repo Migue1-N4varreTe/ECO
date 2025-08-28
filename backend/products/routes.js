@@ -190,4 +190,35 @@ router.delete(
   },
 );
 
+// Update product image URL
+router.post(
+  "/:id/image",
+  authenticateToken,
+  requirePermission(PERMISSIONS.INVENTORY.UPDATE_ITEM),
+  [body("image_url").isURL().withMessage("URL de imagen válida requerida")],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    try {
+      const product = await updateProduct(req.params.id, { image_url: req.body.image_url }, req.user);
+      res.json(product);
+    } catch (error) {
+      res.status(400).json({ error: error.message });
+    }
+  },
+);
+
+// Get similar products by category
+router.get("/:id/similar", authenticateToken, async (req, res) => {
+  try {
+    const items = await getSimilarProducts(req.params.id);
+    res.json(items);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 export default router;

@@ -13,14 +13,14 @@ import {
   validateIP,
 } from "./middleware/security.js";
 
-// import authRoutes from "./auth/routes.js";
-// import userRoutes from "./users/routes.js";
-// import productRoutes from "./products/routes.js";
-// import salesRoutes from "./sales/routes.js";
-// import clientRoutes from "./clients/routes.js";
-// import employeeRoutes from "./employees/routes.js";
-// import reportRoutes from "./reports/routes.js";
-// import paymentRoutes from "./payments/routes.js";
+import authRoutes from "./auth/routes.js";
+import userRoutes from "./users/routes.js";
+import productRoutes from "./products/routes.js";
+import salesRoutes from "./sales/routes.js";
+import clientRoutes from "./clients/routes.js";
+import employeeRoutes from "./employees/routes.js";
+import reportRoutes from "./reports/routes.js";
+import paymentRoutes from "./payments/routes.js";
 
 dotenv.config({ path: "../.env" });
 
@@ -48,14 +48,14 @@ app.use("/api/", generalLimiter);
 app.use(morgan("combined"));
 
 // Routes with specific rate limiting
-// app.use("/api/auth", authLimiter, authRoutes);
-// app.use("/api/payments", paymentLimiter, paymentRoutes);
-// app.use("/api/users", userRoutes);
-// app.use("/api/products", productRoutes);
-// app.use("/api/sales", salesRoutes);
-// app.use("/api/clients", clientRoutes);
-// app.use("/api/employees", employeeRoutes);
-// app.use("/api/reports", reportRoutes);
+app.use("/api/auth", authLimiter, authRoutes);
+app.use("/api/payments", paymentLimiter, paymentRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/products", productRoutes);
+app.use("/api/sales", salesRoutes);
+app.use("/api/clients", clientRoutes);
+app.use("/api/employees", employeeRoutes);
+app.use("/api/reports", reportRoutes);
 
 // Health check
 app.get("/api/health", (req, res) => {

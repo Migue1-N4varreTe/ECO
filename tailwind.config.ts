@@ -314,6 +314,7 @@ export default {
       fontFamily: {
         sans: [
           "Inter",
+          "Noto Sans",
           "-apple-system",
           "BlinkMacSystemFont",
           '"Segoe UI"',
@@ -323,7 +324,8 @@ export default {
           "sans-serif",
         ],
         display: [
-          "Poppins",
+          "Inter",
+          "Noto Sans",
           "-apple-system",
           "BlinkMacSystemFont",
           '"Segoe UI"',

@@ -240,6 +240,16 @@ const ProductForm: React.FC<ProductFormProps> = ({
           </div>
 
           <div className="space-y-2">
+            <Label htmlFor="image_url">URL de Imagen</Label>
+            <Input
+              id="image_url"
+              value={formData.image_url}
+              onChange={(e) => handleInputChange("image_url", e.target.value)}
+              placeholder="https://..."
+            />
+          </div>
+
+          <div className="space-y-2">
             <Label htmlFor="description">Descripción</Label>
             <Textarea
               id="description"

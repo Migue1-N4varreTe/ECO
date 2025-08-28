@@ -107,27 +107,9 @@ function sanitizeRequestData(data) {
   return sanitized;
 }
 
-// Express middleware for Sentry error handling
-export const sentryErrorHandler = Sentry.Handlers.errorHandler({
-  shouldHandleError(error) {
-    // Only handle 5xx errors and specific 4xx errors
-    if (error.status >= 500) return true;
-    if (error.status === 429) return true; // Rate limiting errors
-    if (error.status === 403) return true; // Security-related errors
-    return false;
-  },
-});
-
-// Express middleware for request tracing
-export const sentryRequestHandler = Sentry.Handlers.requestHandler({
-  // Use custom transaction name
-  transaction: (req) => {
-    return `${req.method} ${req.route?.path || req.path}`;
-  },
-});
-
-// Express middleware for tracing
-export const sentryTracingHandler = Sentry.Handlers.tracingHandler();
+// Express middleware for Sentry (SDK v9)
+export const sentryRequestHandler = Sentry.expressRequestMiddleware();
+export const sentryErrorHandler = Sentry.expressErrorHandler();
 
 // Helper functions for manual error reporting
 export const captureError = (error, context = {}) => {

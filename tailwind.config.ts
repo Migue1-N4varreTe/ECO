@@ -332,7 +332,6 @@ export default {
           "Arial",
           "sans-serif",
         ],
-        happy: ["Happy Monkey", "cursive"],
       },
       borderRadius: {
         lg: "var(--radius)",

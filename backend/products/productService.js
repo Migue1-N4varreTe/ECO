@@ -435,6 +435,25 @@ const deleteCategory = async (categoryId, user) => {
   }
 };
 
+const getSimilarProducts = async (productId) => {
+  try {
+    const { data: base, error: baseErr } = await supabase
+      .from("products").select("id, category_id").eq("id", productId).single();
+    if (baseErr || !base) throw new Error("Producto no encontrado");
+
+    const { data: items, error } = await supabase
+      .from("products")
+      .select("id, name, price, image_url, category_id")
+      .eq("category_id", base.category_id)
+      .eq("is_active", true)
+      .neq("id", productId)
+      .limit(8);
+
+    if (error) throw new Error("No se pudieron obtener similares: " + error.message);
+    return items || [];
+  } catch (e) { throw e; }
+};
+
 export {
   getAllProducts,
   getProductById,
@@ -446,4 +465,5 @@ export {
   createCategory,
   updateCategory,
   deleteCategory,
+  getSimilarProducts,
 };

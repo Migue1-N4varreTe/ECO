@@ -40,7 +40,7 @@ export class PaymentService {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          amount: Math.round(amount * 100), // Convert to cents
+          amount, // send in major units; backend converts to cents
           currency,
           metadata,
         }),

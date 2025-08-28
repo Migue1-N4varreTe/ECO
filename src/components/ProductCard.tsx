@@ -2,6 +2,14 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Heart, ShoppingCart, Star, Clock, MapPin } from "lucide-react";
 import { Product } from "@/lib/data";
 import { useFavorites } from "@/contexts/FavoritesContext";
@@ -20,22 +28,43 @@ const ProductCard = ({ product, className }: ProductCardProps) => {
   const { addToCartWithNotification } = useCartActions();
   const [isAddingToCart, setIsAddingToCart] = useState(false);
 
+  const isWeight = product.sellByWeight || product.unit === "kg";
+  const [unitMode, setUnitMode] = useState<string>(isWeight ? "g" : "pieza");
+  const [qty, setQty] = useState<number>(isWeight ? 500 : 1);
+
   const handleAddToCart = async () => {
     if (!product.inStock) {
       return;
     }
 
+    // Compute final quantity respecting unit selection
+    let computedQty: number;
+    if (isWeight) {
+      if (unitMode === "g") {
+        computedQty = qty / 1000; // convert grams to kg
+      } else {
+        computedQty = qty; // kg
+      }
+      // round to 3 decimals to avoid floating precision issues
+      computedQty = Math.round(computedQty * 1000) / 1000;
+    } else {
+      computedQty = Math.max(1, Math.floor(qty));
+    }
+
+    if (!(computedQty > 0)) return;
+
     setIsAddingToCart(true);
 
     try {
-      // Simulate API call delay
       await new Promise((resolve) => setTimeout(resolve, 300));
 
-      // Try to add to cart with validations
-      const success = addToCartWithNotification(product.id, 1, product.name);
+      const success = addToCartWithNotification(
+        product.id,
+        computedQty,
+        product.name,
+      );
 
       if (!success) {
-        // Error was already shown in the toast, just log for debugging
         console.log(`Failed to add ${product.name} to cart`);
       }
     } catch (error) {
@@ -188,6 +217,34 @@ const ProductCard = ({ product, className }: ProductCardProps) => {
                 </span>
               )}
             </div>
+          </div>
+
+          {/* Quantity Selector */}
+          <div className="flex items-center gap-2 mb-3">
+            <Input
+              type="number"
+              value={qty}
+              onChange={(e) => setQty(Number(e.target.value))}
+              min={isWeight ? (unitMode === "g" ? 50 : 0.1) : 1}
+              step={isWeight ? (unitMode === "g" ? 50 : 0.1) : 1}
+              disabled={!product.inStock}
+              className="w-24 h-9"
+            />
+            {isWeight ? (
+              <Select value={unitMode} onValueChange={setUnitMode}>
+                <SelectTrigger className="w-24 h-9">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="g">gramos</SelectItem>
+                  <SelectItem value="kg">kg</SelectItem>
+                </SelectContent>
+              </Select>
+            ) : (
+              <Badge variant="secondary" className="text-xs h-9 flex items-center">
+                piezas
+              </Badge>
+            )}
           </div>
 
           {/* Add to Cart Button */}

@@ -21,6 +21,18 @@ import clientRoutes from "./clients/routes.js";
 import employeeRoutes from "./employees/routes.js";
 import reportRoutes from "./reports/routes.js";
 import paymentRoutes from "./payments/routes.js";
+import brandsRoutes from "./brands/routes.js";
+import suppliersRoutes from "./suppliers/routes.js";
+import locationsRoutes from "./locations/routes.js";
+import purchaseOrdersRoutes from "./purchase-orders/routes.js";
+import receivingRoutes from "./receiving/routes.js";
+import movementsRoutes from "./movements/routes.js";
+import notificationsRoutes from "./notifications/routes.js";
+import importExportRoutes from "./import-export/routes.js";
+import auditRoutes from "./audit/routes.js";
+import deliveryRoutes from "./delivery/routes.js";
+import qualityRoutes from "./quality/routes.js";
+import biRoutes from "./bi/routes.js";
 
 dotenv.config({ path: "../.env" });
 
@@ -56,6 +68,20 @@ app.use("/api/sales", salesRoutes);
 app.use("/api/clients", clientRoutes);
 app.use("/api/employees", employeeRoutes);
 app.use("/api/reports", reportRoutes);
+
+// Extended modules
+app.use("/api/brands", brandsRoutes);
+app.use("/api/suppliers", suppliersRoutes);
+app.use("/api/locations", locationsRoutes);
+app.use("/api/purchase-orders", purchaseOrdersRoutes);
+app.use("/api/receiving", receivingRoutes);
+app.use("/api/movements", movementsRoutes);
+app.use("/api/notifications", notificationsRoutes);
+app.use("/api/import-export", importExportRoutes);
+app.use("/api/audit", auditRoutes);
+app.use("/api/delivery", deliveryRoutes);
+app.use("/api/quality", qualityRoutes);
+app.use("/api/bi", biRoutes);
 
 // Health check
 app.get("/api/health", (req, res) => {

@@ -1,5 +1,7 @@
 import * as Sentry from "@sentry/react";
 
+import * as Sentry from "@sentry/react";
+
 const sentryDsn = import.meta.env.VITE_SENTRY_DSN;
 const environment = import.meta.env.NODE_ENV || "development";
 

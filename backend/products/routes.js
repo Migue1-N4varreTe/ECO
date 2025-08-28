@@ -13,6 +13,7 @@ import {
   createCategory,
   updateCategory,
   deleteCategory,
+  getSimilarProducts,
 } from "./productService.js";
 
 const router = express.Router();

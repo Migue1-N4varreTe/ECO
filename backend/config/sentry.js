@@ -1,5 +1,4 @@
 import * as Sentry from "@sentry/node";
-import * as Sentry from "@sentry/node";
 import { ProfilingIntegration } from "@sentry/profiling-node";
 
 const sentryDsn = process.env.VITE_SENTRY_DSN;

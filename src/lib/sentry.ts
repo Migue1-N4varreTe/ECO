@@ -8,13 +8,15 @@ const environment = import.meta.env.NODE_ENV || "development";
 
 // Initialize Sentry only if DSN is provided
 if (sentryDsn) {
-  Sentry.init({
-    dsn: sentryDsn,
-    environment,
-    integrations: [browserTracingIntegration()],
+  try {
+    const integration = typeof browserTracingIntegration === "function" ? browserTracingIntegration() : undefined;
+    Sentry.init({
+      dsn: sentryDsn,
+      environment,
+      integrations: integration ? [integration] : [],
 
-    // Performance monitoring
-    tracesSampleRate: environment === "production" ? 0.1 : 1.0,
+      // Performance monitoring
+      tracesSampleRate: environment === "production" ? 0.1 : 1.0,
 
     // Error sampling
     sampleRate: 1.0,
@@ -56,9 +58,12 @@ if (sentryDsn) {
 
       return breadcrumb;
     },
-  });
+    });
 
-  console.log("✅ Sentry initialized for error monitoring");
+    console.log("✅ Sentry initialized for error monitoring");
+  } catch (e) {
+    console.warn("⚠️ Sentry init skipped:", e);
+  }
 } else {
   console.warn("⚠️ Sentry DSN not configured - error monitoring disabled");
 }

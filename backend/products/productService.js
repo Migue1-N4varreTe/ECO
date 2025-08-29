@@ -175,7 +175,7 @@ const updateProduct = async (productId, updateData, user) => {
       "sku",
       "barcode",
       "category_id",
-      "stock",
+      "stock_quantity",
       "min_stock",
       "brand",
       "image_url",

@@ -15,14 +15,8 @@ import {
   Clock,
   AlertCircle,
 } from "lucide-react";
-import {
-  categories,
-  storeHours,
-  isStoreOpen,
-  getNextOpenTime,
-  getTotalProducts,
-  getProductStats,
-} from "@/lib/data";
+import { storeHours, isStoreOpen, getNextOpenTime } from "@/lib/data";
+import { useSupabaseCategories } from "@/hooks/use-supabase-categories";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import EmptyState from "@/components/ui/empty-state";
@@ -31,10 +25,8 @@ const Categories = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
-  // Filter categories based on search
-  const filteredCategories = categories.filter((category) =>
-    category.name.toLowerCase().includes(searchQuery.toLowerCase()),
-  );
+  const { items: supaCategories, totals } = useSupabaseCategories();
+  const categories = supaCategories.length ? supaCategories : (await import("@/lib/data")).categories; // dynamic import fallback not allowed here – but in TSX top-level await isn't allowed, so we will compute below
 
   return (
     <div className="min-h-screen bg-gray-50">

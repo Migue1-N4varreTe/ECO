@@ -233,6 +233,7 @@ const Navbar: React.FC = () => {
             {/* Favorites */}
             <Link
               to="/favorites"
+              onMouseEnter={() => prefetchFavorites()}
               className="relative p-2 hover:bg-gray-100 rounded-md"
             >
               <Heart

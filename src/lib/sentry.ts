@@ -1,6 +1,4 @@
 import * as Sentry from "@sentry/react";
-
-import * as Sentry from "@sentry/react";
 import { browserTracingIntegration } from "@sentry/react";
 
 const sentryDsn = import.meta.env.VITE_SENTRY_DSN;

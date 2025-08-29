@@ -188,10 +188,42 @@ const Navbar: React.FC = () => {
                 <Input
                   type="text"
                   placeholder="Buscar productos..."
+                  aria-label="Buscar productos"
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    window.clearTimeout((window as any).__navDebounce);
+                    (window as any).__navDebounce = window.setTimeout(() => {
+                      if (e.target.value.trim()) {
+                        navigate(`/shop?search=${encodeURIComponent(e.target.value.trim())}`);
+                      }
+                    }, 300);
+                  }}
                   className="pl-10 pr-8 py-2 w-full ml-2.5"
                 />
+                {searchQuery.length >= 2 && (
+                  <div role="listbox" className="absolute z-50 mt-1 w-full bg-white border rounded-md shadow-md max-h-64 overflow-auto">
+                    {allProducts
+                      .filter(p => p.name?.toLowerCase().includes(searchQuery.toLowerCase()))
+                      .slice(0, 5)
+                      .map(p => (
+                        <button
+                          key={p.id}
+                          role="option"
+                          className="w-full text-left px-3 py-2 hover:bg-gray-50"
+                          onMouseDown={(ev) => {
+                            ev.preventDefault();
+                            navigate(`/shop?search=${encodeURIComponent(p.name)}`);
+                          }}
+                        >
+                          {p.name}
+                        </button>
+                      ))}
+                    {allProducts.filter(p => p.name?.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 && (
+                      <div className="px-3 py-2 text-sm text-gray-500">Sin resultados</div>
+                    )}
+                  </div>
+                )}
               </div>
             </form>
           </div>

@@ -9,8 +9,7 @@ const getAllProducts = async (filters = {}) => {
         *,
         categories (
           id,
-          name,
-          aisle
+          name
         )
       `,
       )
@@ -62,8 +61,7 @@ const getProductById = async (productId) => {
         *,
         categories (
           id,
-          name,
-          aisle
+          name
         )
       `,
       )
@@ -124,8 +122,7 @@ const createProduct = async (productData, user) => {
         *,
         categories (
           id,
-          name,
-          aisle
+          name
         )
       `,
       )
@@ -203,8 +200,7 @@ const updateProduct = async (productId, updateData, user) => {
         *,
         categories (
           id,
-          name,
-          aisle
+          name
         )
       `,
       )
@@ -294,8 +290,7 @@ const getLowStockProducts = async (storeId) => {
         *,
         categories (
           id,
-          name,
-          aisle
+          name
         )
       `,
       )

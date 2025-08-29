@@ -23,6 +23,9 @@ async function ensureAuthUser() {
   if (signin.data?.session?.access_token) {
     return signin.data.session.access_token;
   }
+  if (signin.error) {
+    console.warn('Sign-in attempt failed:', signin.error.message);
+  }
 
   if (!SUPABASE_SERVICE_KEY) {
     throw new Error('Sign-in failed and SUPABASE_SERVICE_KEY not set to create the user');
@@ -35,9 +38,13 @@ async function ensureAuthUser() {
   if (error && !String(error.message || '').toLowerCase().includes('already')) {
     throw error;
   }
+  if (error) {
+    console.warn('Create user warning:', error.message);
+  }
   // Try sign-in again
   const signin2 = await supabase.auth.signInWithPassword({ email: TEST_EMAIL, password: TEST_PASSWORD });
   if (!signin2.data?.session?.access_token) {
+    console.warn('Second sign-in failed:', signin2.error?.message || 'no session returned');
     throw new Error('Failed to sign in test user after creation');
   }
   return signin2.data.session.access_token;

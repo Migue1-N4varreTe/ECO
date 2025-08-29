@@ -25,8 +25,7 @@ async function ensureLocalUser() {
   if (existing && existing[0]) return;
   const password_hash = await bcrypt.hash(TEST_PASSWORD, 10);
   const level = 1;
-  const now = new Date().toISOString();
-  const payload = { email: TEST_EMAIL.toLowerCase(), password_hash, role: 'LEVEL_1_CASHIER', level, is_active: true, created_at: now, updated_at: now };
+  const payload = { email: TEST_EMAIL.toLowerCase(), password_hash, role: 'LEVEL_1_CASHIER', level };
   const { error } = await admin.from('users').insert([payload]);
   if (error) throw new Error('No se pudo crear usuario local: ' + error.message);
 }

@@ -212,6 +212,8 @@ const updateUserRole = async (userId, newRole, currentUser) => {
         user_id: currentUser.id,
         target_user_id: userId,
         action: "role_change",
+        table_name: "users",
+        record_id: userId,
         details: {
           old_role: targetUser.role,
           new_role: newRole,
@@ -270,6 +272,8 @@ const deleteUser = async (userId, currentUser) => {
         user_id: currentUser.id,
         target_user_id: userId,
         action: "user_deactivated",
+        table_name: "users",
+        record_id: userId,
         details: {
           target_user_email: targetUser.email,
           target_user_role: targetUser.role,
@@ -339,10 +343,10 @@ const grantTemporaryPermission = async (
       .insert([
         {
           user_id: userId,
-          permission,
+          permission_type: permission,
           granted_by: granter.id,
           expires_at: expiresAt.toISOString(),
-          duration_minutes: durationMinutes,
+          notes: `Duración: ${durationMinutes} minutos`,
           created_at: new Date().toISOString(),
         },
       ])
@@ -359,6 +363,8 @@ const grantTemporaryPermission = async (
         user_id: granter.id,
         target_user_id: userId,
         action: "temporary_permission_granted",
+        table_name: "temporary_permissions",
+        record_id: tempPermission.id,
         details: {
           permission,
           duration_minutes: durationMinutes,
@@ -380,7 +386,7 @@ const revokeTemporaryPermission = async (userId, permission, revoker) => {
       .from("temporary_permissions")
       .delete()
       .eq("user_id", userId)
-      .eq("permission", permission)
+      .eq("permission_type", permission)
       .gte("expires_at", new Date().toISOString());
 
     if (error) {
@@ -393,6 +399,7 @@ const revokeTemporaryPermission = async (userId, permission, revoker) => {
         user_id: revoker.id,
         target_user_id: userId,
         action: "temporary_permission_revoked",
+        table_name: "temporary_permissions",
         details: { permission },
         created_at: new Date().toISOString(),
       },

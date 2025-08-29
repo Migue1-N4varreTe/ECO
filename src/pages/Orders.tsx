@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
+import EmptyState from "@/components/ui/empty-state";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -595,39 +596,20 @@ const Orders = () => {
           </div>
         ) : (
           /* Empty State */
-          <div className="text-center py-16">
-            <Package className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="font-semibold text-lg text-gray-900 mb-2">
-              {searchQuery || statusFilter !== "all"
-                ? "No encontramos pedidos"
-                : "Aún no tienes pedidos"}
-            </h3>
-            <p className="text-gray-600 mb-6 max-w-md mx-auto">
-              {searchQuery || statusFilter !== "all"
-                ? "Intenta ajustar tus filtros de búsqueda"
-                : "Cuando hagas tu primer pedido, aparecerá aquí"}
-            </p>
-            <div className="space-y-3">
-              {searchQuery || statusFilter !== "all" ? (
-                <Button
-                  onClick={() => {
-                    setSearchQuery("");
-                    setStatusFilter("all");
-                  }}
-                  variant="outline"
-                >
-                  Limpiar filtros
-                </Button>
-              ) : (
-                <Button asChild className="btn-gradient">
-                  <Link to="/shop">
-                    <ShoppingBag className="w-4 h-4 mr-2" />
-                    Empezar a comprar
-                  </Link>
-                </Button>
-              )}
-            </div>
-          </div>
+          <EmptyState
+            icon={<Package className="w-16 h-16 text-gray-400 mx-auto" />}
+            title={searchQuery || statusFilter !== "all" ? "No encontramos pedidos" : "Aún no tienes pedidos"}
+            description={searchQuery || statusFilter !== "all" ? "Intenta ajustar tus filtros de búsqueda" : "Cuando hagas tu primer pedido, aparecerá aquí"}
+            action={(
+              <div className="space-y-3">
+                {searchQuery || statusFilter !== "all" ? (
+                  <Button onClick={() => { setSearchQuery(""); setStatusFilter("all"); }} variant="outline">Limpiar filtros</Button>
+                ) : (
+                  <Button asChild className="btn-gradient"><Link to="/shop"><ShoppingBag className="w-4 h-4 mr-2" />Empezar a comprar</Link></Button>
+                )}
+              </div>
+            )}
+          />
         )}
       </div>
     </div>

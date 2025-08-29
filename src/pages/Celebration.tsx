@@ -2,6 +2,7 @@ import { Star } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { Star } from "lucide-react";
 
 export default function Celebration() {
   return (

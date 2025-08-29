@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import ProductCard from "@/components/ProductCard";
@@ -24,6 +25,7 @@ import {
 import { allProducts as products, categories } from "@/lib/data";
 import { useFavorites } from "@/contexts/FavoritesContext";
 import { cn } from "@/lib/utils";
+import EmptyState from "@/components/ui/empty-state";
 
 const Favorites = () => {
   const { favorites, favoriteCount } = useFavorites();
@@ -97,29 +99,24 @@ const Favorites = () => {
 
         {/* Empty Favorites State */}
         <div className="container px-4 py-16">
-          <div className="max-w-md mx-auto text-center">
-            <div className="w-24 h-24 mx-auto mb-6 bg-gray-100 rounded-full flex items-center justify-center">
-              <Heart className="w-12 h-12 text-gray-400" />
-            </div>
-            <h1 className="font-display font-bold text-2xl md:text-3xl text-gray-900 mb-4">
-              No tienes favoritos aún
-            </h1>
-            <p className="text-gray-600 mb-8">
-              Agrega productos a tus favoritos para encontrarlos fácilmente más
-              tarde. ¡Descubre algo que te guste!
-            </p>
-            <div className="space-y-4">
-              <Button size="lg" className="w-full btn-gradient" asChild>
-                <Link to="/shop">
-                  <ShoppingCart className="w-5 h-5 mr-2" />
-                  Explorar productos
-                </Link>
-              </Button>
-              <Button variant="outline" size="lg" className="w-full" asChild>
-                <Link to="/categories">Ver categorías</Link>
-              </Button>
-            </div>
-          </div>
+          <EmptyState
+            icon={<Heart className="w-12 h-12 text-gray-400" />}
+            title="No tienes favoritos aún"
+            description="Agrega productos a tus favoritos para encontrarlos fácilmente más tarde. ¡Descubre algo que te guste!"
+            action={(
+              <div className="space-y-4 max-w-md mx-auto">
+                <Button size="lg" className="w-full btn-gradient" asChild>
+                  <Link to="/shop">
+                    <ShoppingCart className="w-5 h-5 mr-2" />
+                    Explorar productos
+                  </Link>
+                </Button>
+                <Button variant="outline" size="lg" className="w-full" asChild>
+                  <Link to="/categories">Ver categorías</Link>
+                </Button>
+              </div>
+            )}
+          />
         </div>
       </div>
     );
@@ -297,19 +294,12 @@ const Favorites = () => {
           </div>
         ) : (
           /* No Results State */
-          <div className="text-center py-16">
-            <div className="text-6xl mb-4">💔</div>
-            <h3 className="font-semibold text-lg text-gray-900 mb-2">
-              No encontramos productos
-            </h3>
-            <p className="text-gray-600 mb-6 max-w-md mx-auto">
-              No hay productos favoritos que coincidan con tus filtros de
-              búsqueda
-            </p>
-            <Button onClick={clearFilters} variant="outline">
-              Mostrar todos los favoritos
-            </Button>
-          </div>
+          <EmptyState
+            icon={<span>💔</span>}
+            title="No encontramos productos"
+            description="No hay productos favoritos que coincidan con tus filtros de búsqueda"
+            action={<Button onClick={clearFilters} variant="outline">Mostrar todos los favoritos</Button>}
+          />
         )}
 
         {/* Quick Actions */}

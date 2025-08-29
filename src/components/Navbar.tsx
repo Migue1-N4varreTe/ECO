@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,6 +27,9 @@ import { useFavorites } from "@/contexts/FavoritesContext";
 import { useAuth } from "@/contexts/AuthContext";
 import PermissionGuard from "@/components/PermissionGuard";
 import FontSizeController from "@/components/FontSizeController";
+import { allProducts } from "@/lib/data";
+import { prefetchShop, prefetchCategories, prefetchOffers, prefetchFavorites } from "@/routes/prefetch";
+import { toast } from "sonner";
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -36,6 +39,44 @@ const Navbar: React.FC = () => {
   const { totalItems } = useCart();
   const { favoriteCount } = useFavorites();
   const { user, logout } = useAuth();
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      const isEditable = target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || (target as any).isContentEditable);
+      if (!isEditable && e.key === '/') {
+        e.preventDefault();
+        const input: HTMLInputElement | undefined = (window as any).__searchInput;
+        input?.focus();
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
+  // Best-effort data prefetch (only once per session, requires auth token)
+  useEffect(() => {
+    if ((window as any).__prefetchedData) return;
+    const token = localStorage.getItem('auth_token');
+    if (!token) return; // skip when not authenticated
+    (window as any).__prefetchedData = true;
+    import("@/services/api").then((m: any) => {
+      const api = m.default || new m.ApiService();
+      if (!api) return;
+      api.getCategories?.().catch(() => {});
+      api.getProducts?.({ limit: 50 }).catch(() => {});
+    }).catch(() => {});
+  }, []);
+
+  // Global API error toasts
+  useEffect(() => {
+    const handler = (e: any) => {
+      const { message, endpoint } = e.detail || {};
+      toast.error(message || 'Error de solicitud', { description: endpoint });
+    };
+    window.addEventListener('api:error', handler as any);
+    return () => window.removeEventListener('api:error', handler as any);
+  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -80,6 +121,11 @@ const Navbar: React.FC = () => {
                 <Link
                   key={item.name}
                   to={item.href}
+                  onMouseEnter={() => {
+                    if (item.href === "/shop") prefetchShop();
+                    if (item.href === "/categories") prefetchCategories();
+                    if (item.href === "/offers") prefetchOffers();
+                  }}
                   className={`inline-flex items-center px-1 pt-1 text-sm font-medium border-b-2 transition-colors ${
                     location.pathname === item.href
                       ? "border-green-500 text-gray-900"
@@ -179,12 +225,47 @@ const Navbar: React.FC = () => {
                   <Search className="h-5 w-5 text-gray-400" />
                 </div>
                 <Input
+                  ref={(el) => {
+                    (window as any).__searchInput = el;
+                  }}
                   type="text"
                   placeholder="Buscar productos..."
+                  aria-label="Buscar productos"
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    window.clearTimeout((window as any).__navDebounce);
+                    (window as any).__navDebounce = window.setTimeout(() => {
+                      if (e.target.value.trim()) {
+                        navigate(`/shop?search=${encodeURIComponent(e.target.value.trim())}`);
+                      }
+                    }, 300);
+                  }}
                   className="pl-10 pr-8 py-2 w-full ml-2.5"
                 />
+                {searchQuery.length >= 2 && (
+                  <div role="listbox" className="absolute z-50 mt-1 w-full bg-white border rounded-md shadow-md max-h-64 overflow-auto">
+                    {allProducts
+                      .filter(p => p.name?.toLowerCase().includes(searchQuery.toLowerCase()))
+                      .slice(0, 5)
+                      .map(p => (
+                        <button
+                          key={p.id}
+                          role="option"
+                          className="w-full text-left px-3 py-2 hover:bg-gray-50"
+                          onMouseDown={(ev) => {
+                            ev.preventDefault();
+                            navigate(`/shop?search=${encodeURIComponent(p.name)}`);
+                          }}
+                        >
+                          {p.name}
+                        </button>
+                      ))}
+                    {allProducts.filter(p => p.name?.toLowerCase().includes(searchQuery.toLowerCase())).length === 0 && (
+                      <div className="px-3 py-2 text-sm text-gray-500">Sin resultados</div>
+                    )}
+                  </div>
+                )}
               </div>
             </form>
           </div>
@@ -194,6 +275,7 @@ const Navbar: React.FC = () => {
             {/* Favorites */}
             <Link
               to="/favorites"
+              onMouseEnter={() => prefetchFavorites()}
               className="relative p-2 hover:bg-gray-100 rounded-md"
             >
               <Heart

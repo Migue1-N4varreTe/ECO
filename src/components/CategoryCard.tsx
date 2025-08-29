@@ -3,6 +3,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Category } from "@/lib/data";
 import { cn } from "@/lib/utils";
+import SmartImage from "@/components/ui/smart-image";
+import { memo } from "react";
 
 interface CategoryCardProps {
   category: Category;
@@ -21,10 +23,10 @@ const CategoryCard = ({ category, className }: CategoryCardProps) => {
         <CardContent className="p-0">
           {/* Image Container */}
           <div className="relative aspect-square overflow-hidden">
-            <img
+            <SmartImage
               src={category.image}
               alt={category.name}
-              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+              className="transition-transform duration-300 group-hover:scale-105"
             />
 
             {/* Overlay */}
@@ -61,4 +63,4 @@ const CategoryCard = ({ category, className }: CategoryCardProps) => {
   );
 };
 
-export default CategoryCard;
+export default memo(CategoryCard);

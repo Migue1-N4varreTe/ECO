@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Navbar from "@/components/Navbar";
 import GuestShoppingBanner from "@/components/GuestShoppingBanner";
 import ProductCard from "@/components/ProductCard";
+import ProductCardSkeleton from "@/components/ProductCardSkeleton";
+import { useDebounce } from "@/hooks/use-debounce";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -27,6 +29,7 @@ import { cn } from "@/lib/utils";
 import { useDebugProducts } from "@/hooks/use-debug";
 import { useProductFilters } from "@/hooks/use-search";
 import ProductDiagnostic from "@/components/ProductDiagnostic";
+import EmptyState from "@/components/ui/empty-state";
 
 const Shop = () => {
   // Debug products on development
@@ -53,6 +56,34 @@ const Shop = () => {
     hasActiveFilters,
     resultCount,
   } = useProductFilters();
+
+  const [typedQuery, setTypedQuery] = useState(searchQuery);
+  const debouncedQuery = useDebounce(typedQuery, 300);
+
+  useEffect(() => {
+    if (debouncedQuery !== searchQuery) {
+      updateSearchQuery(debouncedQuery);
+    }
+  }, [debouncedQuery]);
+
+  const [visibleCount, setVisibleCount] = useState(40);
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver((entries) => {
+      if (entries.some(e => e.isIntersecting)) {
+        setVisibleCount((c) => Math.min(c + 40, filteredProducts.length));
+      }
+    }, { rootMargin: '200px' });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [filteredProducts.length]);
+
+  useEffect(() => {
+    setVisibleCount(40);
+  }, [debouncedQuery, selectedCategory, priceFilter, sortBy]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -81,8 +112,9 @@ const Shop = () => {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
             <Input
               placeholder="Buscar productos..."
-              value={searchQuery}
-              onChange={(e) => updateSearchQuery(e.target.value)}
+              aria-label="Buscar productos"
+              value={typedQuery}
+              onChange={(e) => setTypedQuery(e.target.value)}
               className="pl-10 pr-4 h-12 text-base"
             />
           </div>
@@ -247,7 +279,18 @@ const Shop = () => {
         </div>
 
         {/* Products Grid/List */}
-        {filteredProducts.length > 0 ? (
+        {typedQuery !== debouncedQuery ? (
+          <div className={cn(
+            "gap-6",
+            viewMode === "grid"
+              ? "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
+              : "space-y-4",
+          )}>
+            {Array.from({ length: viewMode === "grid" ? 10 : 6 }).map((_, i) => (
+              <ProductCardSkeleton key={i} />
+            ))}
+          </div>
+        ) : filteredProducts.length > 0 ? (
           <div
             className={cn(
               "gap-6",
@@ -256,29 +299,27 @@ const Shop = () => {
                 : "space-y-4",
             )}
           >
-            {filteredProducts.map((product) => (
+            {filteredProducts.slice(0, visibleCount).map((product) => (
               <ProductCard
                 key={product.id}
                 product={product}
                 className={viewMode === "list" ? "flex" : ""}
               />
             ))}
+            {visibleCount < filteredProducts.length && (
+              <div ref={sentinelRef} className="col-span-full text-center py-6 text-gray-500">
+                Cargando más...
+              </div>
+            )}
           </div>
         ) : (
           /* Empty State */
-          <div className="text-center py-16">
-            <div className="text-6xl mb-4">🔍</div>
-            <h3 className="font-semibold text-lg text-gray-900 mb-2">
-              No encontramos productos
-            </h3>
-            <p className="text-gray-600 mb-6 max-w-md mx-auto">
-              Intenta ajustar tus filtros de búsqueda o explora nuestras
-              categorías
-            </p>
-            <Button onClick={clearFilters} variant="outline">
-              Limpiar filtros
-            </Button>
-          </div>
+          <EmptyState
+            icon={<span>🔍</span>}
+            title="No encontramos productos"
+            description="Intenta ajustar tus filtros de búsqueda o explora nuestras categorías"
+            action={<Button onClick={clearFilters} variant="outline">Limpiar filtros</Button>}
+          />
         )}
 
         {/* Load More (if needed) */}

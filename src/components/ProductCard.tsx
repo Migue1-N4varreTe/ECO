@@ -12,10 +12,12 @@ import {
 } from "@/components/ui/select";
 import { Heart, ShoppingCart, Star, Clock, MapPin } from "lucide-react";
 import { Product } from "@/lib/data";
+import SmartImage from "@/components/ui/smart-image";
 import { useFavorites } from "@/contexts/FavoritesContext";
 import { useCart } from "@/contexts/CartContext";
 import { useCartActions } from "@/hooks/use-cart-actions";
 import { cn, prettifyProductName } from "@/lib/utils";
+import { memo } from "react";
 
 interface ProductCardProps {
   product: Product;
@@ -102,12 +104,12 @@ const ProductCard = ({ product, className }: ProductCardProps) => {
       <CardContent className="p-0">
         {/* Image Container */}
         <div className="relative aspect-square overflow-hidden bg-gray-50">
-          <img
+          <SmartImage
             src={product.image && product.image.includes("placeholder")
               ? `https://via.placeholder.com/400x300/f3f4f6/9ca3af?text=${encodeURIComponent(displayName)}`
               : product.image}
             alt={displayName}
-            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+            className="transition-transform duration-300 group-hover:scale-105"
           />
 
           {/* Badges */}
@@ -287,4 +289,4 @@ const ProductCard = ({ product, className }: ProductCardProps) => {
   );
 };
 
-export default ProductCard;
+export default memo(ProductCard);

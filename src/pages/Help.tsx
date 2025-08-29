@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import EmptyState from "@/components/ui/empty-state";
 import { Separator } from "@/components/ui/separator";
 import {
   Accordion,
@@ -138,7 +139,7 @@ const helpArticles: HelpArticle[] = [
     id: "3",
     title: "Seguimiento de pedidos",
     description:
-      "Cómo rastrear tu pedido desde la confirmación hasta la entrega",
+      "C��mo rastrear tu pedido desde la confirmación hasta la entrega",
     category: "pedidos",
     readTime: "2 min",
     icon: <Package className="w-5 h-5" />,
@@ -380,19 +381,12 @@ const Help = () => {
               </div>
             ) : (
               /* No Results */
-              <div className="text-center py-16">
-                <div className="text-6xl mb-4">🤔</div>
-                <h3 className="font-semibold text-lg text-gray-900 mb-2">
-                  No encontramos resultados
-                </h3>
-                <p className="text-gray-600 mb-6 max-w-md mx-auto">
-                  No hay preguntas que coincidan con tu búsqueda. Intenta con
-                  otros términos o contáctanos directamente.
-                </p>
-                <Button onClick={() => setSearchQuery("")} variant="outline">
-                  Limpiar búsqueda
-                </Button>
-              </div>
+              <EmptyState
+                icon={<span>🤔</span>}
+                title="No encontramos resultados"
+                description="No hay preguntas que coincidan con tu búsqueda. Intenta con otros términos o contáctanos directamente."
+                action={<Button onClick={() => setSearchQuery("")} variant="outline">Limpiar búsqueda</Button>}
+              />
             )}
           </TabsContent>
 

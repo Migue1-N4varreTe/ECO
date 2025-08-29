@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { Suspense, lazy } from "react";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { PageLoader } from "@/components/LoadingSpinner";
@@ -82,9 +82,23 @@ const DroneDelivery = lazy(() => import("./pages/DroneDelivery"));
 
 const Gramaje = lazy(() => import("./pages/Gramaje"));
 const Tickets = lazy(() => import("./pages/Tickets"));
+const Celebration = lazy(() => import("./pages/Celebration"));
 
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5,
+      gcTime: 1000 * 60 * 30,
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: true,
+      retry: 2,
+    },
+    mutations: {
+      retry: 1,
+    },
+  },
+});
 
 const App = () => (
   <ErrorBoundary>
@@ -176,7 +190,7 @@ const App = () => (
 
 
                       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                      <Route path="*" element={<NotFound />} />
+                      <Route path="*" element={<CatchAll />} />
                     </Routes>
                   </Suspense>
                 </BrowserRouter>
@@ -188,5 +202,28 @@ const App = () => (
     </QueryClientProvider>
   </ErrorBoundary>
 );
+
+function normalizeSegmentToKebab(segment: string) {
+  const withDashes = segment
+    .replace(/([A-Z]+)([A-Z][a-z])/g, "$1-$2")
+    .replace(/([a-z0-9])([A-Z])/g, "$1-$2");
+  return withDashes.toLowerCase();
+}
+
+function normalizePath(pathname: string) {
+  if (!pathname) return "/";
+  const parts = pathname.split("/").filter(Boolean);
+  const normalized = parts.map(normalizeSegmentToKebab).join("/");
+  return "/" + normalized;
+}
+
+function CatchAll() {
+  const location = useLocation();
+  const target = normalizePath(location.pathname);
+  if (target !== location.pathname) {
+    return <Navigate to={`${target}${location.search}${location.hash}`} replace />;
+  }
+  return <NotFound />;
+}
 
 export default App;

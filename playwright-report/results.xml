@@ -1,2 +1,132 @@
-<testsuites id="" name="" tests="0" failures="0" skipped="0" errors="0" time="1.693229">
+<testsuites id="" name="" tests="1" failures="1" skipped="0" errors="0" time="56.578264000000004">
+<testsuite name="smoke/login-profile.spec.ts" timestamp="2025-08-29T06:28:21.929Z" hostname="chromium" tests="1" failures="1" skipped="0" time="52.33" errors="0">
+<testcase name="Auth smoke › login with quick user and open profile" classname="smoke/login-profile.spec.ts" time="52.33">
+<failure message="login-profile.spec.ts:4:3 login with quick user and open profile" type="FAILURE">
+<![CDATA[  [chromium] › smoke/login-profile.spec.ts:4:3 › Auth smoke › login with quick user and open profile 
+
+    Error: Timed out 15000ms waiting for expect(locator).toBeVisible()
+
+    Locator: getByText('Cerrar Sesión')
+    Expected: visible
+    Received: <element(s) not found>
+    Call log:
+      - Expect "toBeVisible" with timeout 15000ms
+      - waiting for getByText('Cerrar Sesión')
+
+
+       5 |     await page.goto('/login');
+       6 |     await page.getByRole('button', { name: 'Probar usuario (recomendado)' }).click();
+    >  7 |     await expect(page.getByText('Cerrar Sesión')).toBeVisible({ timeout: 15000 });
+         |                                                   ^
+       8 |
+       9 |     await page.goto('/profile');
+      10 |     await expect(page.getByText('le.tester+123@example.com')).toBeVisible();
+        at /app/code/tests/smoke/login-profile.spec.ts:7:51
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../test-results/smoke-login-profile-Auth-s-b3bf6-quick-user-and-open-profile-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../test-results/smoke-login-profile-Auth-s-b3bf6-quick-user-and-open-profile-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../test-results/smoke-login-profile-Auth-s-b3bf6-quick-user-and-open-profile-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: Timed out 15000ms waiting for expect(locator).toBeVisible()
+
+    Locator: getByText('Cerrar Sesión')
+    Expected: visible
+    Received: <element(s) not found>
+    Call log:
+      - Expect "toBeVisible" with timeout 15000ms
+      - waiting for getByText('Cerrar Sesión')
+
+
+       5 |     await page.goto('/login');
+       6 |     await page.getByRole('button', { name: 'Probar usuario (recomendado)' }).click();
+    >  7 |     await expect(page.getByText('Cerrar Sesión')).toBeVisible({ timeout: 15000 });
+         |                                                   ^
+       8 |
+       9 |     await page.goto('/profile');
+      10 |     await expect(page.getByText('le.tester+123@example.com')).toBeVisible();
+        at /app/code/tests/smoke/login-profile.spec.ts:7:51
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../test-results/smoke-login-profile-Auth-s-b3bf6-quick-user-and-open-profile-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../test-results/smoke-login-profile-Auth-s-b3bf6-quick-user-and-open-profile-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../test-results/smoke-login-profile-Auth-s-b3bf6-quick-user-and-open-profile-chromium-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../test-results/smoke-login-profile-Auth-s-b3bf6-quick-user-and-open-profile-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace ../test-results/smoke-login-profile-Auth-s-b3bf6-quick-user-and-open-profile-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Retry #2 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: Timed out 15000ms waiting for expect(locator).toBeVisible()
+
+    Locator: getByText('Cerrar Sesión')
+    Expected: visible
+    Received: <element(s) not found>
+    Call log:
+      - Expect "toBeVisible" with timeout 15000ms
+      - waiting for getByText('Cerrar Sesión')
+
+
+       5 |     await page.goto('/login');
+       6 |     await page.getByRole('button', { name: 'Probar usuario (recomendado)' }).click();
+    >  7 |     await expect(page.getByText('Cerrar Sesión')).toBeVisible({ timeout: 15000 });
+         |                                                   ^
+       8 |
+       9 |     await page.goto('/profile');
+      10 |     await expect(page.getByText('le.tester+123@example.com')).toBeVisible();
+        at /app/code/tests/smoke/login-profile.spec.ts:7:51
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../test-results/smoke-login-profile-Auth-s-b3bf6-quick-user-and-open-profile-chromium-retry2/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../test-results/smoke-login-profile-Auth-s-b3bf6-quick-user-and-open-profile-chromium-retry2/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../test-results/smoke-login-profile-Auth-s-b3bf6-quick-user-and-open-profile-chromium-retry2/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../test-results/smoke-login-profile-Auth-s-b3bf6-quick-user-and-open-profile-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|../test-results/smoke-login-profile-Auth-s-b3bf6-quick-user-and-open-profile-chromium/video.webm]]
+
+[[ATTACHMENT|../test-results/smoke-login-profile-Auth-s-b3bf6-quick-user-and-open-profile-chromium/error-context.md]]
+
+[[ATTACHMENT|../test-results/smoke-login-profile-Auth-s-b3bf6-quick-user-and-open-profile-chromium-retry1/test-failed-1.png]]
+
+[[ATTACHMENT|../test-results/smoke-login-profile-Auth-s-b3bf6-quick-user-and-open-profile-chromium-retry1/video.webm]]
+
+[[ATTACHMENT|../test-results/smoke-login-profile-Auth-s-b3bf6-quick-user-and-open-profile-chromium-retry1/error-context.md]]
+
+[[ATTACHMENT|../test-results/smoke-login-profile-Auth-s-b3bf6-quick-user-and-open-profile-chromium-retry1/trace.zip]]
+
+[[ATTACHMENT|../test-results/smoke-login-profile-Auth-s-b3bf6-quick-user-and-open-profile-chromium-retry2/test-failed-1.png]]
+
+[[ATTACHMENT|../test-results/smoke-login-profile-Auth-s-b3bf6-quick-user-and-open-profile-chromium-retry2/video.webm]]
+
+[[ATTACHMENT|../test-results/smoke-login-profile-Auth-s-b3bf6-quick-user-and-open-profile-chromium-retry2/error-context.md]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
 </testsuites>

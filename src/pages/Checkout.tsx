@@ -32,7 +32,7 @@ import {
 } from "lucide-react";
 import { deliveryOptions } from "@/lib/data";
 import { useCart } from "@/contexts/CartContext";
-import { cn } from "@/lib/utils";
+import { cn, prettifyProductName } from "@/lib/utils";
 
 // Cart items now come from CartContext
 

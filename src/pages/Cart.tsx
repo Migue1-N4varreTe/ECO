@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { prettifyProductName } from "@/lib/utils";
+import EmptyState from "@/components/ui/empty-state";
 import Navbar from "@/components/Navbar";
 import GuestShoppingBanner from "@/components/GuestShoppingBanner";
 import { Button } from "@/components/ui/button";

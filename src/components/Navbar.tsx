@@ -39,6 +39,20 @@ const Navbar: React.FC = () => {
   const { favoriteCount } = useFavorites();
   const { user, logout } = useAuth();
 
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      const isEditable = target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || (target as any).isContentEditable);
+      if (!isEditable && e.key === '/') {
+        e.preventDefault();
+        const input: HTMLInputElement | undefined = (window as any).__searchInput;
+        input?.focus();
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {

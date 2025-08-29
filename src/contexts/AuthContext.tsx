@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { apiService } from "../services/api";
+import { supabase } from "../services/api";
 
 export interface User {
   id: string;
@@ -12,30 +12,40 @@ export interface User {
   is_active: boolean;
   last_login_at?: string;
   created_at: string;
+  name?: string;
+  phone?: string;
+  address?: any;
+  birthday?: string;
+}
+
+interface RegisterInput {
+  email: string;
+  password: string;
+  name?: string;
+  phone?: string;
+  first_name?: string;
+  last_name?: string;
+  role?: string;
 }
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  register: (userData: {
-    email: string;
-    password: string;
-    first_name: string;
-    last_name: string;
-    role?: string;
-  }) => Promise<void>;
+  isAuthenticated: boolean;
+  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  register: (userData: RegisterInput) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
   hasPermission: (permission: string) => boolean;
   hasRole: (role: string | string[]) => boolean;
   hasLevel: (minLevel: number) => boolean;
   refreshUser: () => Promise<void>;
+  updateProfile: (data: Partial<User>) => Promise<{ success: boolean; error?: string }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const ROLE_PERMISSIONS = {
-  LEVEL_5_DEVELOPER: ["*"], // Full access
+  LEVEL_5_DEVELOPER: ["*"],
   LEVEL_4_OWNER: [
     "sales:create",
     "sales:create_order",
@@ -118,74 +128,105 @@ const ROLE_PERMISSIONS = {
     "inventory:view",
     "customers:view_basic",
   ],
-};
+} as const;
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+function mapSupabaseUser(u: any | null): User | null {
+  if (!u) return null;
+  const meta = (u.user_metadata || {}) as Record<string, any>;
+  const fullName = meta.name || `${meta.first_name || ""} ${meta.last_name || ""}`.trim();
+  const [first, ...rest] = (meta.first_name ? [meta.first_name, meta.last_name] : fullName.split(" ")).filter(Boolean);
+  const last = meta.last_name ?? (rest || []).join(" ");
+  return {
+    id: u.id,
+    email: u.email || "",
+    first_name: first || "",
+    last_name: last || "",
+    role: meta.role || "LEVEL_1_CASHIER",
+    level: Number(meta.level ?? 1),
+    is_active: meta.is_active ?? true,
+    created_at: u.created_at || new Date().toISOString(),
+    last_login_at: undefined,
+    name: fullName || undefined,
+    phone: meta.phone,
+    address: meta.address,
+    birthday: meta.birthday,
+  };
+}
+
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const login = async (email: string, password: string) => {
-    try {
-      const response = await apiService.login(email, password);
-      setUser(response.user);
-    } catch (error) {
-      throw error;
-    }
+  const login: AuthContextType["login"] = async (email, password) => {
+    if (!supabase) return { success: false, error: "Supabase no está inicializado" };
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) return { success: false, error: error.message };
+    setUser(mapSupabaseUser(data.user));
+    return { success: true };
   };
 
-  const register = async (userData: {
-    email: string;
-    password: string;
-    first_name: string;
-    last_name: string;
-    role?: string;
-  }) => {
-    try {
-      const response = await apiService.register(userData);
-      setUser(response.user);
-    } catch (error) {
-      throw error;
-    }
+  const register: AuthContextType["register"] = async (userData) => {
+    if (!supabase) return { success: false, error: "Supabase no está inicializado" };
+    const role = userData.role || "LEVEL_1_CASHIER";
+    const level = role === "LEVEL_4_OWNER" ? 4 : role === "LEVEL_3_MANAGER" ? 3 : role === "LEVEL_2_SUPERVISOR" ? 2 : 1;
+    const first = userData.first_name || userData.name?.split(" ")[0] || "";
+    const last = userData.last_name || userData.name?.split(" ").slice(1).join(" ") || "";
+
+    const { data, error } = await supabase.auth.signUp({
+      email: userData.email,
+      password: userData.password,
+      options: {
+        data: {
+          name: userData.name ?? `${first} ${last}`.trim(),
+          first_name: first,
+          last_name: last,
+          phone: userData.phone,
+          role,
+          level,
+          is_active: true,
+        },
+      },
+    });
+
+    if (error) return { success: false, error: error.message };
+    setUser(mapSupabaseUser(data.user));
+    return { success: true };
   };
 
   const logout = async () => {
-    try {
-      await apiService.logout();
-    } catch (error) {
-      console.error("Logout error:", error);
-    } finally {
-      setUser(null);
-    }
+    if (!supabase) return;
+    await supabase.auth.signOut();
+    setUser(null);
   };
 
   const refreshUser = async () => {
-    try {
-      const userData = await apiService.getMe();
-      setUser(userData);
-    } catch (error) {
-      console.error("Failed to refresh user:", error);
-      setUser(null);
+    if (!supabase) return;
+    const { data } = await supabase.auth.getUser();
+    setUser(mapSupabaseUser(data.user));
+  };
+
+  const updateProfile: AuthContextType["updateProfile"] = async (data) => {
+    if (!supabase) return { success: false, error: "Supabase no está inicializado" };
+    const metadata: Record<string, any> = { ...data };
+    if (data.first_name || data.last_name) {
+      metadata.name = `${data.first_name ?? user?.first_name ?? ""} ${data.last_name ?? user?.last_name ?? ""}`.trim();
     }
+    const { error } = await supabase.auth.updateUser({ data: metadata });
+    if (error) return { success: false, error: error.message };
+    await refreshUser();
+    return { success: true };
   };
 
   const hasPermission = (permission: string): boolean => {
     if (!user) return false;
-
-    const userPermissions =
-      ROLE_PERMISSIONS[user.role as keyof typeof ROLE_PERMISSIONS];
+    const userPermissions = (ROLE_PERMISSIONS as any)[user.role];
     if (!userPermissions) return false;
-
-    // Developer has all permissions
     if (userPermissions.includes("*")) return true;
-
     return userPermissions.includes(permission);
   };
 
   const hasRole = (role: string | string[]): boolean => {
     if (!user) return false;
-
     const roles = Array.isArray(role) ? role : [role];
     return roles.includes(user.role);
   };
@@ -196,26 +237,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   useEffect(() => {
-    const initAuth = async () => {
-      const token = localStorage.getItem("auth_token");
-      if (token) {
-        try {
-          await refreshUser();
-        } catch (error) {
-          console.error("Auth initialization failed:", error);
-          // Don't remove token on initialization failure - might be network issue
-          console.warn("Keeping auth token - will retry on next request");
-        }
-      }
+    let mounted = true;
+    (async () => {
+      await refreshUser();
+      if (!mounted) return;
       setLoading(false);
-    };
+    })();
 
-    initAuth();
+    const { data: sub } = supabase?.auth.onAuthStateChange(async () => {
+      await refreshUser();
+    }) || { data: { subscription: { unsubscribe: () => {} } } } as any;
+
+    return () => {
+      mounted = false;
+      (sub as any)?.subscription?.unsubscribe?.();
+    };
   }, []);
 
   const value: AuthContextType = {
     user,
     loading,
+    isAuthenticated: !!user,
     login,
     register,
     logout,
@@ -223,6 +265,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     hasRole,
     hasLevel,
     refreshUser,
+    updateProfile,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

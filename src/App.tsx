@@ -203,4 +203,27 @@ const App = () => (
   </ErrorBoundary>
 );
 
+function normalizeSegmentToKebab(segment: string) {
+  const withDashes = segment
+    .replace(/([A-Z]+)([A-Z][a-z])/g, "$1-$2")
+    .replace(/([a-z0-9])([A-Z])/g, "$1-$2");
+  return withDashes.toLowerCase();
+}
+
+function normalizePath(pathname: string) {
+  if (!pathname) return "/";
+  const parts = pathname.split("/").filter(Boolean);
+  const normalized = parts.map(normalizeSegmentToKebab).join("/");
+  return "/" + normalized;
+}
+
+function CatchAll() {
+  const location = useLocation();
+  const target = normalizePath(location.pathname);
+  if (target !== location.pathname) {
+    return <Navigate to={`${target}${location.search}${location.hash}`} replace />;
+  }
+  return <NotFound />;
+}
+
 export default App;

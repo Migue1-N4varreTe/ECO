@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import EmptyState from "@/components/ui/empty-state";
 import { Separator } from "@/components/ui/separator";
 import {
   Accordion,
@@ -138,7 +139,7 @@ const helpArticles: HelpArticle[] = [
     id: "3",
     title: "Seguimiento de pedidos",
     description:
-      "Cómo rastrear tu pedido desde la confirmación hasta la entrega",
+      "C��mo rastrear tu pedido desde la confirmación hasta la entrega",
     category: "pedidos",
     readTime: "2 min",
     icon: <Package className="w-5 h-5" />,

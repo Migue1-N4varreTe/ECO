@@ -103,12 +103,12 @@ const ProductCard = ({ product, className }: ProductCardProps) => {
       <CardContent className="p-0">
         {/* Image Container */}
         <div className="relative aspect-square overflow-hidden bg-gray-50">
-          <img
+          <SmartImage
             src={product.image && product.image.includes("placeholder")
               ? `https://via.placeholder.com/400x300/f3f4f6/9ca3af?text=${encodeURIComponent(displayName)}`
               : product.image}
             alt={displayName}
-            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+            className="transition-transform duration-300 group-hover:scale-105"
           />
 
           {/* Badges */}

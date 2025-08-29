@@ -63,5 +63,4 @@ const CategoryCard = ({ category, className }: CategoryCardProps) => {
   );
 };
 
-import { memo } from "react";
 export default memo(CategoryCard);

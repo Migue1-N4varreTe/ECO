@@ -1,307 +1,72 @@
-# 🚀 Guía de Deployment - Arquitectura Separada
+# 🚀 Guía de Deployment (Netlify + Railway)
 
-## Estrategias de Deployment Recomendadas
+Esta guía deja listo el despliegue simultáneo: frontend en Netlify y backend en Railway. El proyecto ya está preparado (netlify.toml, railway.toml, CORS y healthcheck).
 
-### 1. **Frontend (Netlify) + Backend (Railway/Render)**
-✅ **Opción Recomendada - Máxima Flexibilidad**
+---
+## 1) Backend en Railway (Express API)
 
-```bash
-# Frontend → Netlify (ya configurado)
-# Backend → Railway/Render/Fly.io
+1. Crear servicio en Railway apuntando al repo (directorio backend ya es la raíz del servicio).
+2. Variables de entorno (Backend):
+   - NODE_ENV=production
+   - PORT=5000
+   - SUPABASE_URL=SU_URL_SUPABASE (p.ej. https://evyslzzekjrskeyparqn.supabase.co)
+   - SUPABASE_ANON_KEY=TU_ANON_KEY_PUBLICA
+   - SUPABASE_SERVICE_KEY=TU_SERVICE_ROLE_KEY (requerida si usarás operaciones admin)
+   - JWT_SECRET=TU_SECRETO_JWT
+   - STRIPE_SECRET_KEY=sk_live_... (opcional; si no se define, pagos quedan deshabilitados)
+   - SENTRY_DSN=... (opcional)
+3. Deploy (desde el UI de Railway). La API responde en: https://<tu-servicio>.railway.app
+4. Verifica healthcheck: GET https://<tu-servicio>.railway.app/api/health
 
-# Configuración:
-Frontend:  https://la-economica.netlify.app
-Backend:   https://api.la-economica.railway.app
-```
+Notas:
+- Si faltan claves de Supabase, el backend arranca en modo "sin Supabase".
+- CORS permite *.netlify.app y localhost.
 
-**Ventajas:**
-- Deployment independiente de cada servicio
-- Escalabilidad individual
-- Especialización de plataformas
-- Zero downtime deployments
+---
+## 2) Frontend en Netlify (Vite React)
 
-### 2. **Ambos en Railway (Servicios Separados)**
-✅ **Opción Simplificada - Una Plataforma**
+1. Crear sitio en Netlify desde el mismo repo.
+2. Build settings:
+   - Build command: npm run build
+   - Publish directory: dist
+3. Variables de entorno (Frontend):
+   - VITE_API_URL=https://<tu-servicio>.railway.app
+   - VITE_SUPABASE_URL=SU_URL_SUPABASE (p.ej. https://evyslzzekjrskeyparqn.supabase.co)
+   - VITE_SUPABASE_ANON_KEY=TU_ANON_KEY_PUBLICA
+   - VITE_STRIPE_PUBLISHABLE_KEY=pk_live_... (opcional)
+   - VITE_SENTRY_DSN=... (opcional)
+4. Deploy. Netlify servirá el SPA y redirigirá todo a /index.html (netlify.toml ya lo define).
 
-```bash
-# Proyecto único con 2 servicios
-railway-project/
-├── frontend-service/
-└── backend-service/
-```
+---
+## 3) Verificación rápida
 
-### 3. **Docker Compose en Fly.io/Railway**
-✅ **Opción Avanzada - Containerización**
+- Frontend: https://<tu-sitio>.netlify.app carga y muestra "Todo lo que necesitas".
+- Navegación a /gramaje, /tickets y /celebracion no debe dar 404.
+- Llamadas a la API usan VITE_API_URL. Prueba /api/health desde el navegador.
 
-```yaml
-# docker-compose.yml
-services:
-  frontend:
-    build: ./
-    command: npm run build && npm run preview
-    ports: ["8080:8080"]
-  
-  backend:
-    build: ./backend
-    command: npm start
-    ports: ["5000:5000"]
-```
+---
+## 4) Troubleshooting
 
-## Implementación Paso a Paso
+- 401/403 CORS: confirma dominio de Netlify y que CORS acepte *.netlify.app (ya soportado).
+- 500 en backend: revisa logs Railway; define JWT_SECRET y claves Supabase/Stripe si corresponde.
+- Pagos: requieren STRIPE_SECRET_KEY (backend) y VITE_STRIPE_PUBLISHABLE_KEY (frontend).
 
-### **Opción 1: Netlify + Railway (Recomendada)**
+---
+## 5) Scripts útiles
 
-#### 🎯 Backend en Railway
+- npm run build        # build frontend
+- npm run deploy:backend  # (Railway CLI) si lo usas
+- npm run deploy:frontend # (Netlify CLI) si lo usas
 
-1. **Crear `railway.json` para el backend:**
-```json
-{
-  "deploy": {
-    "startCommand": "npm run start:backend",
-    "restartPolicyType": "ON_FAILURE"
-  }
-}
-```
+---
+## 6) Seguridad
 
-2. **Variables de entorno del backend:**
-```bash
-PORT=5000
-NODE_ENV=production
-CORS_ORIGIN=https://la-economica.netlify.app
-DATABASE_URL=mongodb://...
-JWT_SECRET=...
-STRIPE_SECRET_KEY=...
-```
+Nunca subas claves al repo. Define variables sólo en los paneles de Netlify/Railway.
 
-3. **Deploy del backend:**
-```bash
-# Conectar repositorio a Railway
-railway login
-railway link
-railway deploy
-```
+---
+## 7) Referencias
 
-#### 🎯 Frontend en Netlify (actualizar)
-
-1. **Actualizar variables de entorno:**
-```bash
-VITE_API_URL=https://api.la-economica.railway.app
-VITE_STRIPE_PUBLISHABLE_KEY=pk_live_...
-```
-
-2. **Build settings en Netlify:**
-```toml
-# netlify.toml
-[build]
-  publish = "dist"
-  command = "npm run build"
-
-[build.environment]
-  NODE_VERSION = "18"
-
-[[redirects]]
-  from = "/api/*"
-  to = "https://api.la-economica.railway.app/api/:splat"
-  status = 200
-  force = true
-```
-
-### **Opción 2: Todo en Railway (Servicios Separados)**
-
-#### Estructura del proyecto:
-```
-la-economica/
-├── frontend/          # Servicio React
-│   ├── package.json
-│   └── vite.config.ts
-├── backend/           # Servicio Express
-│   ├── package.json
-│   └── server.js
-└── railway.toml       # Configuración Railway
-```
-
-#### `railway.toml`:
-```toml
-[[services]]
-name = "frontend"
-source = "frontend"
-variables = { NODE_ENV = "production" }
-
-[[services]]
-name = "backend"
-source = "backend"
-variables = { NODE_ENV = "production" }
-```
-
-### **Opción 3: Docker (Fly.io/Railway)**
-
-#### `Dockerfile.frontend`:
-```dockerfile
-FROM node:18-alpine
-
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci --only=production
-
-COPY . .
-RUN npm run build
-
-EXPOSE 8080
-CMD ["npm", "run", "preview"]
-```
-
-#### `Dockerfile.backend`:
-```dockerfile
-FROM node:18-alpine
-
-WORKDIR /app
-COPY backend/package*.json ./
-RUN npm ci --only=production
-
-COPY backend/ .
-
-EXPOSE 5000
-CMD ["npm", "start"]
-```
-
-## Configuración de CORS
-
-### Backend (`backend/middleware/security.js`):
-```javascript
-const cors = require('cors');
-
-const corsOptions = {
-  origin: [
-    'http://localhost:8080',          // Desarrollo
-    'https://la-economica.netlify.app', // Producción
-    'https://staging--la-economica.netlify.app' // Staging
-  ],
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-};
-
-module.exports = cors(corsOptions);
-```
-
-## Scripts de Deployment
-
-### `package.json` (raíz):
-```json
-{
-  "scripts": {
-    "deploy:frontend": "netlify deploy --prod --dir=dist",
-    "deploy:backend": "railway deploy",
-    "deploy:all": "npm run deploy:backend && npm run deploy:frontend",
-    "build:frontend": "vite build",
-    "build:backend": "echo 'Backend build complete'",
-    "build:all": "npm run build:frontend && npm run build:backend"
-  }
-}
-```
-
-## Monitoreo y Health Checks
-
-### Backend Health Check:
-```javascript
-// backend/routes/health.js
-router.get('/health', (req, res) => {
-  res.json({
-    status: 'OK',
-    timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV,
-    version: process.env.npm_package_version
-  });
-});
-```
-
-### Frontend Environment Check:
-```typescript
-// src/lib/environment.ts
-export const config = {
-  apiUrl: import.meta.env.VITE_API_URL || 'http://localhost:5000',
-  environment: import.meta.env.MODE,
-  isDevelopment: import.meta.env.DEV,
-  isProduction: import.meta.env.PROD
-};
-```
-
-## Pipelines de CI/CD
-
-### GitHub Actions (`.github/workflows/deploy.yml`):
-```yaml
-name: Deploy La Económica
-
-on:
-  push:
-    branches: [main]
-
-jobs:
-  deploy-backend:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Deploy to Railway
-        uses: railway-project/deploy@v1
-        with:
-          token: ${{ secrets.RAILWAY_TOKEN }}
-          service: backend
-
-  deploy-frontend:
-    runs-on: ubuntu-latest
-    needs: deploy-backend
-    steps:
-      - uses: actions/checkout@v3
-      - name: Build and Deploy to Netlify
-        uses: netlify/actions/build@v1
-        with:
-          publish-dir: './dist'
-          production-branch: main
-```
-
-## URLs de Ambiente
-
-### Desarrollo:
-- Frontend: `http://localhost:8080`
-- Backend: `http://localhost:5000`
-
-### Staging:
-- Frontend: `https://staging--la-economica.netlify.app`
-- Backend: `https://staging-api.la-economica.railway.app`
-
-### Producción:
-- Frontend: `https://la-economica.netlify.app`
-- Backend: `https://api.la-economica.railway.app`
-
-## Beneficios de la Arquitectura Separada
-
-✅ **Escalabilidad Individual**
-- Frontend y backend escalan independientemente
-- Optimización específica por servicio
-
-✅ **Deployment Independiente**
-- Deploy de frontend sin afectar backend
-- Rollbacks independientes
-
-✅ **Tecnología Especializada**
-- CDN optimizado para frontend (Netlify)
-- Servidor optimizado para APIs (Railway)
-
-✅ **Costos Optimizados**
-- Pago por uso específico de cada servicio
-- Sin recursos subutilizados
-
-✅ **Desarrollo Paralelo**
-- Equipos pueden trabajar independientemente
-- Releases más frecuentes
-
-## Próximos Pasos
-
-1. **Elegir estrategia de deployment**
-2. **Configurar variables de entorno**
-3. **Actualizar configuración de CORS**
-4. **Implementar health checks**
-5. **Configurar monitoreo**
-6. **Establecer pipeline de CI/CD**
-
-¿Con cuál estrategia te gustaría empezar?
+- netlify.toml: build, headers y SPA redirects
+- railway.toml: startCommand y healthcheck
+- backend/config/cors.js: CORS con soporte *.netlify.app
+- src/config/environment.ts: lectura de VITE_API_URL

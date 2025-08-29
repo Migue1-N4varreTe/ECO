@@ -17,37 +17,24 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: { autoRefreshToken: false, persistSession: false },
 });
 
-async function ensureAuthUser() {
-  // Try sign-in first
-  const signin = await supabase.auth.signInWithPassword({ email: TEST_EMAIL, password: TEST_PASSWORD });
-  if (signin.data?.session?.access_token) {
-    return signin.data.session.access_token;
+async function ensureBackendJwt() {
+  // Try register (idempotent)
+  try {
+    await api('/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: TEST_EMAIL, password: TEST_PASSWORD, first_name: 'LE', last_name: 'Tester', role: 'LEVEL_1_CASHIER' })
+    });
+  } catch (e) {
+    // ignore if already exists
   }
-  if (signin.error) {
-    console.warn('Sign-in attempt failed:', signin.error.message);
-  }
-
-  if (!SUPABASE_SERVICE_KEY) {
-    throw new Error('Sign-in failed and SUPABASE_SERVICE_KEY not set to create the user');
-  }
-
-  // Create user via admin
-  const admin = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY, { auth: { autoRefreshToken: false, persistSession: false } });
-  const meta = { role: 'LEVEL_1_CASHIER', level: 1, is_active: true, first_name: 'LE', last_name: 'Tester' };
-  const { data, error } = await admin.auth.admin.createUser({ email: TEST_EMAIL, password: TEST_PASSWORD, email_confirm: true, user_metadata: meta });
-  if (error && !String(error.message || '').toLowerCase().includes('already')) {
-    throw error;
-  }
-  if (error) {
-    console.warn('Create user warning:', error.message);
-  }
-  // Try sign-in again
-  const signin2 = await supabase.auth.signInWithPassword({ email: TEST_EMAIL, password: TEST_PASSWORD });
-  if (!signin2.data?.session?.access_token) {
-    console.warn('Second sign-in failed:', signin2.error?.message || 'no session returned');
-    throw new Error('Failed to sign in test user after creation');
-  }
-  return signin2.data.session.access_token;
+  const login = await api('/api/auth/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: TEST_EMAIL, password: TEST_PASSWORD })
+  });
+  if (!login?.token) throw new Error('No JWT from backend login');
+  return login.token;
 }
 
 async function ensureCategory(name = 'Pruebas') {

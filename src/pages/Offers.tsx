@@ -27,6 +27,7 @@ import {
 import { allProducts as products, categories } from "@/lib/data";
 import { useState, useMemo } from "react";
 import { cn } from "@/lib/utils";
+import EmptyState from "@/components/ui/empty-state";
 
 const Offers = () => {
   const [searchQuery, setSearchQuery] = useState("");

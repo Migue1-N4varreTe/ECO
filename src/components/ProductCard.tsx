@@ -17,6 +17,7 @@ import { useFavorites } from "@/contexts/FavoritesContext";
 import { useCart } from "@/contexts/CartContext";
 import { useCartActions } from "@/hooks/use-cart-actions";
 import { cn, prettifyProductName } from "@/lib/utils";
+import { memo } from "react";
 
 interface ProductCardProps {
   product: Product;

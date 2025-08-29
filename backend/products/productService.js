@@ -140,6 +140,8 @@ const createProduct = async (productData, user) => {
       {
         user_id: user.id,
         action: "product_created",
+        table_name: "products",
+        record_id: product.id,
         details: {
           product_id: product.id,
           product_name: product.name,

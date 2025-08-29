@@ -59,20 +59,29 @@ const createSale = async (saleData, user) => {
         throw new Error(`Producto ${item.product_id} no encontrado`);
       }
 
-      if (product.stock < item.quantity) {
+      const sellByWeight = product.sell_by_weight === true || product.unit === "kg";
+      const qty = sellByWeight ? (Number(item.weight_kg) || Number(item.quantity) || 0) : Number(item.quantity) || 0;
+
+      if (qty <= 0) {
+        throw new Error(`Cantidad inválida para ${product.name}`);
+      }
+
+      if (product.stock < qty) {
         throw new Error(
           `Stock insuficiente para ${product.name}. Disponible: ${product.stock}`,
         );
       }
 
-      const itemTotal = product.price * item.quantity;
+      const unitPrice = Number(product.price);
+      const itemTotal = unitPrice * qty;
       calculatedTotal += itemTotal;
 
       validatedItems.push({
         product_id: product.id,
         product_name: product.name,
-        product_price: product.price,
-        quantity: item.quantity,
+        product_price: unitPrice,
+        quantity: qty,
+        unit: product.unit || (sellByWeight ? "kg" : "pieza"),
         subtotal: itemTotal,
       });
     }

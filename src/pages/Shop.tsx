@@ -298,13 +298,18 @@ const Shop = () => {
                 : "space-y-4",
             )}
           >
-            {filteredProducts.map((product) => (
+            {filteredProducts.slice(0, visibleCount).map((product) => (
               <ProductCard
                 key={product.id}
                 product={product}
                 className={viewMode === "list" ? "flex" : ""}
               />
             ))}
+            {visibleCount < filteredProducts.length && (
+              <div ref={sentinelRef} className="col-span-full text-center py-6 text-gray-500">
+                Cargando más...
+              </div>
+            )}
           </div>
         ) : (
           /* Empty State */

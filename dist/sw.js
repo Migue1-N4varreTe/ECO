@@ -1,4 +1,5 @@
 const CACHE_NAME = "la-economica-pos-v1.0.0";
+const CACHE_NAME = "la-economica-static-v1.0.0";
 const API_CACHE_NAME = "la-economica-api-v1.0.0";
 
 // Static assets to cache

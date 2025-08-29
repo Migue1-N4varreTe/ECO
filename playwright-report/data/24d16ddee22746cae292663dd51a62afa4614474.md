@@ -1,0 +1,42 @@
+# Page snapshot
+
+```yaml
+- region "Notifications alt+T"
+- button "Volver":
+  - img
+  - text: Volver
+- link "LE La Económica":
+  - /url: /
+- heading "¡Bienvenido de vuelta!" [level=1]
+- paragraph: Inicia sesión para continuar con tus compras
+- heading "Iniciar Sesión" [level=3]
+- text: Email
+- img
+- textbox "Email": le.tester+123@example.com
+- text: Contraseña
+- img
+- textbox "Contraseña": LaEco123!
+- button:
+  - img
+- link "¿Olvidaste tu contraseña?":
+  - /url: /forgot-password
+- paragraph: captcha verification process failed
+- button "Iniciar Sesión"
+- paragraph: Cuentas de demostración
+- button "✅ Probar usuario (recomendado)"
+- button "👨‍💻 Desarrollador (Acceso Total)"
+- button "👔 Propietario (Gestión)"
+- button "📊 Gerente (Operaciones)"
+- button "👥 Supervisor (Turnos)"
+- button "🛒 Cajero (POS)"
+- paragraph:
+  - text: ¿No tienes cuenta?
+  - link "Regístrate aquí":
+    - /url: /register
+- text: ⚡
+- paragraph: Entrega express
+- text: 🛡️
+- paragraph: Compra segura
+- text: 📱
+- paragraph: App móvil
+```

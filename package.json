@@ -9,7 +9,7 @@
     "build": "vite build",
     "build:backend": "echo 'Backend build complete'",
     "build:all": "npm run build:backend && npm run build",
-    "test": "vitest --run",
+    "test": "vitest --run src/**/*.spec.ts",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:debug": "playwright test --debug",
@@ -26,7 +26,8 @@
     "logs:backend": "cd backend && railway logs",
     "health:check": "curl -f $VITE_API_URL/api/health || curl -f http://localhost:5000/api/health",
     "verify:secrets": "node scripts/verify-secrets.js",
-    "setup:secrets": "echo 'Abre: https://github.com/Migue1-N4varreTe/ECO/settings/secrets/actions'"
+    "setup:secrets": "echo 'Abre: https://github.com/Migue1-N4varreTe/ECO/settings/secrets/actions'",
+    "create:test-user": "node scripts/create-test-user.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",

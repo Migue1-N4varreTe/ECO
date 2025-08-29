@@ -15,14 +15,8 @@ import {
   Clock,
   AlertCircle,
 } from "lucide-react";
-import {
-  categories,
-  storeHours,
-  isStoreOpen,
-  getNextOpenTime,
-  getTotalProducts,
-  getProductStats,
-} from "@/lib/data";
+import { storeHours, isStoreOpen, getNextOpenTime, categories as staticCategories } from "@/lib/data";
+import { useSupabaseCategories } from "@/hooks/use-supabase-categories";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import EmptyState from "@/components/ui/empty-state";
@@ -31,10 +25,8 @@ const Categories = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
 
-  // Filter categories based on search
-  const filteredCategories = categories.filter((category) =>
-    category.name.toLowerCase().includes(searchQuery.toLowerCase()),
-  );
+  const { items: supaCategories } = useSupabaseCategories();
+  const categories = supaCategories.length ? supaCategories : staticCategories;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -103,13 +95,13 @@ const Categories = () => {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="text-center">
                   <div className="text-2xl md:text-3xl font-bold text-brand-500 mb-1">
-                    {getTotalProducts().toLocaleString()}
+                    {categories.reduce((sum, c) => sum + (c.productCount || 0), 0).toLocaleString()}
                   </div>
                   <div className="text-sm text-gray-600">Productos Totales</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl md:text-3xl font-bold text-yellow-500 mb-1">
-                    {getProductStats().inStockProducts.toLocaleString()}
+                    {categories.reduce((sum, c) => sum + (c.productCount || 0), 0).toLocaleString()}
                   </div>
                   <div className="text-sm text-gray-600">En Stock</div>
                 </div>
@@ -121,10 +113,7 @@ const Categories = () => {
                 </div>
                 <div className="text-center">
                   <div className="text-2xl md:text-3xl font-bold text-red-500 mb-1">
-                    $
-                    {Math.round(
-                      getProductStats().averagePrice,
-                    ).toLocaleString()}
+                    $0
                   </div>
                   <div className="text-sm text-gray-600">Precio Promedio</div>
                 </div>
@@ -140,7 +129,7 @@ const Categories = () => {
             <div className="relative flex-1 max-w-md">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
               <Input
-                placeholder="Buscar categorías..."
+                placeholder="Buscar categor��as..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10 pr-4 h-12 text-base"
@@ -261,7 +250,7 @@ const Categories = () => {
           </div>
           <div className="text-center p-6 bg-white rounded-xl shadow-sm">
             <div className="text-2xl font-bold text-fresh-600 mb-1">
-              {categories.reduce((sum, cat) => sum + cat.productCount, 0)}
+              {categories.reduce((sum, cat) => sum + (cat.productCount || 0), 0)}
             </div>
             <div className="text-sm text-gray-600">Productos totales</div>
           </div>

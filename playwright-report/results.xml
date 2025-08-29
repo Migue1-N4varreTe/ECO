@@ -1,0 +1,129 @@
+<testsuites id="" name="" tests="1" failures="1" skipped="0" errors="0" time="72.64008499999998">
+<testsuite name="smoke/login-profile.spec.ts" timestamp="2025-08-29T06:30:04.649Z" hostname="chromium" tests="1" failures="1" skipped="0" time="66.99" errors="0">
+<testcase name="Auth smoke › login with quick user and open profile" classname="smoke/login-profile.spec.ts" time="66.99">
+<failure message="login-profile.spec.ts:4:3 login with quick user and open profile" type="FAILURE">
+<![CDATA[  [chromium] › smoke/login-profile.spec.ts:4:3 › Auth smoke › login with quick user and open profile 
+
+    Error: Timed out 10000ms waiting for expect(page).toHaveURL(expected)
+
+    Expected pattern: /\/$/
+    Received string:  "http://localhost:8080/login"
+    Call log:
+      - Expect "toHaveURL" with timeout 10000ms
+        14 × unexpected value "http://localhost:8080/login"
+
+
+       5 |     await page.goto('/login');
+       6 |     await page.getByRole('button', { name: 'Probar usuario (recomendado)' }).click();
+    >  7 |     await expect(page).toHaveURL(/\/$/);
+         |                        ^
+       8 |     await expect(page.getByRole('button', { name: 'Iniciar Sesión' })).toHaveCount(0);
+       9 |
+      10 |     await page.goto('/profile');
+        at /app/code/tests/smoke/login-profile.spec.ts:7:24
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../test-results/smoke-login-profile-Auth-s-b3bf6-quick-user-and-open-profile-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../test-results/smoke-login-profile-Auth-s-b3bf6-quick-user-and-open-profile-chromium/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../test-results/smoke-login-profile-Auth-s-b3bf6-quick-user-and-open-profile-chromium/error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: Timed out 10000ms waiting for expect(page).toHaveURL(expected)
+
+    Expected pattern: /\/$/
+    Received string:  "http://localhost:8080/login"
+    Call log:
+      - Expect "toHaveURL" with timeout 10000ms
+        14 × unexpected value "http://localhost:8080/login"
+
+
+       5 |     await page.goto('/login');
+       6 |     await page.getByRole('button', { name: 'Probar usuario (recomendado)' }).click();
+    >  7 |     await expect(page).toHaveURL(/\/$/);
+         |                        ^
+       8 |     await expect(page.getByRole('button', { name: 'Iniciar Sesión' })).toHaveCount(0);
+       9 |
+      10 |     await page.goto('/profile');
+        at /app/code/tests/smoke/login-profile.spec.ts:7:24
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../test-results/smoke-login-profile-Auth-s-b3bf6-quick-user-and-open-profile-chromium-retry1/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../test-results/smoke-login-profile-Auth-s-b3bf6-quick-user-and-open-profile-chromium-retry1/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../test-results/smoke-login-profile-Auth-s-b3bf6-quick-user-and-open-profile-chromium-retry1/error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../test-results/smoke-login-profile-Auth-s-b3bf6-quick-user-and-open-profile-chromium-retry1/trace.zip
+    Usage:
+
+        npx playwright show-trace ../test-results/smoke-login-profile-Auth-s-b3bf6-quick-user-and-open-profile-chromium-retry1/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Retry #2 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: Timed out 10000ms waiting for expect(page).toHaveURL(expected)
+
+    Expected pattern: /\/$/
+    Received string:  "http://localhost:8080/login"
+    Call log:
+      - Expect "toHaveURL" with timeout 10000ms
+        12 × unexpected value "http://localhost:8080/login"
+
+
+       5 |     await page.goto('/login');
+       6 |     await page.getByRole('button', { name: 'Probar usuario (recomendado)' }).click();
+    >  7 |     await expect(page).toHaveURL(/\/$/);
+         |                        ^
+       8 |     await expect(page.getByRole('button', { name: 'Iniciar Sesión' })).toHaveCount(0);
+       9 |
+      10 |     await page.goto('/profile');
+        at /app/code/tests/smoke/login-profile.spec.ts:7:24
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../test-results/smoke-login-profile-Auth-s-b3bf6-quick-user-and-open-profile-chromium-retry2/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../test-results/smoke-login-profile-Auth-s-b3bf6-quick-user-and-open-profile-chromium-retry2/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../test-results/smoke-login-profile-Auth-s-b3bf6-quick-user-and-open-profile-chromium-retry2/error-context.md
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|../test-results/smoke-login-profile-Auth-s-b3bf6-quick-user-and-open-profile-chromium/test-failed-1.png]]
+
+[[ATTACHMENT|../test-results/smoke-login-profile-Auth-s-b3bf6-quick-user-and-open-profile-chromium/video.webm]]
+
+[[ATTACHMENT|../test-results/smoke-login-profile-Auth-s-b3bf6-quick-user-and-open-profile-chromium/error-context.md]]
+
+[[ATTACHMENT|../test-results/smoke-login-profile-Auth-s-b3bf6-quick-user-and-open-profile-chromium-retry1/test-failed-1.png]]
+
+[[ATTACHMENT|../test-results/smoke-login-profile-Auth-s-b3bf6-quick-user-and-open-profile-chromium-retry1/video.webm]]
+
+[[ATTACHMENT|../test-results/smoke-login-profile-Auth-s-b3bf6-quick-user-and-open-profile-chromium-retry1/error-context.md]]
+
+[[ATTACHMENT|../test-results/smoke-login-profile-Auth-s-b3bf6-quick-user-and-open-profile-chromium-retry1/trace.zip]]
+
+[[ATTACHMENT|../test-results/smoke-login-profile-Auth-s-b3bf6-quick-user-and-open-profile-chromium-retry2/test-failed-1.png]]
+
+[[ATTACHMENT|../test-results/smoke-login-profile-Auth-s-b3bf6-quick-user-and-open-profile-chromium-retry2/video.webm]]
+
+[[ATTACHMENT|../test-results/smoke-login-profile-Auth-s-b3bf6-quick-user-and-open-profile-chromium-retry2/error-context.md]]
+]]>
+</system-out>
+</testcase>
+</testsuite>
+</testsuites>

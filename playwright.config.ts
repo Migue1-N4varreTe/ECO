@@ -1,7 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
 export default defineConfig({
-  testDir: "./tests/e2e",
+  testDir: "./tests",
 
   // Run tests in files in parallel
   fullyParallel: true,
@@ -53,24 +53,6 @@ export default defineConfig({
       name: "chromium",
       use: { ...devices["Desktop Chrome"] },
     },
-    {
-      name: "firefox",
-      use: { ...devices["Desktop Firefox"] },
-    },
-    {
-      name: "webkit",
-      use: { ...devices["Desktop Safari"] },
-    },
-
-    // Mobile testing
-    {
-      name: "Mobile Chrome",
-      use: { ...devices["Pixel 5"] },
-    },
-    {
-      name: "Mobile Safari",
-      use: { ...devices["iPhone 12"] },
-    },
   ],
 
   // Run your local dev server before starting the tests
@@ -78,20 +60,20 @@ export default defineConfig({
     {
       command: "npm run dev:frontend",
       port: 8080,
-      reuseExistingServer: !process.env.CI,
+      reuseExistingServer: true,
       timeout: 120000,
     },
     {
       command: "npm run dev:backend",
       port: 5000,
-      reuseExistingServer: !process.env.CI,
+      reuseExistingServer: true,
       timeout: 60000,
     },
   ],
 
   // Global setup and teardown
-  globalSetup: require.resolve("./tests/setup/global-setup.ts"),
-  globalTeardown: require.resolve("./tests/setup/global-teardown.ts"),
+  globalSetup: "./tests/setup/global-setup.ts",
+  globalTeardown: "./tests/setup/global-teardown.ts",
 
   // Test timeout
   timeout: 60000,

@@ -27,7 +27,7 @@ import {
 import { categories, getTotalProducts } from "@/lib/data";
 import { cn } from "@/lib/utils";
 import { useDebugProducts } from "@/hooks/use-debug";
-import { useProductFilters } from "@/hooks/use-search";
+import { useSupabaseProductFilters as useProductFilters } from "@/hooks/use-supabase-products";
 import ProductDiagnostic from "@/components/ProductDiagnostic";
 import EmptyState from "@/components/ui/empty-state";
 

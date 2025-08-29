@@ -60,32 +60,26 @@ const Login = () => {
 
     setIsSubmitting(true);
 
-    try {
-      await login(formData.email, formData.password);
+    const result = await login(formData.email, formData.password);
+    if (result.success) {
       navigate(from, { replace: true });
-    } catch (error: any) {
-      setErrors({
-        submit: error.message || "Error al iniciar sesión. Intenta nuevamente.",
-      });
-    } finally {
-      setIsSubmitting(false);
+    } else {
+      setErrors({ submit: result.error || "Error al iniciar sesión. Intenta nuevamente." });
     }
+    setIsSubmitting(false);
   };
 
   const quickLogin = async (email: string, password: string) => {
     setFormData({ email, password });
     setIsSubmitting(true);
 
-    try {
-      await login(email, password);
+    const result = await login(email, password);
+    if (result.success) {
       navigate(from, { replace: true });
-    } catch (error: any) {
-      setErrors({
-        submit: error.message || "Error al iniciar sesión. Intenta nuevamente.",
-      });
-    } finally {
-      setIsSubmitting(false);
+    } else {
+      setErrors({ submit: result.error || "Error al iniciar sesión. Intenta nuevamente." });
     }
+    setIsSubmitting(false);
   };
 
   return (
@@ -243,6 +237,14 @@ const Login = () => {
                   Cuentas de demostración
                 </p>
                 <div className="grid gap-2">
+                  <Button
+                    variant="outline"
+                    className="w-full h-10 text-xs"
+                    onClick={() => quickLogin("le.tester+123@example.com", "LaEco123!")}
+                    disabled={isSubmitting}
+                  >
+                    ✅ Probar usuario (recomendado)
+                  </Button>
                   <Button
                     variant="outline"
                     className="w-full h-10 text-xs"

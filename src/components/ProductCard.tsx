@@ -288,4 +288,5 @@ const ProductCard = ({ product, className }: ProductCardProps) => {
   );
 };
 
-export default ProductCard;
+import { memo } from "react";
+export default memo(ProductCard);

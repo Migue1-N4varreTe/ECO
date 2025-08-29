@@ -313,19 +313,12 @@ const Shop = () => {
           </div>
         ) : (
           /* Empty State */
-          <div className="text-center py-16">
-            <div className="text-6xl mb-4">🔍</div>
-            <h3 className="font-semibold text-lg text-gray-900 mb-2">
-              No encontramos productos
-            </h3>
-            <p className="text-gray-600 mb-6 max-w-md mx-auto">
-              Intenta ajustar tus filtros de búsqueda o explora nuestras
-              categorías
-            </p>
-            <Button onClick={clearFilters} variant="outline">
-              Limpiar filtros
-            </Button>
-          </div>
+          <EmptyState
+            icon={<span>🔍</span>}
+            title="No encontramos productos"
+            description="Intenta ajustar tus filtros de búsqueda o explora nuestras categorías"
+            action={<Button onClick={clearFilters} variant="outline">Limpiar filtros</Button>}
+          />
         )}
 
         {/* Load More (if needed) */}

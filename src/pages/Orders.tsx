@@ -38,7 +38,7 @@ import {
   Download,
   ShoppingBag,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, prettifyProductName } from "@/lib/utils";
 
 interface OrderItem {
   id: string;
@@ -411,14 +411,20 @@ const Orders = () => {
 
                         {/* Products Preview */}
                         <div className="flex items-center gap-2 mt-4">
-                          {order.items.slice(0, 3).map((item) => (
-                            <img
-                              key={item.id}
-                              src={item.image}
-                              alt={item.name}
-                              className="w-10 h-10 rounded-lg object-cover bg-gray-100"
-                            />
-                          ))}
+                          {order.items.slice(0, 3).map((item) => {
+                            const displayName = prettifyProductName(item.name, item.id);
+                            const src = item.image && item.image.includes("placeholder")
+                              ? `https://via.placeholder.com/80x80/f3f4f6/9ca3af?text=${encodeURIComponent(displayName)}`
+                              : item.image;
+                            return (
+                              <img
+                                key={item.id}
+                                src={src}
+                                alt={displayName}
+                                className="w-10 h-10 rounded-lg object-cover bg-gray-100"
+                              />
+                            );
+                          })}
                           {order.items.length > 3 && (
                             <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center text-xs text-gray-600">
                               +{order.items.length - 3}
@@ -513,13 +519,13 @@ const Orders = () => {
                                         className="flex items-center gap-3 p-3 border rounded-lg"
                                       >
                                         <img
-                                          src={item.image}
-                                          alt={item.name}
+                                          src={(item.image && item.image.includes("placeholder")) ? `https://via.placeholder.com/96x96/f3f4f6/9ca3af?text=${encodeURIComponent(prettifyProductName(item.name, item.id))}` : item.image}
+                                          alt={prettifyProductName(item.name, item.id)}
                                           className="w-12 h-12 rounded-lg object-cover"
                                         />
                                         <div className="flex-1">
                                           <p className="font-medium text-sm">
-                                            {item.name}
+                                            {prettifyProductName(item.name, item.id)}
                                           </p>
                                           {item.brand && (
                                             <p className="text-xs text-gray-600">

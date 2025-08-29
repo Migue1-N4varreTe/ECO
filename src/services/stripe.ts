@@ -2,22 +2,19 @@ import { loadStripe, Stripe } from "@stripe/stripe-js";
 
 const stripePublishableKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
 
-// Initialize Stripe
+// Initialize Stripe (graceful if missing)
 let stripePromise: Promise<Stripe | null> | null = null;
+export const isStripeEnabled = Boolean(stripePublishableKey);
 
 if (stripePublishableKey) {
   stripePromise = loadStripe(stripePublishableKey);
 } else {
-  console.warn("⚠️ Stripe publishable key not configured");
+  console.warn("⚠️ Stripe publishable key not configured (payments disabled)");
+  stripePromise = Promise.resolve(null);
 }
 
 export const getStripe = () => {
-  if (!stripePromise) {
-    throw new Error(
-      "Stripe not initialized. Please configure VITE_STRIPE_PUBLISHABLE_KEY",
-    );
-  }
-  return stripePromise;
+  return stripePromise as Promise<Stripe | null>;
 };
 
 // Payment service

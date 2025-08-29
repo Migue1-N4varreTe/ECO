@@ -91,7 +91,7 @@ export const useCartActions = () => {
     quantity: number,
     maxStock?: number,
   ) => {
-    if (quantity < 1) {
+    if (quantity <= 0) {
       removeFromCart(productId);
       return;
     }

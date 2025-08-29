@@ -22,19 +22,23 @@ const corsOptions = {
   origin: function (origin, callback) {
     // Permitir requests sin origin (ej: aplicaciones móviles)
     if (!origin) return callback(null, true);
-    
-    // Verificar si el origin está en la lista permitida
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      // En desarrollo, permitir cualquier localhost
-      if (process.env.NODE_ENV === 'development' && origin.includes('localhost')) {
-        callback(null, true);
-      } else {
-        console.error(`CORS: Origin ${origin} not allowed`);
-        callback(new Error('Not allowed by CORS'));
+
+    try {
+      const hostname = new URL(origin).hostname;
+      const isExplicit = allowedOrigins.includes(origin);
+      const isLocalhost = hostname === 'localhost' || hostname.startsWith('127.0.0.1');
+      const isNetlify = hostname.endsWith('.netlify.app');
+
+      if (isExplicit || (process.env.NODE_ENV === 'development' && isLocalhost) || isNetlify) {
+        return callback(null, true);
       }
+    } catch (e) {
+      // Si origin no es una URL válida, continuar con validación simple
+      if (allowedOrigins.includes(origin)) return callback(null, true);
     }
+
+    console.error(`CORS: Origin ${origin} not allowed`);
+    return callback(new Error('Not allowed by CORS'));
   },
   
   // Configuraciones adicionales

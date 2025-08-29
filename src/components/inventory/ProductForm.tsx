@@ -73,6 +73,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
     is_active: true,
     image_url: "",
   });
+  const [sellByWeight, setSellByWeight] = useState(false);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
@@ -97,6 +98,9 @@ const ProductForm: React.FC<ProductFormProps> = ({
         is_active: product.is_active ?? true,
         image_url: (product as any).image_url || "",
       });
+      setSellByWeight((product.unit || "").toLowerCase() === "kg");
+    } else {
+      setSellByWeight(false);
     }
   }, [product]);
 
@@ -387,7 +391,23 @@ const ProductForm: React.FC<ProductFormProps> = ({
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="unit">Unidad</Label>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="unit">Unidad</Label>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground">Vender por peso</span>
+                  <Switch
+                    checked={sellByWeight}
+                    onCheckedChange={(val) => {
+                      setSellByWeight(val);
+                      if (val) {
+                        handleInputChange("unit", "kg");
+                      } else if ((formData.unit || "").toLowerCase() === "kg") {
+                        handleInputChange("unit", "unidad");
+                      }
+                    }}
+                  />
+                </div>
+              </div>
               <Select
                 value={formData.unit}
                 onValueChange={(value) => handleInputChange("unit", value)}
@@ -403,6 +423,9 @@ const ProductForm: React.FC<ProductFormProps> = ({
                   ))}
                 </SelectContent>
               </Select>
+              {sellByWeight && (
+                <p className="text-xs text-muted-foreground">Se venderá por kg y el cliente podrá elegir gramos en la tienda.</p>
+              )}
             </div>
           </div>
         </CardContent>

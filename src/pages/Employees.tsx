@@ -34,6 +34,7 @@ import Navbar from "@/components/Navbar";
 import EmployeeForm from "@/components/employees/EmployeeForm";
 import AttendanceTracker from "@/components/employees/AttendanceTracker";
 import PerformanceDashboard from "@/components/employees/PerformanceDashboard";
+import EmptyState from "@/components/ui/empty-state";
 
 interface Employee {
   id: string;

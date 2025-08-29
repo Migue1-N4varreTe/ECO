@@ -26,7 +26,7 @@ const authenticateToken = async (req, res, next) => {
         return res.status(401).json({ error: "Usuario no válido" });
       }
 
-      if (!user.is_active) {
+      if (user.is_active === false) {
         return res.status(401).json({ error: "Usuario desactivado" });
       }
 

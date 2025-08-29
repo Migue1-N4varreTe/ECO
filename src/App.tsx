@@ -1,5 +1,5 @@
 import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
+import { Toaster as Sonner } from "sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -27,6 +27,7 @@ const Login = lazy(() => import("./pages/Login"));
 const Register = lazy(() => import("./pages/Register"));
 const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
 const Checkout = lazy(() => import("./pages/Checkout"));
+const CheckoutSuccess = lazy(() => import("./pages/CheckoutSuccess"));
 const Profile = lazy(() => import("./pages/Profile"));
 const Orders = lazy(() => import("./pages/Orders"));
 const Settings = lazy(() => import("./pages/Settings"));
@@ -52,6 +53,33 @@ const GestionarPerfil = lazy(() => import("./pages/GestionarPerfil"));
 const SeguimientoPedidos = lazy(() => import("./pages/SeguimientoPedidos"));
 const ProgramaLealtad = lazy(() => import("./pages/ProgramaLealtad"));
 
+// Extended feature pages (lazy loaded)
+const ShoppingList = lazy(() => import("./pages/ShoppingList"));
+const Addresses = lazy(() => import("./pages/Addresses"));
+const Reviews = lazy(() => import("./pages/Reviews"));
+const Pickup = lazy(() => import("./pages/Pickup"));
+const DeliveryManagement = lazy(() => import("./pages/DeliveryManagement"));
+const DeliveryStaff = lazy(() => import("./pages/DeliveryStaff"));
+const RecurringOrders = lazy(() => import("./pages/RecurringOrders"));
+const Compare = lazy(() => import("./pages/Compare"));
+const LiveTracking = lazy(() => import("./pages/LiveTracking"));
+const DeliveryRoutes = lazy(() => import("./pages/DeliveryRoutes"));
+const FlashSales = lazy(() => import("./pages/FlashSales"));
+const Warehouse = lazy(() => import("./pages/Warehouse"));
+const AdvancedReports = lazy(() => import("./pages/AdvancedReports"));
+const Referrals = lazy(() => import("./pages/Referrals"));
+const Premium = lazy(() => import("./pages/Premium"));
+const ExecutiveDashboard = lazy(() => import("./pages/ExecutiveDashboard"));
+const B2B = lazy(() => import("./pages/B2B"));
+const Franchises = lazy(() => import("./pages/Franchises"));
+const ARView = lazy(() => import("./pages/ARView"));
+const Social = lazy(() => import("./pages/Social"));
+const Assistant = lazy(() => import("./pages/Assistant"));
+const Wallet = lazy(() => import("./pages/Wallet"));
+const DynamicPricing = lazy(() => import("./pages/DynamicPricing"));
+const EmailCampaigns = lazy(() => import("./pages/EmailCampaigns"));
+const DroneDelivery = lazy(() => import("./pages/DroneDelivery"));
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -62,7 +90,6 @@ const App = () => (
           <FavoritesProvider>
             <CartProvider>
               <SafeWebSocketProvider>
-                <Toaster />
                 <Sonner />
                 <BrowserRouter>
                   <Suspense fallback={<PageLoader />}>
@@ -81,6 +108,7 @@ const App = () => (
                         element={<ForgotPassword />}
                       />
                       <Route path="/checkout" element={<Checkout />} />
+                      <Route path="/checkout/success" element={<CheckoutSuccess />} />
                       <Route path="/profile" element={<Profile />} />
                       <Route path="/orders" element={<Orders />} />
                       <Route path="/settings" element={<Settings />} />
@@ -104,110 +132,40 @@ const App = () => (
                       />
                       <Route path="/terms" element={<Terms />} />
                       <Route path="/privacy" element={<Privacy />} />
-                      <Route
-                        path="/admin"
-                        element={
-                          <PermissionGuard
-                            permission="staff:view"
-                            fallback={
-                              <AccessDenied requiredPermission="staff:view" />
-                            }
-                          >
-                            <Admin />
-                          </PermissionGuard>
-                        }
-                      />
-                      <Route
-                        path="/inventory"
-                        element={
-                          <PermissionGuard
-                            permission="inventory:view"
-                            fallback={
-                              <AccessDenied requiredPermission="inventory:view" />
-                            }
-                          >
-                            <Inventory />
-                          </PermissionGuard>
-                        }
-                      />
-                      <Route
-                        path="/pos"
-                        element={
-                          <PermissionGuard
-                            permission="sales:create"
-                            fallback={
-                              <AccessDenied requiredPermission="sales:create" />
-                            }
-                          >
-                            <POS />
-                          </PermissionGuard>
-                        }
-                      />
-                      <Route
-                        path="/reports"
-                        element={
-                          <PermissionGuard
-                            permission="reports:view"
-                            fallback={
-                              <AccessDenied requiredPermission="reports:view" />
-                            }
-                          >
-                            <Reports />
-                          </PermissionGuard>
-                        }
-                      />
-                      <Route
-                        path="/employees"
-                        element={
-                          <PermissionGuard
-                            permission="staff:view"
-                            fallback={
-                              <AccessDenied requiredPermission="staff:view" />
-                            }
-                          >
-                            <Employees />
-                          </PermissionGuard>
-                        }
-                      />
-                      <Route
-                        path="/clients"
-                        element={
-                          <PermissionGuard
-                            permission="clients:view"
-                            fallback={
-                              <AccessDenied requiredPermission="clients:view" />
-                            }
-                          >
-                            <Clients />
-                          </PermissionGuard>
-                        }
-                      />
-                      <Route
-                        path="/system-config"
-                        element={
-                          <PermissionGuard
-                            permission="system:config"
-                            fallback={
-                              <AccessDenied requiredPermission="system:config" />
-                            }
-                          >
-                            <SystemConfig />
-                          </PermissionGuard>
-                        }
-                      />
-                      <Route
-                        path="/deployment"
-                        element={
-                          <PermissionGuard
-                            permission="system:deploy"
-                            fallback={
-                              <AccessDenied requiredPermission="system:deploy" />
-                            }
-                          >
-                            <Deployment />
-                          </PermissionGuard>
-                        }
-                      />
+                      <Route path="/admin" element={<Admin />} />
+                      <Route path="/inventory" element={<Inventory />} />
+                      <Route path="/pos" element={<POS />} />
+                      <Route path="/reports" element={<Reports />} />
+                      <Route path="/employees" element={<Employees />} />
+                      <Route path="/clients" element={<Clients />} />
+                      <Route path="/system-config" element={<SystemConfig />} />
+                      <Route path="/deployment" element={<Deployment />} />
+                      <Route path="/shopping-list" element={<ShoppingList />} />
+                      <Route path="/addresses" element={<Addresses />} />
+                      <Route path="/reviews" element={<Reviews />} />
+                      <Route path="/pickup" element={<Pickup />} />
+                      <Route path="/delivery-management" element={<DeliveryManagement />} />
+                      <Route path="/delivery-staff" element={<DeliveryStaff />} />
+                      <Route path="/recurring-orders" element={<RecurringOrders />} />
+                      <Route path="/compare" element={<Compare />} />
+                      <Route path="/live-tracking" element={<LiveTracking />} />
+                      <Route path="/delivery-routes" element={<DeliveryRoutes />} />
+                      <Route path="/flash-sales" element={<FlashSales />} />
+                      <Route path="/warehouse" element={<Warehouse />} />
+                      <Route path="/advanced-reports" element={<AdvancedReports />} />
+                      <Route path="/referrals" element={<Referrals />} />
+                      <Route path="/premium" element={<Premium />} />
+                      <Route path="/executive-dashboard" element={<ExecutiveDashboard />} />
+                      <Route path="/b2b" element={<B2B />} />
+                      <Route path="/franchises" element={<Franchises />} />
+                      <Route path="/ar-view" element={<ARView />} />
+                      <Route path="/social" element={<Social />} />
+                      <Route path="/assistant" element={<Assistant />} />
+                      <Route path="/wallet" element={<Wallet />} />
+                      <Route path="/dynamic-pricing" element={<DynamicPricing />} />
+                      <Route path="/email-campaigns" element={<EmailCampaigns />} />
+                      <Route path="/drone-delivery" element={<DroneDelivery />} />
+
                       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                       <Route path="*" element={<NotFound />} />
                     </Routes>

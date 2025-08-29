@@ -353,7 +353,7 @@ const Navbar: React.FC = () => {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="px-2.5 font-happy text-xl"
+                    className="px-2.5 font-display text-xl"
                   >
                     Iniciar Sesión
                   </Button>
@@ -361,9 +361,9 @@ const Navbar: React.FC = () => {
                 <Link to="/register">
                   <Button
                     size="sm"
-                    className="bg-green-600 hover:bg-green-700 font-happy text-xl"
+                    className="bg-green-600 hover:bg-green-700 font-display text-xl"
                   >
-                    <span className="font-happy text-white">Registrarse</span>
+                    <span className="font-display text-white">Registrarse</span>
                   </Button>
                 </Link>
               </div>

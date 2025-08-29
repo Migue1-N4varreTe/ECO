@@ -1,5 +1,4 @@
 import * as Sentry from "@sentry/node";
-import { ProfilingIntegration } from "@sentry/profiling-node";
 
 const sentryDsn = process.env.VITE_SENTRY_DSN;
 const environment = process.env.NODE_ENV || "development";
@@ -11,13 +10,11 @@ if (sentryDsn) {
     environment,
 
     // Performance monitoring
-    integrations: [new ProfilingIntegration()],
+    integrations: [],
 
     // Performance sampling
     tracesSampleRate: environment === "production" ? 0.1 : 1.0,
 
-    // Profiling sampling (lower rate for production)
-    profilesSampleRate: environment === "production" ? 0.01 : 0.1,
 
     // Error sampling
     sampleRate: 1.0,
@@ -110,27 +107,6 @@ function sanitizeRequestData(data) {
   return sanitized;
 }
 
-// Express middleware for Sentry error handling
-export const sentryErrorHandler = Sentry.Handlers.errorHandler({
-  shouldHandleError(error) {
-    // Only handle 5xx errors and specific 4xx errors
-    if (error.status >= 500) return true;
-    if (error.status === 429) return true; // Rate limiting errors
-    if (error.status === 403) return true; // Security-related errors
-    return false;
-  },
-});
-
-// Express middleware for request tracing
-export const sentryRequestHandler = Sentry.Handlers.requestHandler({
-  // Use custom transaction name
-  transaction: (req) => {
-    return `${req.method} ${req.route?.path || req.path}`;
-  },
-});
-
-// Express middleware for tracing
-export const sentryTracingHandler = Sentry.Handlers.tracingHandler();
 
 // Helper functions for manual error reporting
 export const captureError = (error, context = {}) => {

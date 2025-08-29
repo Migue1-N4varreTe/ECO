@@ -14,6 +14,7 @@ import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/services/api";
 
 interface Product {
   id: string;
@@ -70,6 +71,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
     supplier: "",
     expiry_date: "",
     is_active: true,
+    image_url: "",
   });
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
@@ -84,7 +86,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
         sku: product.sku || "",
         barcode: product.barcode || "",
         category_id: product.categories?.id || "",
-        stock_quantity: product.stock_quantity?.toString() || "",
+        stock_quantity: (product as any).stock_quantity?.toString() || "",
         min_stock: product.min_stock?.toString() || "10",
         unit: product.unit || "unidad",
         brand: product.brand || "",
@@ -93,6 +95,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
           ? product.expiry_date.split("T")[0]
           : "",
         is_active: product.is_active ?? true,
+        image_url: (product as any).image_url || "",
       });
     }
   }, [product]);
@@ -129,6 +132,7 @@ const ProductForm: React.FC<ProductFormProps> = ({
         stock_quantity: parseInt(formData.stock_quantity),
         min_stock: parseInt(formData.min_stock),
         expiry_date: formData.expiry_date || null,
+        image_url: formData.image_url || null,
       };
 
       const response = await fetch(url, {
@@ -233,6 +237,44 @@ const ProductForm: React.FC<ProductFormProps> = ({
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="image_url">URL de Imagen</Label>
+            <Input
+              id="image_url"
+              value={formData.image_url}
+              onChange={(e) => handleInputChange("image_url", e.target.value)}
+              placeholder="https://..."
+            />
+            <div className="flex items-center gap-3">
+              <Input
+                id="image_file"
+                type="file"
+                accept="image/*"
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (!file || !supabase) return;
+                  try {
+                    const fileName = `${Date.now()}-${file.name}`;
+                    const { data, error } = await (supabase as any).storage
+                      .from("product-images")
+                      .upload(fileName, file, {
+                        cacheControl: "3600",
+                        upsert: false,
+                      });
+                    if (error) throw error;
+                    const { data: pub } = await (supabase as any).storage
+                      .from("product-images")
+                      .getPublicUrl(data.path);
+                    handleInputChange("image_url", pub.publicUrl);
+                    toast({ title: "Imagen subida", description: "Se actualizó la URL" });
+                  } catch (err: any) {
+                    toast({ title: "Error subiendo imagen", description: err.message, variant: "destructive" });
+                  }
+                }}
+              />
             </div>
           </div>
 

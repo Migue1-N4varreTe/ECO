@@ -15,13 +15,3 @@ source = "backend"
 [services.variables]
 NODE_ENV = "production"
 PORT = "5000"
-
-[[services]]
-name = "frontend"
-source = "."
-buildCommand = "npm run build"
-startCommand = "npm run preview"
-
-[services.variables]
-NODE_ENV = "production"
-VITE_API_URL = "${{backend.RAILWAY_PUBLIC_DOMAIN}}"

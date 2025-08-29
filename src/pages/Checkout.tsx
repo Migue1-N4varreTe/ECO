@@ -814,13 +814,13 @@ const Checkout = () => {
                     return (
                       <div key={item.id} className="flex gap-3">
                         <img
-                          src={item.image}
-                          alt={item.name}
+                          src={(item.image && item.image.includes("placeholder")) ? `https://via.placeholder.com/96x96/f3f4f6/9ca3af?text=${encodeURIComponent(prettifyProductName(item.name, item.id, item.category))}` : item.image}
+                          alt={prettifyProductName(item.name, item.id, item.category)}
                           className="w-12 h-12 object-cover rounded-lg bg-gray-100"
                         />
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium line-clamp-1">
-                            {item.name}
+                            {prettifyProductName(item.name, item.id, item.category)}
                           </p>
                           <p className="text-xs text-gray-600">
                             {item.quantity}x ${item.price}

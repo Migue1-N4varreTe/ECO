@@ -94,31 +94,31 @@
                       "workerIndex": 0,
                       "parallelIndex": 0,
                       "status": "failed",
-                      "duration": 17297,
+                      "duration": 11902,
                       "error": {
-                        "message": "Error: \u001b[31mTimed out 15000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m\n\nLocator: getByText('Cerrar Sesión')\nExpected: visible\nReceived: <element(s) not found>\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 15000ms\u001b[22m\n\u001b[2m  - waiting for getByText('Cerrar Sesión')\u001b[22m\n",
-                        "stack": "Error: \u001b[31mTimed out 15000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m\n\nLocator: getByText('Cerrar Sesión')\nExpected: visible\nReceived: <element(s) not found>\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 15000ms\u001b[22m\n\u001b[2m  - waiting for getByText('Cerrar Sesión')\u001b[22m\n\n    at /app/code/tests/smoke/login-profile.spec.ts:7:51",
+                        "message": "Error: \u001b[31mTimed out 10000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveURL\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected pattern: \u001b[32m/\\/$/\u001b[39m\nReceived string:  \u001b[31m\"http://localhost:8080/login\"\u001b[39m\nCall log:\n\u001b[2m  - Expect \"toHaveURL\" with timeout 10000ms\u001b[22m\n\u001b[2m    14 × unexpected value \"http://localhost:8080/login\"\u001b[22m\n",
+                        "stack": "Error: \u001b[31mTimed out 10000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveURL\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected pattern: \u001b[32m/\\/$/\u001b[39m\nReceived string:  \u001b[31m\"http://localhost:8080/login\"\u001b[39m\nCall log:\n\u001b[2m  - Expect \"toHaveURL\" with timeout 10000ms\u001b[22m\n\u001b[2m    14 × unexpected value \"http://localhost:8080/login\"\u001b[22m\n\n    at /app/code/tests/smoke/login-profile.spec.ts:7:24",
                         "location": {
                           "file": "/app/code/tests/smoke/login-profile.spec.ts",
-                          "column": 51,
+                          "column": 24,
                           "line": 7
                         },
-                        "snippet": "   5 |     await page.goto('/login');\n   6 |     await page.getByRole('button', { name: 'Probar usuario (recomendado)' }).click();\n>  7 |     await expect(page.getByText('Cerrar Sesión')).toBeVisible({ timeout: 15000 });\n     |                                                   ^\n   8 |\n   9 |     await page.goto('/profile');\n  10 |     await expect(page.getByText('le.tester+123@example.com')).toBeVisible();"
+                        "snippet": "   5 |     await page.goto('/login');\n   6 |     await page.getByRole('button', { name: 'Probar usuario (recomendado)' }).click();\n>  7 |     await expect(page).toHaveURL(/\\/$/);\n     |                        ^\n   8 |     await expect(page.getByRole('button', { name: 'Iniciar Sesión' })).toHaveCount(0);\n   9 |\n  10 |     await page.goto('/profile');"
                       },
                       "errors": [
                         {
                           "location": {
                             "file": "/app/code/tests/smoke/login-profile.spec.ts",
-                            "column": 51,
+                            "column": 24,
                             "line": 7
                           },
-                          "message": "Error: \u001b[31mTimed out 15000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m\n\nLocator: getByText('Cerrar Sesión')\nExpected: visible\nReceived: <element(s) not found>\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 15000ms\u001b[22m\n\u001b[2m  - waiting for getByText('Cerrar Sesión')\u001b[22m\n\n\n   5 |     await page.goto('/login');\n   6 |     await page.getByRole('button', { name: 'Probar usuario (recomendado)' }).click();\n>  7 |     await expect(page.getByText('Cerrar Sesión')).toBeVisible({ timeout: 15000 });\n     |                                                   ^\n   8 |\n   9 |     await page.goto('/profile');\n  10 |     await expect(page.getByText('le.tester+123@example.com')).toBeVisible();\n    at /app/code/tests/smoke/login-profile.spec.ts:7:51"
+                          "message": "Error: \u001b[31mTimed out 10000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveURL\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected pattern: \u001b[32m/\\/$/\u001b[39m\nReceived string:  \u001b[31m\"http://localhost:8080/login\"\u001b[39m\nCall log:\n\u001b[2m  - Expect \"toHaveURL\" with timeout 10000ms\u001b[22m\n\u001b[2m    14 × unexpected value \"http://localhost:8080/login\"\u001b[22m\n\n\n   5 |     await page.goto('/login');\n   6 |     await page.getByRole('button', { name: 'Probar usuario (recomendado)' }).click();\n>  7 |     await expect(page).toHaveURL(/\\/$/);\n     |                        ^\n   8 |     await expect(page.getByRole('button', { name: 'Iniciar Sesión' })).toHaveCount(0);\n   9 |\n  10 |     await page.goto('/profile');\n    at /app/code/tests/smoke/login-profile.spec.ts:7:24"
                         }
                       ],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-08-29T06:28:22.669Z",
+                      "startTime": "2025-08-29T06:30:05.367Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -139,7 +139,7 @@
                       ],
                       "errorLocation": {
                         "file": "/app/code/tests/smoke/login-profile.spec.ts",
-                        "column": 51,
+                        "column": 24,
                         "line": 7
                       }
                     },
@@ -147,31 +147,31 @@
                       "workerIndex": 1,
                       "parallelIndex": 0,
                       "status": "failed",
-                      "duration": 17809,
+                      "duration": 12376,
                       "error": {
-                        "message": "Error: \u001b[31mTimed out 15000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m\n\nLocator: getByText('Cerrar Sesión')\nExpected: visible\nReceived: <element(s) not found>\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 15000ms\u001b[22m\n\u001b[2m  - waiting for getByText('Cerrar Sesión')\u001b[22m\n",
-                        "stack": "Error: \u001b[31mTimed out 15000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m\n\nLocator: getByText('Cerrar Sesión')\nExpected: visible\nReceived: <element(s) not found>\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 15000ms\u001b[22m\n\u001b[2m  - waiting for getByText('Cerrar Sesión')\u001b[22m\n\n    at /app/code/tests/smoke/login-profile.spec.ts:7:51",
+                        "message": "Error: \u001b[31mTimed out 10000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveURL\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected pattern: \u001b[32m/\\/$/\u001b[39m\nReceived string:  \u001b[31m\"http://localhost:8080/login\"\u001b[39m\nCall log:\n\u001b[2m  - Expect \"toHaveURL\" with timeout 10000ms\u001b[22m\n\u001b[2m    14 × unexpected value \"http://localhost:8080/login\"\u001b[22m\n",
+                        "stack": "Error: \u001b[31mTimed out 10000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveURL\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected pattern: \u001b[32m/\\/$/\u001b[39m\nReceived string:  \u001b[31m\"http://localhost:8080/login\"\u001b[39m\nCall log:\n\u001b[2m  - Expect \"toHaveURL\" with timeout 10000ms\u001b[22m\n\u001b[2m    14 × unexpected value \"http://localhost:8080/login\"\u001b[22m\n\n    at /app/code/tests/smoke/login-profile.spec.ts:7:24",
                         "location": {
                           "file": "/app/code/tests/smoke/login-profile.spec.ts",
-                          "column": 51,
+                          "column": 24,
                           "line": 7
                         },
-                        "snippet": "   5 |     await page.goto('/login');\n   6 |     await page.getByRole('button', { name: 'Probar usuario (recomendado)' }).click();\n>  7 |     await expect(page.getByText('Cerrar Sesión')).toBeVisible({ timeout: 15000 });\n     |                                                   ^\n   8 |\n   9 |     await page.goto('/profile');\n  10 |     await expect(page.getByText('le.tester+123@example.com')).toBeVisible();"
+                        "snippet": "   5 |     await page.goto('/login');\n   6 |     await page.getByRole('button', { name: 'Probar usuario (recomendado)' }).click();\n>  7 |     await expect(page).toHaveURL(/\\/$/);\n     |                        ^\n   8 |     await expect(page.getByRole('button', { name: 'Iniciar Sesión' })).toHaveCount(0);\n   9 |\n  10 |     await page.goto('/profile');"
                       },
                       "errors": [
                         {
                           "location": {
                             "file": "/app/code/tests/smoke/login-profile.spec.ts",
-                            "column": 51,
+                            "column": 24,
                             "line": 7
                           },
-                          "message": "Error: \u001b[31mTimed out 15000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m\n\nLocator: getByText('Cerrar Sesión')\nExpected: visible\nReceived: <element(s) not found>\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 15000ms\u001b[22m\n\u001b[2m  - waiting for getByText('Cerrar Sesión')\u001b[22m\n\n\n   5 |     await page.goto('/login');\n   6 |     await page.getByRole('button', { name: 'Probar usuario (recomendado)' }).click();\n>  7 |     await expect(page.getByText('Cerrar Sesión')).toBeVisible({ timeout: 15000 });\n     |                                                   ^\n   8 |\n   9 |     await page.goto('/profile');\n  10 |     await expect(page.getByText('le.tester+123@example.com')).toBeVisible();\n    at /app/code/tests/smoke/login-profile.spec.ts:7:51"
+                          "message": "Error: \u001b[31mTimed out 10000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveURL\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected pattern: \u001b[32m/\\/$/\u001b[39m\nReceived string:  \u001b[31m\"http://localhost:8080/login\"\u001b[39m\nCall log:\n\u001b[2m  - Expect \"toHaveURL\" with timeout 10000ms\u001b[22m\n\u001b[2m    14 × unexpected value \"http://localhost:8080/login\"\u001b[22m\n\n\n   5 |     await page.goto('/login');\n   6 |     await page.getByRole('button', { name: 'Probar usuario (recomendado)' }).click();\n>  7 |     await expect(page).toHaveURL(/\\/$/);\n     |                        ^\n   8 |     await expect(page.getByRole('button', { name: 'Iniciar Sesión' })).toHaveCount(0);\n   9 |\n  10 |     await page.goto('/profile');\n    at /app/code/tests/smoke/login-profile.spec.ts:7:24"
                         }
                       ],
                       "stdout": [],
                       "stderr": [],
                       "retry": 1,
-                      "startTime": "2025-08-29T06:28:40.784Z",
+                      "startTime": "2025-08-29T06:30:18.136Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -197,7 +197,7 @@
                       ],
                       "errorLocation": {
                         "file": "/app/code/tests/smoke/login-profile.spec.ts",
-                        "column": 51,
+                        "column": 24,
                         "line": 7
                       }
                     },
@@ -205,31 +205,31 @@
                       "workerIndex": 2,
                       "parallelIndex": 0,
                       "status": "failed",
-                      "duration": 17224,
+                      "duration": 42712,
                       "error": {
-                        "message": "Error: \u001b[31mTimed out 15000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m\n\nLocator: getByText('Cerrar Sesión')\nExpected: visible\nReceived: <element(s) not found>\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 15000ms\u001b[22m\n\u001b[2m  - waiting for getByText('Cerrar Sesión')\u001b[22m\n",
-                        "stack": "Error: \u001b[31mTimed out 15000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m\n\nLocator: getByText('Cerrar Sesión')\nExpected: visible\nReceived: <element(s) not found>\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 15000ms\u001b[22m\n\u001b[2m  - waiting for getByText('Cerrar Sesión')\u001b[22m\n\n    at /app/code/tests/smoke/login-profile.spec.ts:7:51",
+                        "message": "Error: \u001b[31mTimed out 10000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveURL\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected pattern: \u001b[32m/\\/$/\u001b[39m\nReceived string:  \u001b[31m\"http://localhost:8080/login\"\u001b[39m\nCall log:\n\u001b[2m  - Expect \"toHaveURL\" with timeout 10000ms\u001b[22m\n\u001b[2m    12 × unexpected value \"http://localhost:8080/login\"\u001b[22m\n",
+                        "stack": "Error: \u001b[31mTimed out 10000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveURL\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected pattern: \u001b[32m/\\/$/\u001b[39m\nReceived string:  \u001b[31m\"http://localhost:8080/login\"\u001b[39m\nCall log:\n\u001b[2m  - Expect \"toHaveURL\" with timeout 10000ms\u001b[22m\n\u001b[2m    12 × unexpected value \"http://localhost:8080/login\"\u001b[22m\n\n    at /app/code/tests/smoke/login-profile.spec.ts:7:24",
                         "location": {
                           "file": "/app/code/tests/smoke/login-profile.spec.ts",
-                          "column": 51,
+                          "column": 24,
                           "line": 7
                         },
-                        "snippet": "   5 |     await page.goto('/login');\n   6 |     await page.getByRole('button', { name: 'Probar usuario (recomendado)' }).click();\n>  7 |     await expect(page.getByText('Cerrar Sesión')).toBeVisible({ timeout: 15000 });\n     |                                                   ^\n   8 |\n   9 |     await page.goto('/profile');\n  10 |     await expect(page.getByText('le.tester+123@example.com')).toBeVisible();"
+                        "snippet": "   5 |     await page.goto('/login');\n   6 |     await page.getByRole('button', { name: 'Probar usuario (recomendado)' }).click();\n>  7 |     await expect(page).toHaveURL(/\\/$/);\n     |                        ^\n   8 |     await expect(page.getByRole('button', { name: 'Iniciar Sesión' })).toHaveCount(0);\n   9 |\n  10 |     await page.goto('/profile');"
                       },
                       "errors": [
                         {
                           "location": {
                             "file": "/app/code/tests/smoke/login-profile.spec.ts",
-                            "column": 51,
+                            "column": 24,
                             "line": 7
                           },
-                          "message": "Error: \u001b[31mTimed out 15000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m()\u001b[22m\n\nLocator: getByText('Cerrar Sesión')\nExpected: visible\nReceived: <element(s) not found>\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 15000ms\u001b[22m\n\u001b[2m  - waiting for getByText('Cerrar Sesión')\u001b[22m\n\n\n   5 |     await page.goto('/login');\n   6 |     await page.getByRole('button', { name: 'Probar usuario (recomendado)' }).click();\n>  7 |     await expect(page.getByText('Cerrar Sesión')).toBeVisible({ timeout: 15000 });\n     |                                                   ^\n   8 |\n   9 |     await page.goto('/profile');\n  10 |     await expect(page.getByText('le.tester+123@example.com')).toBeVisible();\n    at /app/code/tests/smoke/login-profile.spec.ts:7:51"
+                          "message": "Error: \u001b[31mTimed out 10000ms waiting for \u001b[39m\u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveURL\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected pattern: \u001b[32m/\\/$/\u001b[39m\nReceived string:  \u001b[31m\"http://localhost:8080/login\"\u001b[39m\nCall log:\n\u001b[2m  - Expect \"toHaveURL\" with timeout 10000ms\u001b[22m\n\u001b[2m    12 × unexpected value \"http://localhost:8080/login\"\u001b[22m\n\n\n   5 |     await page.goto('/login');\n   6 |     await page.getByRole('button', { name: 'Probar usuario (recomendado)' }).click();\n>  7 |     await expect(page).toHaveURL(/\\/$/);\n     |                        ^\n   8 |     await expect(page.getByRole('button', { name: 'Iniciar Sesión' })).toHaveCount(0);\n   9 |\n  10 |     await page.goto('/profile');\n    at /app/code/tests/smoke/login-profile.spec.ts:7:24"
                         }
                       ],
                       "stdout": [],
                       "stderr": [],
                       "retry": 2,
-                      "startTime": "2025-08-29T06:28:59.588Z",
+                      "startTime": "2025-08-29T06:30:31.503Z",
                       "annotations": [],
                       "attachments": [
                         {
@@ -250,7 +250,7 @@
                       ],
                       "errorLocation": {
                         "file": "/app/code/tests/smoke/login-profile.spec.ts",
-                        "column": 51,
+                        "column": 24,
                         "line": 7
                       }
                     }
@@ -270,8 +270,8 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2025-08-29T06:28:20.382Z",
-    "duration": 56578.264,
+    "startTime": "2025-08-29T06:30:02.905Z",
+    "duration": 72640.08499999999,
     "expected": 0,
     "skipped": 0,
     "unexpected": 1,

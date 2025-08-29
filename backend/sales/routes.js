@@ -42,19 +42,11 @@ router.post(
   authenticateToken,
   requirePermission(PERMISSIONS.SALES.PROCESS_PAYMENT),
   [
-    body("items").isArray().withMessage("Items requeridos"),
-    body("items.*.product_id")
-      .notEmpty()
-      .withMessage("ID de producto requerido"),
-    body("items.*.quantity")
-      .isInt({ min: 1 })
-      .withMessage("Cantidad debe ser mayor a 0"),
     body("payment_method")
-      .isIn(["cash", "card", "transfer"])
+      .isIn(["cash", "card", "transfer", "efectivo", "tarjeta", "transferencia"])
       .withMessage("Método de pago inválido"),
-    body("total")
-      .isFloat({ min: 0 })
-      .withMessage("Total debe ser un número válido"),
+    body("discount_amount").optional().isFloat({ min: 0 }).withMessage("Descuento inválido"),
+    body("client_id").optional().isString(),
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -63,7 +55,15 @@ router.post(
     }
 
     try {
-      const sale = await createSale(req.body, req.user);
+      const pmMap = { efectivo: "cash", tarjeta: "card", transferencia: "transfer" };
+      const mappedPM = pmMap[req.body.payment_method] || req.body.payment_method;
+      const payload = {
+        payment_method: mappedPM,
+        discount: Number(req.body.discount_amount || 0),
+        tax: 0,
+        customer_id: req.body.client_id || null,
+      };
+      const sale = await createSale(payload, req.user);
       res.json(sale);
     } catch (error) {
       res.status(400).json({ error: error.message });
@@ -108,6 +108,87 @@ router.get(
   async (req, res) => {
     try {
       const receipt = await generateReceipt(req.params.saleId);
+      if ((req.query.format || "").toString().toLowerCase() === "html") {
+        const itemsRows = receipt.items
+          .map(
+            (it) => `
+            <tr>
+              <td>${it.product_id}</td>
+              <td style="text-align:right">${it.quantity}</td>
+              <td style="text-align:right">$${Number(it.product_price || 0).toFixed(2)}</td>
+              <td style="text-align:right">$${Number(it.subtotal || 0).toFixed(2)}</td>
+            </tr>`,
+          )
+          .join("");
+        const html = `<!doctype html>
+<html><head><meta charset="utf-8"/><title>Ticket ${receipt.sale_id}</title>
+<style>body{font-family:Arial, sans-serif;padding:16px} h1{font-size:16px;margin:0 0 8px} table{width:100%;border-collapse:collapse} td{padding:4px 0;border-bottom:1px solid #eee;font-size:12px}</style>
+</head><body>
+  <h1>Ticket #${receipt.sale_id}</h1>
+  <div>Fecha: ${new Date(receipt.date).toLocaleString()}</div>
+  <hr/>
+  <table>
+    <thead><tr><td>Producto</td><td style="text-align:right">Cant</td><td style="text-align:right">Precio</td><td style="text-align:right">Subtotal</td></tr></thead>
+    <tbody>${itemsRows}</tbody>
+  </table>
+  <hr/>
+  <div><strong>Subtotal:</strong> $${Number(receipt.subtotal || 0).toFixed(2)}</div>
+  <div><strong>Descuento:</strong> $${Number(receipt.discount || 0).toFixed(2)}</div>
+  <div><strong>Impuesto:</strong> $${Number(receipt.tax || 0).toFixed(2)}</div>
+  <div><strong>Total:</strong> $${Number(receipt.total || 0).toFixed(2)}</div>
+  <div><strong>Método:</strong> ${receipt.payment_method || ""}</div>
+</body></html>`;
+        res.setHeader("Content-Type", "text/html; charset=utf-8");
+        return res.send(html);
+      }
+      res.json(receipt);
+    } catch (error) {
+      res.status(404).json({ error: error.message });
+    }
+  },
+);
+
+// Alias for frontend expectation
+router.get(
+  "/receipt/:saleId",
+  authenticateToken,
+  requirePermission(PERMISSIONS.SALES.VIEW_SALES),
+  async (req, res) => {
+    try {
+      const receipt = await generateReceipt(req.params.saleId);
+      if ((req.query.format || "").toString().toLowerCase() === "html") {
+        const itemsRows = receipt.items
+          .map(
+            (it) => `
+            <tr>
+              <td>${it.product_id}</td>
+              <td style="text-align:right">${it.quantity}</td>
+              <td style="text-align:right">$${Number(it.product_price || 0).toFixed(2)}</td>
+              <td style="text-align:right">$${Number(it.subtotal || 0).toFixed(2)}</td>
+            </tr>`,
+          )
+          .join("");
+        const html = `<!doctype html>
+<html><head><meta charset="utf-8"/><title>Ticket ${receipt.sale_id}</title>
+<style>body{font-family:Arial, sans-serif;padding:16px} h1{font-size:16px;margin:0 0 8px} table{width:100%;border-collapse:collapse} td{padding:4px 0;border-bottom:1px solid #eee;font-size:12px}</style>
+</head><body>
+  <h1>Ticket #${receipt.sale_id}</h1>
+  <div>Fecha: ${new Date(receipt.date).toLocaleString()}</div>
+  <hr/>
+  <table>
+    <thead><tr><td>Producto</td><td style="text-align:right">Cant</td><td style="text-align:right">Precio</td><td style="text-align:right">Subtotal</td></tr></thead>
+    <tbody>${itemsRows}</tbody>
+  </table>
+  <hr/>
+  <div><strong>Subtotal:</strong> $${Number(receipt.subtotal || 0).toFixed(2)}</div>
+  <div><strong>Descuento:</strong> $${Number(receipt.discount || 0).toFixed(2)}</div>
+  <div><strong>Impuesto:</strong> $${Number(receipt.tax || 0).toFixed(2)}</div>
+  <div><strong>Total:</strong> $${Number(receipt.total || 0).toFixed(2)}</div>
+  <div><strong>Método:</strong> ${receipt.payment_method || ""}</div>
+</body></html>`;
+        res.setHeader("Content-Type", "text/html; charset=utf-8");
+        return res.send(html);
+      }
       res.json(receipt);
     } catch (error) {
       res.status(404).json({ error: error.message });

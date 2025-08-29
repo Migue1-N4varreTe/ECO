@@ -1,8 +1,22 @@
 import { verifyToken } from "../utils/jwt.js";
-import { supabase } from "../config/supabase.js";
+import { supabase, supabaseAdmin } from "../config/supabase.js";
 import { hasPermission } from "../users/permissions.js";
+import { ROLES } from "../users/roles.js";
 
 const authenticateToken = async (req, res, next) => {
+  // Dev-only internal smoke bypass
+  const smokeSecret = process.env.INTERNAL_SMOKE_SECRET;
+  if (process.env.NODE_ENV !== "production" && smokeSecret && req.headers["x-internal-secret"] === smokeSecret) {
+    req.user = {
+      id: "smoke-user",
+      email: "smoke@example.com",
+      role: ROLES.CASHIER,
+      level: 1,
+      store_id: null,
+    };
+    return next();
+  }
+
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
 
@@ -11,32 +25,79 @@ const authenticateToken = async (req, res, next) => {
   }
 
   try {
-    const decoded = verifyToken(token);
+    // 1) Try app JWT first
+    try {
+      const decoded = verifyToken(token);
 
-    // Verify user still exists in database
-    const { data: user, error } = await supabase
-      .from("users")
-      .select("*")
-      .eq("id", decoded.userId)
-      .single();
+      const { data: user, error } = await supabase
+        .from("users")
+        .select("*")
+        .eq("id", decoded.userId)
+        .single();
 
-    if (error || !user) {
-      return res.status(401).json({ error: "Usuario no válido" });
+      if (error || !user) {
+        return res.status(401).json({ error: "Usuario no válido" });
+      }
+
+      if (user.is_active === false) {
+        return res.status(401).json({ error: "Usuario desactivado" });
+      }
+
+      req.user = {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        level: user.level,
+        store_id: user.store_id,
+      };
+
+      return next();
+    } catch (jwtErr) {
+      // 2) Fallback: accept Supabase access tokens
+      if (!supabaseAdmin) {
+        return res.status(403).json({ error: "Token inválido" });
+      }
+
+      const { data: authData, error: authError } = await supabaseAdmin.auth.getUser(token);
+      if (authError || !authData?.user) {
+        return res.status(403).json({ error: "Token inválido" });
+      }
+
+      const su = authData.user;
+      const meta = (su.user_metadata || {});
+
+      // Prefer local users table if present (for store/ACL linkage)
+      let role = meta.role || ROLES.CASHIER;
+      let level = Number(meta.level ?? 1);
+      let store_id = meta.store_id || null;
+
+      if (supabase) {
+        const { data: dbUser } = await supabase
+          .from("users")
+          .select("id,email,role,level,store_id,is_active")
+          .eq("email", (su.email || "").toLowerCase())
+          .single();
+
+        if (dbUser) {
+          if (dbUser.is_active === false) {
+            return res.status(401).json({ error: "Usuario desactivado" });
+          }
+          role = dbUser.role || role;
+          level = typeof dbUser.level === 'number' ? dbUser.level : level;
+          store_id = dbUser.store_id ?? store_id;
+        }
+      }
+
+      req.user = {
+        id: su.id,
+        email: su.email || "",
+        role,
+        level,
+        store_id,
+      };
+
+      return next();
     }
-
-    if (!user.is_active) {
-      return res.status(401).json({ error: "Usuario desactivado" });
-    }
-
-    req.user = {
-      id: user.id,
-      email: user.email,
-      role: user.role,
-      level: user.level,
-      store_id: user.store_id,
-    };
-
-    next();
   } catch (error) {
     return res.status(403).json({ error: "Token inválido" });
   }

@@ -43,11 +43,25 @@ const createSale = async (saleData, user) => {
       customer_id = null,
     } = saleData;
 
+    // Build items list: from request or from user's cart
+    let sourceItems = Array.isArray(items) && items.length > 0 ? items : null;
+    if (!sourceItems) {
+      const { data: cart } = await supabase
+        .from("carts")
+        .select("items")
+        .eq("user_id", user.id)
+        .single();
+      if (!cart || !Array.isArray(cart.items) || cart.items.length === 0) {
+        throw new Error("Carrito vacío");
+      }
+      sourceItems = cart.items.map((ci) => ({ product_id: ci.product_id, quantity: ci.quantity }));
+    }
+
     // Validate items and check stock
     let calculatedTotal = 0;
     const validatedItems = [];
 
-    for (const item of items) {
+    for (const item of sourceItems) {
       const { data: product, error } = await supabase
         .from("products")
         .select("*")
@@ -66,9 +80,9 @@ const createSale = async (saleData, user) => {
         throw new Error(`Cantidad inválida para ${product.name}`);
       }
 
-      if (product.stock < qty) {
+      if ((product.stock_quantity ?? 0) < qty) {
         throw new Error(
-          `Stock insuficiente para ${product.name}. Disponible: ${product.stock}`,
+          `Stock insuficiente para ${product.name}. Disponible: ${product.stock_quantity ?? 0}`,
         );
       }
 
@@ -89,44 +103,49 @@ const createSale = async (saleData, user) => {
     // Apply discount
     const finalTotal = calculatedTotal - discount + tax;
 
-    // Verify total matches
-    if (Math.abs(finalTotal - total) > 0.01) {
+    // If client sent total, verify within tolerance
+    if (total !== undefined && Math.abs(finalTotal - total) > 0.01) {
       throw new Error("El total calculado no coincide con el total enviado");
     }
 
-    // Create sale record
-    const { data: sale, error: saleError } = await supabase
-      .from("sales")
+    // Create order
+    const orderNumber = `ORD-${Date.now()}`;
+    const { data: order, error: orderError } = await supabase
+      .from("orders")
       .insert([
         {
+          order_number: orderNumber,
           cashier_id: user.id,
           customer_id,
-          store_id: user.store_id,
-          subtotal: calculatedTotal,
-          discount,
-          tax,
-          total: finalTotal,
-          payment_method,
           status: "completed",
+          payment_method,
+          subtotal: calculatedTotal,
+          tax_amount: tax,
+          discount_amount: discount,
+          total_amount: finalTotal,
           created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
         },
       ])
       .select()
       .single();
 
-    if (saleError) {
-      throw new Error("Error al crear venta: " + saleError.message);
+    if (orderError) {
+      throw new Error("Error al crear orden: " + orderError.message);
     }
 
-    // Create sale items
-    const saleItems = validatedItems.map((item) => ({
-      ...item,
-      sale_id: sale.id,
+    // Create order items
+    const orderItems = validatedItems.map((item) => ({
+      order_id: order.id,
+      product_id: item.product_id,
+      quantity: item.quantity,
+      unit_price: item.product_price,
+      total_price: item.subtotal,
     }));
 
     const { error: itemsError } = await supabase
-      .from("sale_items")
-      .insert(saleItems);
+      .from("order_items")
+      .insert(orderItems);
 
     if (itemsError) {
       throw new Error("Error al crear items de venta: " + itemsError.message);
@@ -134,31 +153,33 @@ const createSale = async (saleData, user) => {
 
     // Update product stock
     for (const item of validatedItems) {
-      const { error: stockError } = await supabase
+      const { data: current } = await supabase
         .from("products")
-        .update({
-          stock: supabase.raw(`stock - ${item.quantity}`),
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", item.product_id);
+        .select("stock_quantity")
+        .eq("id", item.product_id)
+        .single();
 
-      if (stockError) {
-        console.error(
-          `Error updating stock for product ${item.product_id}:`,
-          stockError,
-        );
-      }
+      const newQty = Math.max(0, Number(current?.stock_quantity ?? 0) - item.quantity);
+      await supabase
+        .from("products")
+        .update({ stock_quantity: newQty, updated_at: new Date().toISOString() })
+        .eq("id", item.product_id);
     }
+
+    // Clear cart after successful order
+    await supabase.from("carts").update({ items: [], updated_at: new Date().toISOString() }).eq("user_id", user.id);
 
     // Log sale
     await supabase.from("audit_logs").insert([
       {
         user_id: user.id,
-        action: "sale_completed",
+        action: "order_completed",
+        table_name: "orders",
+        record_id: order.id,
         details: {
-          sale_id: sale.id,
+          order_id: order.id,
           total: finalTotal,
-          items_count: items.length,
+          items_count: validatedItems.length,
           payment_method,
         },
         created_at: new Date().toISOString(),
@@ -166,8 +187,18 @@ const createSale = async (saleData, user) => {
     ]);
 
     return {
-      ...sale,
-      items: saleItems,
+      sale: {
+        id: order.id,
+        sale_number: order.order_number,
+        subtotal: order.subtotal,
+        discount: order.discount_amount,
+        tax: order.tax_amount,
+        total: order.total_amount,
+        payment_method: order.payment_method,
+        status: order.status,
+        created_at: order.created_at,
+        items: orderItems,
+      },
     };
   } catch (error) {
     throw error;
@@ -229,61 +260,40 @@ const processPayment = async (paymentData, user) => {
 
 const generateReceipt = async (saleId) => {
   try {
-    const { data: sale, error: saleError } = await supabase
-      .from("sales")
+    const { data: order, error: orderErr } = await supabase
+      .from("orders")
       .select(
         `
         *,
-        sale_items (
+        order_items (
           product_id,
-          product_name,
-          product_price,
           quantity,
-          subtotal
-        ),
-        users!cashier_id (
-          first_name,
-          last_name
-        ),
-        customers (
-          first_name,
-          last_name,
-          email
-        ),
-        stores (
-          name,
-          address,
-          phone,
-          tax_id
+          unit_price,
+          total_price
         )
       `,
       )
       .eq("id", saleId)
       .single();
 
-    if (saleError || !sale) {
-      throw new Error("Venta no encontrada");
+    if (orderErr || !order) {
+      throw new Error("Orden no encontrada");
     }
 
-    // Format receipt data
     const receipt = {
-      sale_id: sale.id,
-      date: sale.created_at,
-      store: sale.stores,
-      cashier: sale.users
-        ? `${sale.users.first_name} ${sale.users.last_name}`
-        : "Sistema",
-      customer: sale.customers
-        ? `${sale.customers.first_name} ${sale.customers.last_name}`
-        : "Cliente General",
-      items: sale.sale_items,
-      subtotal: sale.subtotal,
-      discount: sale.discount,
-      tax: sale.tax,
-      total: sale.total,
-      payment_method: sale.payment_method,
-      amount_received: sale.amount_received,
-      change_given: sale.change_given,
+      sale_id: order.id,
+      date: order.created_at,
+      items: order.order_items?.map((i) => ({
+        product_id: i.product_id,
+        product_price: i.unit_price,
+        quantity: i.quantity,
+        subtotal: i.total_price,
+      })) || [],
+      subtotal: order.subtotal,
+      discount: order.discount_amount,
+      tax: order.tax_amount,
+      total: order.total_amount,
+      payment_method: order.payment_method,
     };
 
     return receipt;
@@ -373,36 +383,27 @@ const processSaleRefund = async (refundData, user) => {
 
 const getSaleById = async (saleId) => {
   try {
-    const { data: sale, error } = await supabase
-      .from("sales")
+    const { data: order, error } = await supabase
+      .from("orders")
       .select(
         `
         *,
-        sale_items (
+        order_items (
           product_id,
-          product_name,
-          product_price,
           quantity,
-          subtotal
-        ),
-        users!cashier_id (
-          first_name,
-          last_name
-        ),
-        customers (
-          first_name,
-          last_name
+          unit_price,
+          total_price
         )
       `,
       )
       .eq("id", saleId)
       .single();
 
-    if (error || !sale) {
-      throw new Error("Venta no encontrada");
+    if (error || !order) {
+      throw new Error("Orden no encontrada");
     }
 
-    return sale;
+    return order;
   } catch (error) {
     throw error;
   }
@@ -411,18 +412,10 @@ const getSaleById = async (saleId) => {
 const getSales = async (filters = {}) => {
   try {
     let query = supabase
-      .from("sales")
+      .from("orders")
       .select(
         `
-        *,
-        users!cashier_id (
-          first_name,
-          last_name
-        ),
-        customers (
-          first_name,
-          last_name
-        )
+        *
       `,
       )
       .order("created_at", { ascending: false });
@@ -448,19 +441,31 @@ const getSales = async (filters = {}) => {
     const offset = (filters.page - 1) * filters.limit;
     query = query.range(offset, offset + filters.limit - 1);
 
-    const { data: sales, error, count } = await query;
+    const { data: orders, error, count } = await query;
 
     if (error) {
       throw new Error("Error al obtener ventas: " + error.message);
     }
 
+    const mapped = (orders || []).map((o) => ({
+      id: o.id,
+      order_number: o.order_number,
+      subtotal: o.subtotal,
+      discount: o.discount_amount,
+      tax: o.tax_amount,
+      total: o.total_amount,
+      payment_method: o.payment_method,
+      status: o.status,
+      created_at: o.created_at,
+    }));
+
     return {
-      sales: sales || [],
+      sales: mapped,
       pagination: {
         page: filters.page,
         limit: filters.limit,
         total: count,
-        pages: Math.ceil(count / filters.limit),
+        pages: Math.ceil((count ?? mapped.length) / filters.limit),
       },
     };
   } catch (error) {
@@ -470,7 +475,7 @@ const getSales = async (filters = {}) => {
 
 const getSalesReport = async (filters = {}) => {
   try {
-    let query = supabase.from("sales").select("*").eq("status", "completed");
+    let query = supabase.from("orders").select("*").eq("status", "completed");
 
     if (filters.store_id) {
       query = query.eq("store_id", filters.store_id);
@@ -496,7 +501,7 @@ const getSalesReport = async (filters = {}) => {
 
     // Calculate metrics
     const totalSales = sales.length;
-    const totalRevenue = sales.reduce((sum, sale) => sum + sale.total, 0);
+    const totalRevenue = sales.reduce((sum, sale) => sum + Number(sale.total_amount || 0), 0);
     const averageTicket = totalSales > 0 ? totalRevenue / totalSales : 0;
 
     // Group by payment method
@@ -508,7 +513,7 @@ const getSalesReport = async (filters = {}) => {
     // Group by hour
     const hourlyBreakdown = sales.reduce((acc, sale) => {
       const hour = new Date(sale.created_at).getHours();
-      acc[hour] = (acc[hour] || 0) + sale.total;
+      acc[hour] = (acc[hour] || 0) + Number(sale.total_amount || 0);
       return acc;
     }, {});
 

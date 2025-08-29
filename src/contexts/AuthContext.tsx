@@ -162,6 +162,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) return { success: false, error: error.message };
     setUser(mapSupabaseUser(data.user));
+    try {
+      const { data: sess } = await supabase.auth.getSession();
+      const access = sess.session?.access_token;
+      if (access) localStorage.setItem("token", access);
+    } catch {}
     return { success: true };
   };
 
@@ -196,6 +201,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = async () => {
     if (!supabase) return;
     await supabase.auth.signOut();
+    localStorage.removeItem("token");
     setUser(null);
   };
 
@@ -203,6 +209,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!supabase) return;
     const { data } = await supabase.auth.getUser();
     setUser(mapSupabaseUser(data.user));
+    try {
+      const { data: sess } = await supabase.auth.getSession();
+      const access = sess.session?.access_token;
+      if (access) localStorage.setItem("token", access);
+    } catch {}
   };
 
   const updateProfile: AuthContextType["updateProfile"] = async (data) => {

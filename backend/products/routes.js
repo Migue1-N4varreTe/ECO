@@ -127,6 +127,26 @@ router.delete(
 
 // Category routes
 router.get(
+  "/categories",
+  authenticateToken,
+  requirePermission(PERMISSIONS.INVENTORY.VIEW),
+  async (req, res) => {
+    try {
+      const include = String(req.query.include_products || "").toLowerCase();
+      if (include === "true" || include === "1" || include === "yes") {
+        const { getCategoriesWithStats } = await import("./productService.js");
+        const categories = await getCategoriesWithStats();
+        return res.json({ categories });
+      }
+      const categories = await getAllCategories();
+      return res.json({ categories });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+);
+
+router.get(
   "/categories/all",
   authenticateToken,
   requirePermission(PERMISSIONS.INVENTORY.VIEW),
@@ -146,7 +166,6 @@ router.post(
   requirePermission(PERMISSIONS.INVENTORY.ADD_ITEM),
   [
     body("name").notEmpty().withMessage("Nombre de categoría requerido"),
-    body("aisle").notEmpty().withMessage("Pasillo requerido"),
   ],
   async (req, res) => {
     const errors = validationResult(req);

@@ -9,10 +9,10 @@ const getAllProducts = async (filters = {}) => {
         *,
         categories (
           id,
-          name,
-          aisle
+          name
         )
       `,
+      { count: 'exact' },
       )
       .eq("is_active", true);
 
@@ -62,8 +62,7 @@ const getProductById = async (productId) => {
         *,
         categories (
           id,
-          name,
-          aisle
+          name
         )
       `,
       )
@@ -108,7 +107,7 @@ const createProduct = async (productData, user) => {
           sku,
           barcode,
           category_id,
-          stock,
+          stock_quantity: stock,
           min_stock,
           brand,
           image_url,
@@ -124,8 +123,7 @@ const createProduct = async (productData, user) => {
         *,
         categories (
           id,
-          name,
-          aisle
+          name
         )
       `,
       )
@@ -140,6 +138,8 @@ const createProduct = async (productData, user) => {
       {
         user_id: user.id,
         action: "product_created",
+        table_name: "products",
+        record_id: product.id,
         details: {
           product_id: product.id,
           product_name: product.name,
@@ -176,7 +176,7 @@ const updateProduct = async (productId, updateData, user) => {
       "sku",
       "barcode",
       "category_id",
-      "stock",
+      "stock_quantity",
       "min_stock",
       "brand",
       "image_url",
@@ -201,8 +201,7 @@ const updateProduct = async (productId, updateData, user) => {
         *,
         categories (
           id,
-          name,
-          aisle
+          name
         )
       `,
       )
@@ -214,19 +213,21 @@ const updateProduct = async (productId, updateData, user) => {
 
     // Log update if stock changed
     if (
-      filteredData.stock !== undefined &&
-      filteredData.stock !== currentProduct.stock
+      filteredData.stock_quantity !== undefined &&
+      filteredData.stock_quantity !== currentProduct.stock_quantity
     ) {
       await supabase.from("audit_logs").insert([
         {
           user_id: user.id,
           action: "product_stock_updated",
+          table_name: "products",
+          record_id: productId,
           details: {
             product_id: productId,
             product_name: product.name,
-            old_stock: currentProduct.stock,
-            new_stock: filteredData.stock,
-            change: filteredData.stock - currentProduct.stock,
+            old_stock: currentProduct.stock_quantity,
+            new_stock: filteredData.stock_quantity,
+            change: filteredData.stock_quantity - currentProduct.stock_quantity,
           },
           created_at: new Date().toISOString(),
         },
@@ -269,6 +270,8 @@ const deleteProduct = async (productId, user) => {
       {
         user_id: user.id,
         action: "product_deleted",
+        table_name: "products",
+        record_id: productId,
         details: {
           product_id: productId,
           product_name: product.name,
@@ -292,19 +295,17 @@ const getLowStockProducts = async (storeId) => {
         *,
         categories (
           id,
-          name,
-          aisle
+          name
         )
       `,
       )
-      .eq("is_active", true)
-      .filter("stock", "lte", "min_stock");
+      .eq("is_active", true);
 
     if (storeId) {
       query = query.eq("store_id", storeId);
     }
 
-    const { data: products, error } = await query.order("stock", {
+    const { data: products, error } = await query.order("stock_quantity", {
       ascending: true,
     });
 
@@ -314,7 +315,8 @@ const getLowStockProducts = async (storeId) => {
       );
     }
 
-    return products || [];
+    const filtered = (products || []).filter((p) => (p.stock_quantity ?? 0) <= (p.min_stock ?? 0));
+    return filtered;
   } catch (error) {
     throw error;
   }
@@ -327,7 +329,6 @@ const getAllCategories = async () => {
       .from("categories")
       .select("*")
       .eq("is_active", true)
-      .order("aisle")
       .order("name");
 
     if (error) {
@@ -340,9 +341,50 @@ const getAllCategories = async () => {
   }
 };
 
+const getCategoriesWithStats = async () => {
+  try {
+    const { data: categories, error: catErr } = await supabase
+      .from("categories")
+      .select("*")
+      .eq("is_active", true)
+      .order("name");
+
+    if (catErr) throw new Error("Error al obtener categorías: " + catErr.message);
+
+    const { data: products, error: prodErr } = await supabase
+      .from("products")
+      .select("id, category_id, stock_quantity, price")
+      .eq("is_active", true);
+
+    if (prodErr) throw new Error("Error al obtener productos: " + prodErr.message);
+
+    const stats = new Map();
+    for (const p of products || []) {
+      const cid = p.category_id;
+      if (!cid) continue;
+      const entry = stats.get(cid) || { product_count: 0, total_stock: 0, total_value: 0 };
+      const qty = Number(p.stock_quantity ?? 0);
+      const price = Number(p.price ?? 0);
+      entry.product_count += 1;
+      entry.total_stock += qty;
+      entry.total_value += qty * price;
+      stats.set(cid, entry);
+    }
+
+    const enriched = (categories || []).map((c) => ({
+      ...c,
+      ...(stats.get(c.id) || { product_count: 0, total_stock: 0, total_value: 0 }),
+    }));
+
+    return enriched;
+  } catch (error) {
+    throw error;
+  }
+};
+
 const createCategory = async (categoryData, user) => {
   try {
-    const { name, description, aisle, icon } = categoryData;
+    const { name, description, icon, color } = categoryData;
 
     const { data: category, error } = await supabase
       .from("categories")
@@ -350,8 +392,8 @@ const createCategory = async (categoryData, user) => {
         {
           name,
           description,
-          aisle,
           icon,
+          color,
           is_active: true,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
@@ -372,7 +414,7 @@ const createCategory = async (categoryData, user) => {
 
 const updateCategory = async (categoryId, updateData, user) => {
   try {
-    const allowedFields = ["name", "description", "aisle", "icon", "is_active"];
+    const allowedFields = ["name", "description", "icon", "color", "is_active"];
     const filteredData = {};
 
     for (const field of allowedFields) {
@@ -462,6 +504,7 @@ export {
   deleteProduct,
   getLowStockProducts,
   getAllCategories,
+  getCategoriesWithStats,
   createCategory,
   updateCategory,
   deleteCategory,

@@ -16,7 +16,7 @@ const login = async ({ email, password }) => {
       throw new Error("Credenciales inválidas");
     }
 
-    if (!user.is_active) {
+    if (user.is_active === false) {
       throw new Error("Usuario desactivado");
     }
 

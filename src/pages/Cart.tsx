@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { prettifyProductName } from "@/lib/utils";
 import Navbar from "@/components/Navbar";
 import GuestShoppingBanner from "@/components/GuestShoppingBanner";
 import { Button } from "@/components/ui/button";
@@ -143,11 +144,15 @@ const Cart = () => {
                     <div className="flex gap-4">
                       {/* Product Image */}
                       <div className="w-20 h-20 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
-                        <img
-                          src={item.image}
-                          alt={item.name}
-                          className="w-full h-full object-cover"
-                        />
+                        {(() => {
+                          const displayName = prettifyProductName(item.name, item.id, item.category);
+                          const src = item.image && item.image.includes("placeholder")
+                            ? `https://via.placeholder.com/200x200/f3f4f6/9ca3af?text=${encodeURIComponent(displayName)}`
+                            : item.image;
+                          return (
+                            <img src={src} alt={displayName} className="w-full h-full object-cover" />
+                          );
+                        })()}
                       </div>
 
                       {/* Product Info */}
@@ -155,7 +160,7 @@ const Cart = () => {
                         <div className="flex justify-between items-start mb-2">
                           <div>
                             <h3 className="font-semibold text-gray-900 line-clamp-1">
-                              {item.name}
+                              {prettifyProductName(item.name, item.id, item.category)}
                             </h3>
                             {item.brand && (
                               <p className="text-sm text-gray-500">

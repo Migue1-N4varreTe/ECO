@@ -242,18 +242,12 @@ const Categories = () => {
           </div>
         ) : (
           /* Empty State */
-          <div className="text-center py-16">
-            <div className="text-6xl mb-4">🔍</div>
-            <h3 className="font-semibold text-lg text-gray-900 mb-2">
-              No encontramos categorías
-            </h3>
-            <p className="text-gray-600 mb-6 max-w-md mx-auto">
-              No hay categorías que coincidan con tu búsqueda "{searchQuery}"
-            </p>
-            <Button onClick={() => setSearchQuery("")} variant="outline">
-              Mostrar todas las categorías
-            </Button>
-          </div>
+          <EmptyState
+            icon={<span>🔍</span>}
+            title="No encontramos categorías"
+            description={`No hay categorías que coincidan con tu búsqueda "${searchQuery}"`}
+            action={<Button onClick={() => setSearchQuery("")} variant="outline">Mostrar todas las categorías</Button>}
+          />
         )}
 
         {/* Quick Stats */}

@@ -79,9 +79,10 @@ const Wallet = lazy(() => import("./pages/Wallet"));
 const DynamicPricing = lazy(() => import("./pages/DynamicPricing"));
 const EmailCampaigns = lazy(() => import("./pages/EmailCampaigns"));
 const DroneDelivery = lazy(() => import("./pages/DroneDelivery"));
+
 const Gramaje = lazy(() => import("./pages/Gramaje"));
 const Tickets = lazy(() => import("./pages/Tickets"));
-const Celebration = lazy(() => import("./pages/Celebration"));
+
 
 const queryClient = new QueryClient();
 
@@ -168,9 +169,11 @@ const App = () => (
                       <Route path="/dynamic-pricing" element={<DynamicPricing />} />
                       <Route path="/email-campaigns" element={<EmailCampaigns />} />
                       <Route path="/drone-delivery" element={<DroneDelivery />} />
+
                       <Route path="/gramaje" element={<Gramaje />} />
                       <Route path="/tickets" element={<Tickets />} />
                       <Route path="/celebracion" element={<Celebration />} />
+
 
                       {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                       <Route path="*" element={<NotFound />} />

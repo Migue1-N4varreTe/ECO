@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { CheckCircle, Receipt, ArrowRight } from "lucide-react";
+
 import { prettifyProductName } from "@/lib/utils";
 import { Link } from "react-router-dom";
 
@@ -80,6 +81,7 @@ const CheckoutSuccess = () => {
               <Separator />
 
               <div className="space-y-3">
+
                 {receipt.items.map((item) => {
                   const displayName = prettifyProductName(item.name, item.id, item.category);
                   const src = (item.image && item.image.includes("placeholder"))
@@ -98,6 +100,20 @@ const CheckoutSuccess = () => {
                     </div>
                   );
                 })}
+
+                {receipt.items.map((item) => (
+                  <div key={item.id} className="flex items-center gap-3">
+                    <img src={item.image} alt={item.name} className="w-12 h-12 rounded-lg object-cover bg-gray-100" />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium line-clamp-1">{item.name}</p>
+                      <p className="text-xs text-gray-600">{item.quantity} x ${item.price.toFixed(2)}</p>
+                    </div>
+                    <div className="text-sm font-semibold">
+                      ${(item.price * item.quantity).toFixed(2)}
+                    </div>
+                  </div>
+                ))}
+
               </div>
 
               <Separator />

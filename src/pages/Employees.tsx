@@ -391,14 +391,12 @@ const Employees = () => {
                   </Card>
                 ))
               ) : filteredEmployees.length === 0 ? (
-                <div className="col-span-full text-center py-12">
-                  <Users className="mx-auto h-12 w-12 text-gray-400" />
-                  <h3 className="mt-2 text-sm font-semibold text-gray-900">
-                    No hay empleados
-                  </h3>
-                  <p className="mt-1 text-sm text-gray-500">
-                    Comienza agregando un nuevo empleado.
-                  </p>
+                <div className="col-span-full">
+                  <EmptyState
+                    icon={<Users className="mx-auto h-12 w-12 text-gray-400" />}
+                    title="No hay empleados"
+                    description="Comienza agregando un nuevo empleado."
+                  />
                 </div>
               ) : (
                 filteredEmployees.map((employee) => (

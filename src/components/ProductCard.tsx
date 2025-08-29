@@ -101,7 +101,9 @@ const ProductCard = ({ product, className }: ProductCardProps) => {
         {/* Image Container */}
         <div className="relative aspect-square overflow-hidden bg-gray-50">
           <img
-            src={product.image}
+            src={product.image && product.image.includes("placeholder")
+              ? `https://via.placeholder.com/400x300/f3f4f6/9ca3af?text=${encodeURIComponent(product.name)}`
+              : product.image}
             alt={product.name}
             className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
           />

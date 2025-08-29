@@ -68,26 +68,21 @@ const Cart = () => {
 
         {/* Empty Cart State */}
         <div className="container px-4 py-16">
-          <div className="max-w-md mx-auto text-center">
-            <div className="w-24 h-24 mx-auto mb-6 bg-gray-100 rounded-full flex items-center justify-center">
-              <ShoppingCart className="w-12 h-12 text-gray-400" />
-            </div>
-            <h1 className="font-display font-bold text-2xl text-gray-900 mb-4">
-              Tu carrito está vacío
-            </h1>
-            <p className="text-gray-600 mb-8">
-              Parece que aún no has agregado productos a tu carrito. ¡Explora
-              nuestra tienda y encuentra lo que necesitas!
-            </p>
-            <div className="space-y-4">
-              <Button size="lg" className="w-full btn-gradient" asChild>
-                <Link to="/shop">Explorar productos</Link>
-              </Button>
-              <Button variant="outline" size="lg" className="w-full" asChild>
-                <Link to="/offers">Ver ofertas especiales</Link>
-              </Button>
-            </div>
-          </div>
+          <EmptyState
+            icon={<ShoppingCart className="w-12 h-12 text-gray-400" />}
+            title="Tu carrito está vacío"
+            description="Parece que aún no has agregado productos a tu carrito. ¡Explora nuestra tienda y encuentra lo que necesitas!"
+            action={(
+              <div className="space-y-4 max-w-md mx-auto">
+                <Button size="lg" className="w-full btn-gradient" asChild>
+                  <Link to="/shop">Explorar productos</Link>
+                </Button>
+                <Button variant="outline" size="lg" className="w-full" asChild>
+                  <Link to="/offers">Ver ofertas especiales</Link>
+                </Button>
+              </div>
+            )}
+          />
         </div>
       </div>
     );

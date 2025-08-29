@@ -1,34 +1,3 @@
-
-{
-  "$schema": "https://railway.com/railway.schema.json",
-  "build": {
-    "builder": "NIXPACKS",
-    "nixpacksPlan": {
-      "providers": [
-        "..."
-      ]
-    }
-  },
-  "deploy": {
-    "runtime": "V2",
-    "numReplicas": 1,
-    "startCommand": "npm run start:backend",
-    "overlapSeconds": 0,
-    "drainingSeconds": 0,
-    "healthcheckPath": "/api/health",
-    "sleepApplication": true,
-    "useLegacyStacker": false,
-    "multiRegionConfig": {
-      "us-east4-eqdc4a": {
-        "numReplicas": 1,
-        "stackerAssignment": null
-      }
-    },
-    "restartPolicyType": "ON_FAILURE",
-    "healthcheckTimeout": 300,
-    "restartPolicyMaxRetries": 10
-  }
-}
 [build]
 builder = "NIXPACKS"
 
@@ -46,4 +15,3 @@ source = "backend"
 [services.variables]
 NODE_ENV = "production"
 PORT = "5000"
-

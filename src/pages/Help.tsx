@@ -380,19 +380,12 @@ const Help = () => {
               </div>
             ) : (
               /* No Results */
-              <div className="text-center py-16">
-                <div className="text-6xl mb-4">🤔</div>
-                <h3 className="font-semibold text-lg text-gray-900 mb-2">
-                  No encontramos resultados
-                </h3>
-                <p className="text-gray-600 mb-6 max-w-md mx-auto">
-                  No hay preguntas que coincidan con tu búsqueda. Intenta con
-                  otros términos o contáctanos directamente.
-                </p>
-                <Button onClick={() => setSearchQuery("")} variant="outline">
-                  Limpiar búsqueda
-                </Button>
-              </div>
+              <EmptyState
+                icon={<span>🤔</span>}
+                title="No encontramos resultados"
+                description="No hay preguntas que coincidan con tu búsqueda. Intenta con otros términos o contáctanos directamente."
+                action={<Button onClick={() => setSearchQuery("")} variant="outline">Limpiar búsqueda</Button>}
+              />
             )}
           </TabsContent>
 

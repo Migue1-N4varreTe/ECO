@@ -59,11 +59,11 @@ const Navbar: React.FC = () => {
     const token = localStorage.getItem('auth_token');
     if (!token) return; // skip when not authenticated
     (window as any).__prefetchedData = true;
-    import("@/services/api").then(({ default: _unused, ...rest }: any) => {
-      const Api = (rest.ApiService || (rest as any).default || (rest as any)).ApiService || (rest as any).default;
-      const api = new (Api || (rest as any).ApiService)();
-      api.getCategories().catch(() => {});
-      api.getProducts({ limit: 50 }).catch(() => {});
+    import("@/services/api").then((m: any) => {
+      const api = m.default || new m.ApiService();
+      if (!api) return;
+      api.getCategories?.().catch(() => {});
+      api.getProducts?.({ limit: 50 }).catch(() => {});
     }).catch(() => {});
   }, []);
 

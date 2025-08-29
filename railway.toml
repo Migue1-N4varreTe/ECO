@@ -1,27 +1,30 @@
-[build]
-builder = "NIXPACKS"
-
-[deploy]
-startCommand = "npm run start:backend"
-healthcheckPath = "/api/health"
-healthcheckTimeout = 300
-restartPolicyType = "ON_FAILURE"
-restartPolicyMaxRetries = 10
-
-[[services]]
-name = "backend"
-source = "backend"
-
-[services.variables]
-NODE_ENV = "production"
-PORT = "5000"
-
-[[services]]
-name = "frontend"
-source = "."
-buildCommand = "npm run build"
-startCommand = "npm run preview"
-
-[services.variables]
-NODE_ENV = "production"
-VITE_API_URL = "${{backend.RAILWAY_PUBLIC_DOMAIN}}"
+{
+  "$schema": "https://railway.com/railway.schema.json",
+  "build": {
+    "builder": "NIXPACKS",
+    "nixpacksPlan": {
+      "providers": [
+        "..."
+      ]
+    }
+  },
+  "deploy": {
+    "runtime": "V2",
+    "numReplicas": 1,
+    "startCommand": "npm run start:backend",
+    "overlapSeconds": 0,
+    "drainingSeconds": 0,
+    "healthcheckPath": "/api/health",
+    "sleepApplication": true,
+    "useLegacyStacker": false,
+    "multiRegionConfig": {
+      "us-east4-eqdc4a": {
+        "numReplicas": 1,
+        "stackerAssignment": null
+      }
+    },
+    "restartPolicyType": "ON_FAILURE",
+    "healthcheckTimeout": 300,
+    "restartPolicyMaxRetries": 10
+  }
+}

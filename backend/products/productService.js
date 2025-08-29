@@ -348,7 +348,6 @@ const createCategory = async (categoryData, user) => {
         {
           name,
           description,
-          aisle,
           icon,
           is_active: true,
           created_at: new Date().toISOString(),

@@ -29,18 +29,6 @@ async function ensureLocalUser() {
   if (error) throw new Error('No se pudo crear usuario local: ' + error.message);
 }
 
-async function ensureBackendJwt() {
-  // Ensure local table user exists (bypass captcha)
-  await ensureLocalUser();
-  // Then login via backend
-  const login = await api('/api/auth/login', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: TEST_EMAIL, password: TEST_PASSWORD })
-  });
-  if (!login?.token) throw new Error('No JWT from backend login');
-  return login.token;
-}
 
 async function ensureCategory(name = 'Pruebas') {
   const admin = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY || SUPABASE_ANON_KEY, { auth: { autoRefreshToken: false, persistSession: false } });

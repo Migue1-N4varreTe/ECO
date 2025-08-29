@@ -25,6 +25,7 @@ import {
 import { allProducts as products, categories } from "@/lib/data";
 import { useFavorites } from "@/contexts/FavoritesContext";
 import { cn } from "@/lib/utils";
+import EmptyState from "@/components/ui/empty-state";
 
 const Favorites = () => {
   const { favorites, favoriteCount } = useFavorites();

@@ -42,10 +42,8 @@ const registerClient = async (clientData, user) => {
           address,
           loyalty_points: 0,
           total_spent: 0,
-          visit_count: 0,
-          registered_by: user.id,
-          store_id: user.store_id,
           is_active: true,
+          created_by: user.id,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         },
@@ -62,6 +60,8 @@ const registerClient = async (clientData, user) => {
       {
         user_id: user.id,
         action: "client_registered",
+        table_name: "customers",
+        record_id: client.id,
         details: {
           client_id: client.id,
           client_name: `${first_name} ${last_name}`,
@@ -179,19 +179,15 @@ const updateClient = async (clientId, updateData, user) => {
 const getClientHistory = async (clientId, filters = {}) => {
   try {
     let query = supabase
-      .from("sales")
+      .from("orders")
       .select(
         `
         *,
-        sale_items (
-          product_name,
+        order_items (
+          product_id,
           quantity,
-          product_price,
-          subtotal
-        ),
-        users!cashier_id (
-          first_name,
-          last_name
+          unit_price,
+          total_price
         )
       `,
       )
@@ -210,7 +206,7 @@ const getClientHistory = async (clientId, filters = {}) => {
     }
 
     // Calculate summary statistics
-    const totalSpent = purchases.reduce((sum, sale) => sum + sale.total, 0);
+    const totalSpent = purchases.reduce((sum, o) => sum + Number(o.total_amount || 0), 0);
     const averageTicket =
       purchases.length > 0 ? totalSpent / purchases.length : 0;
 

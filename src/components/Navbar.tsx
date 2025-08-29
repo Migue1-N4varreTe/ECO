@@ -82,6 +82,11 @@ const Navbar: React.FC = () => {
                 <Link
                   key={item.name}
                   to={item.href}
+                  onMouseEnter={() => {
+                    if (item.href === "/shop") prefetchShop();
+                    if (item.href === "/categories") prefetchCategories();
+                    if (item.href === "/offers") prefetchOffers();
+                  }}
                   className={`inline-flex items-center px-1 pt-1 text-sm font-medium border-b-2 transition-colors ${
                     location.pathname === item.href
                       ? "border-green-500 text-gray-900"

@@ -18,17 +18,23 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: { autoRefreshToken: false, persistSession: false },
 });
 
+async function ensureLocalUser() {
+  if (!SUPABASE_SERVICE_KEY) return; // skip if no admin key
+  const admin = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY, { auth: { autoRefreshToken: false, persistSession: false } });
+  const { data: existing } = await admin.from('users').select('id,email').eq('email', TEST_EMAIL.toLowerCase()).limit(1);
+  if (existing && existing[0]) return;
+  const password_hash = await bcrypt.hash(TEST_PASSWORD, 10);
+  const level = 1;
+  const now = new Date().toISOString();
+  const payload = { email: TEST_EMAIL.toLowerCase(), password_hash, first_name: 'LE', last_name: 'Tester', role: 'LEVEL_1_CASHIER', level, is_active: true, created_at: now, updated_at: now };
+  const { error } = await admin.from('users').insert([payload]);
+  if (error) throw new Error('No se pudo crear usuario local: ' + error.message);
+}
+
 async function ensureBackendJwt() {
-  // Try register (idempotent)
-  try {
-    await api('/api/auth/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: TEST_EMAIL, password: TEST_PASSWORD, first_name: 'LE', last_name: 'Tester', role: 'LEVEL_1_CASHIER' })
-    });
-  } catch (e) {
-    // ignore if already exists
-  }
+  // Ensure local table user exists (bypass captcha)
+  await ensureLocalUser();
+  // Then login via backend
   const login = await api('/api/auth/login', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

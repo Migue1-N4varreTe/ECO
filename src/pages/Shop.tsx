@@ -65,6 +65,25 @@ const Shop = () => {
     }
   }, [debouncedQuery]);
 
+  const [visibleCount, setVisibleCount] = useState(40);
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver((entries) => {
+      if (entries.some(e => e.isIntersecting)) {
+        setVisibleCount((c) => Math.min(c + 40, filteredProducts.length));
+      }
+    }, { rootMargin: '200px' });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [filteredProducts.length]);
+
+  useEffect(() => {
+    setVisibleCount(40);
+  }, [debouncedQuery, selectedCategory, priceFilter, sortBy]);
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />

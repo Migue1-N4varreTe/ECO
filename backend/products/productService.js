@@ -269,6 +269,8 @@ const deleteProduct = async (productId, user) => {
       {
         user_id: user.id,
         action: "product_deleted",
+        table_name: "products",
+        record_id: productId,
         details: {
           product_id: productId,
           product_name: product.name,

@@ -294,19 +294,12 @@ const Favorites = () => {
           </div>
         ) : (
           /* No Results State */
-          <div className="text-center py-16">
-            <div className="text-6xl mb-4">💔</div>
-            <h3 className="font-semibold text-lg text-gray-900 mb-2">
-              No encontramos productos
-            </h3>
-            <p className="text-gray-600 mb-6 max-w-md mx-auto">
-              No hay productos favoritos que coincidan con tus filtros de
-              búsqueda
-            </p>
-            <Button onClick={clearFilters} variant="outline">
-              Mostrar todos los favoritos
-            </Button>
-          </div>
+          <EmptyState
+            icon={<span>💔</span>}
+            title="No encontramos productos"
+            description="No hay productos favoritos que coincidan con tus filtros de búsqueda"
+            action={<Button onClick={clearFilters} variant="outline">Mostrar todos los favoritos</Button>}
+          />
         )}
 
         {/* Quick Actions */}

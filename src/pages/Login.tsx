@@ -240,6 +240,14 @@ const Login = () => {
                   <Button
                     variant="outline"
                     className="w-full h-10 text-xs"
+                    onClick={() => quickLogin("le.tester+123@example.com", "LaEco123!")}
+                    disabled={isSubmitting}
+                  >
+                    ✅ Probar usuario (recomendado)
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="w-full h-10 text-xs"
                     onClick={() =>
                       quickLogin("admin@laeconomica.com", "password123")
                     }

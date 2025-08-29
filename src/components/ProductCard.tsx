@@ -15,7 +15,7 @@ import { Product } from "@/lib/data";
 import { useFavorites } from "@/contexts/FavoritesContext";
 import { useCart } from "@/contexts/CartContext";
 import { useCartActions } from "@/hooks/use-cart-actions";
-import { cn } from "@/lib/utils";
+import { cn, prettifyProductName } from "@/lib/utils";
 
 interface ProductCardProps {
   product: Product;

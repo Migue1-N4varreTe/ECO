@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Navbar from "@/components/Navbar";
 import GuestShoppingBanner from "@/components/GuestShoppingBanner";
 import ProductCard from "@/components/ProductCard";

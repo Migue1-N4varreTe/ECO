@@ -397,20 +397,20 @@ const InventoryPage = () => {
             </Card>
           ))
         ) : products.length === 0 ? (
-          <div className="col-span-full text-center py-12">
-            <Package className="mx-auto h-12 w-12 text-gray-400" />
-            <h3 className="mt-2 text-sm font-semibold text-gray-900">
-              No hay productos
-            </h3>
-            <p className="mt-1 text-sm text-gray-500">
-              Comienza agregando un nuevo producto.
-            </p>
-            <div className="mt-6">
-              <Button onClick={() => setShowProductForm(true)}>
-                <Plus className="w-4 h-4 mr-2" />
-                Nuevo Producto
-              </Button>
-            </div>
+          <div className="col-span-full">
+            <EmptyState
+              icon={<Package className="mx-auto h-12 w-12 text-gray-400" />}
+              title="No hay productos"
+              description="Comienza agregando un nuevo producto."
+              action={(
+                <div className="mt-6">
+                  <Button onClick={() => setShowProductForm(true)}>
+                    <Plus className="w-4 h-4 mr-2" />
+                    Nuevo Producto
+                  </Button>
+                </div>
+              )}
+            />
           </div>
         ) : (
           products.map((product) => {

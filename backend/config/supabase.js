@@ -39,4 +39,10 @@ try {
   console.error("❌ Supabase initialization failed:", error.message);
 }
 
+// Prefer service role for backend operations
+if (supabaseAdmin) {
+  supabase = supabaseAdmin;
+  console.log("✅ Using service role client for backend operations");
+}
+
 export { supabase, supabaseAdmin };

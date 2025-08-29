@@ -340,7 +340,7 @@ const getAllCategories = async () => {
 
 const createCategory = async (categoryData, user) => {
   try {
-    const { name, description, aisle, icon } = categoryData;
+    const { name, description, icon } = categoryData;
 
     const { data: category, error } = await supabase
       .from("categories")

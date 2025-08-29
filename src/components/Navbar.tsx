@@ -53,6 +53,20 @@ const Navbar: React.FC = () => {
     return () => window.removeEventListener('keydown', onKey);
   }, []);
 
+  // Best-effort data prefetch (only once per session, requires auth token)
+  useEffect(() => {
+    if ((window as any).__prefetchedData) return;
+    const token = localStorage.getItem('auth_token');
+    if (!token) return; // skip when not authenticated
+    (window as any).__prefetchedData = true;
+    import("@/services/api").then(({ default: _unused, ...rest }: any) => {
+      const Api = (rest.ApiService || (rest as any).default || (rest as any)).ApiService || (rest as any).default;
+      const api = new (Api || (rest as any).ApiService)();
+      api.getCategories().catch(() => {});
+      api.getProducts({ limit: 50 }).catch(() => {});
+    }).catch(() => {});
+  }, []);
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {

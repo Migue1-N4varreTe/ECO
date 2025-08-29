@@ -12,6 +12,7 @@ const getAllProducts = async (filters = {}) => {
           name
         )
       `,
+      { count: 'exact' },
       )
       .eq("is_active", true);
 

@@ -26,7 +26,8 @@
     "logs:backend": "cd backend && railway logs",
     "health:check": "curl -f $VITE_API_URL/api/health || curl -f http://localhost:5000/api/health",
     "verify:secrets": "node scripts/verify-secrets.js",
-    "setup:secrets": "echo 'Abre: https://github.com/Migue1-N4varreTe/ECO/settings/secrets/actions'"
+    "setup:secrets": "echo 'Abre: https://github.com/Migue1-N4varreTe/ECO/settings/secrets/actions'",
+    "create:test-user": "node scripts/create-test-user.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",

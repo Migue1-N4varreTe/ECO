@@ -282,7 +282,40 @@ const InventoryPage = () => {
 
       {/* Filtros */}
       <Card>
-        <CardContent className="pt-6">
+        <CardContent className="pt-6 space-y-4">
+          {selected.length > 0 && (
+            <div className="flex flex-wrap items-center gap-2 p-3 rounded-md bg-green-50 border border-green-200">
+              <span className="text-sm text-green-800 font-medium">{selected.length} seleccionados</span>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={async () => {
+                  const token = localStorage.getItem("token");
+                  try {
+                    await Promise.allSettled(
+                      selected.map((id) =>
+                        fetch(`/api/products/${id}`, {
+                          method: "PUT",
+                          headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+                          body: JSON.stringify({ unit: "kg" }),
+                        }),
+                      ),
+                    );
+                    toast({ title: "Actualizado", description: "Productos marcados para vender por kilo" });
+                    setSelected([]);
+                    loadProducts();
+                  } catch (e) {
+                    toast({ title: "Error", description: "No se pudo actualizar la selección", variant: "destructive" });
+                  }
+                }}
+              >
+                Marcar vender por kilo (kg)
+              </Button>
+              <Button variant="ghost" size="sm" onClick={() => setSelected([])}>
+                Limpiar selección
+              </Button>
+            </div>
+          )}
           <div className="grid gap-4 md:grid-cols-4">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -390,15 +423,29 @@ const InventoryPage = () => {
               >
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between">
-                    <div className="space-y-1 min-w-0 flex-1">
-                      <CardTitle className="text-lg truncate">
-                        {product.name}
-                      </CardTitle>
-                      {product.description && (
-                        <p className="text-sm text-muted-foreground line-clamp-2">
-                          {product.description}
-                        </p>
-                      )}
+                    <div className="flex items-start gap-2 min-w-0 flex-1">
+                      <input
+                        type="checkbox"
+                        className="mt-1 h-4 w-4"
+                        checked={selected.includes(product.id)}
+                        onChange={(e) => {
+                          setSelected((prev) =>
+                            e.target.checked
+                              ? [...prev, product.id]
+                              : prev.filter((id) => id !== product.id),
+                          );
+                        }}
+                      />
+                      <div className="space-y-1 min-w-0 flex-1">
+                        <CardTitle className="text-lg truncate">
+                          {product.name}
+                        </CardTitle>
+                        {product.description && (
+                          <p className="text-sm text-muted-foreground line-clamp-2">
+                            {product.description}
+                          </p>
+                        )}
+                      </div>
                     </div>
 
                     <div

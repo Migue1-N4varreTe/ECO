@@ -84,9 +84,11 @@ class ApiService {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(
-          errorData.error || `HTTP error! status: ${response.status}`,
-        );
+        const message = errorData.error || `HTTP error! status: ${response.status}`;
+        if (typeof window !== 'undefined' && (window as any).dispatchEvent) {
+          (window as any).dispatchEvent(new CustomEvent('api:error', { detail: { message, status: response.status, endpoint: url } }));
+        }
+        throw new Error(message);
       }
 
       return await response.json();
@@ -94,13 +96,14 @@ class ApiService {
       console.error("API request failed:", error);
 
       // Provide user-friendly error messages
-      if (error.name === "TypeError" && error.message.includes("fetch")) {
-        throw new Error(
-          "No se puede conectar al servidor. Verifique que el backend esté ejecutándose.",
-        );
+      let friendly = error?.message || 'Error de red';
+      if (error.name === "TypeError" && (error.message || '').includes("fetch")) {
+        friendly = "No se puede conectar al servidor. Verifique que el backend esté ejecutándose.";
       }
-
-      throw error;
+      if (typeof window !== 'undefined' && (window as any).dispatchEvent) {
+        (window as any).dispatchEvent(new CustomEvent('api:error', { detail: { message: friendly, endpoint: url } }));
+      }
+      throw new Error(friendly);
     }
   }
 

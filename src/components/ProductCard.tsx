@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/select";
 import { Heart, ShoppingCart, Star, Clock, MapPin } from "lucide-react";
 import { Product } from "@/lib/data";
+import SmartImage from "@/components/ui/smart-image";
 import { useFavorites } from "@/contexts/FavoritesContext";
 import { useCart } from "@/contexts/CartContext";
 import { useCartActions } from "@/hooks/use-cart-actions";

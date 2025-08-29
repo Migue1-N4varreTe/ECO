@@ -146,7 +146,6 @@ router.post(
   requirePermission(PERMISSIONS.INVENTORY.ADD_ITEM),
   [
     body("name").notEmpty().withMessage("Nombre de categoría requerido"),
-    body("aisle").notEmpty().withMessage("Pasillo requerido"),
   ],
   async (req, res) => {
     const errors = validationResult(req);

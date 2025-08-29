@@ -212,19 +212,21 @@ const updateProduct = async (productId, updateData, user) => {
 
     // Log update if stock changed
     if (
-      filteredData.stock !== undefined &&
-      filteredData.stock !== currentProduct.stock
+      filteredData.stock_quantity !== undefined &&
+      filteredData.stock_quantity !== currentProduct.stock_quantity
     ) {
       await supabase.from("audit_logs").insert([
         {
           user_id: user.id,
           action: "product_stock_updated",
+          table_name: "products",
+          record_id: productId,
           details: {
             product_id: productId,
             product_name: product.name,
-            old_stock: currentProduct.stock,
-            new_stock: filteredData.stock,
-            change: filteredData.stock - currentProduct.stock,
+            old_stock: currentProduct.stock_quantity,
+            new_stock: filteredData.stock_quantity,
+            change: filteredData.stock_quantity - currentProduct.stock_quantity,
           },
           created_at: new Date().toISOString(),
         },

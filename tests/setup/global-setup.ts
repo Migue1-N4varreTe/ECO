@@ -1,4 +1,4 @@
-import { chromium, FullConfig } from "@playwright/test";
+import { chromium, FullConfig, expect } from "@playwright/test";
 
 async function globalSetup(config: FullConfig) {
   console.log("🚀 Starting global test setup...");
@@ -10,8 +10,10 @@ async function globalSetup(config: FullConfig) {
   try {
     // Wait for the application to be ready
     console.log("⏳ Waiting for application to be ready...");
-    await page.goto("http://localhost:8080");
-    await page.waitForSelector('[data-testid="app-ready"]', { timeout: 30000 });
+    const baseURL = (config.projects?.[0]?.use as any)?.baseURL || "http://localhost:8080";
+    await page.goto(baseURL);
+    await page.waitForLoadState("networkidle");
+    await page.waitForSelector("nav", { timeout: 30000 });
 
     // Check if backend is responding
     console.log("⏳ Checking backend health...");

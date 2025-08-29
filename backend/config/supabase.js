@@ -4,12 +4,12 @@ const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_ANON_KEY;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY;
 
-// Optional: initialize Supabase only if all required envs exist
+// Initialize public and admin clients independently
 let supabase = null;
 let supabaseAdmin = null;
 
-if (supabaseUrl && supabaseKey && supabaseServiceKey) {
-  try {
+try {
+  if (supabaseUrl && supabaseKey) {
     supabase = createClient(supabaseUrl, supabaseKey, {
       auth: {
         autoRefreshToken: true,
@@ -17,22 +17,26 @@ if (supabaseUrl && supabaseKey && supabaseServiceKey) {
         detectSessionInUrl: false,
       },
     });
+    console.log("✅ Supabase public client initialized");
+  }
 
+  if (supabaseUrl && supabaseServiceKey) {
     supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey, {
       auth: {
         autoRefreshToken: false,
         persistSession: false,
       },
     });
-
-    console.log("✅ Supabase clients initialized successfully");
-  } catch (error) {
-    console.error("❌ Supabase initialization failed:", error.message);
+    console.log("✅ Supabase admin client initialized");
   }
-} else {
-  console.warn(
-    "⚠️ Supabase env vars not set (SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_KEY). Continuing without Supabase.",
-  );
+
+  if (!supabase && !supabaseAdmin) {
+    console.warn(
+      "⚠️ Supabase env vars not set (SUPABASE_URL, SUPABASE_ANON_KEY and/or SUPABASE_SERVICE_KEY). Continuing without Supabase.",
+    );
+  }
+} catch (error) {
+  console.error("❌ Supabase initialization failed:", error.message);
 }
 
 export { supabase, supabaseAdmin };

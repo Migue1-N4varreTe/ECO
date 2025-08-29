@@ -29,6 +29,7 @@ import PermissionGuard from "@/components/PermissionGuard";
 import FontSizeController from "@/components/FontSizeController";
 import { allProducts } from "@/lib/data";
 import { prefetchShop, prefetchCategories, prefetchOffers, prefetchFavorites } from "@/routes/prefetch";
+import { toast } from "sonner";
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);

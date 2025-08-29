@@ -27,6 +27,8 @@ import { useFavorites } from "@/contexts/FavoritesContext";
 import { useAuth } from "@/contexts/AuthContext";
 import PermissionGuard from "@/components/PermissionGuard";
 import FontSizeController from "@/components/FontSizeController";
+import { allProducts } from "@/lib/data";
+import { prefetchShop, prefetchCategories, prefetchOffers, prefetchFavorites } from "@/routes/prefetch";
 
 const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);

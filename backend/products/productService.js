@@ -296,14 +296,13 @@ const getLowStockProducts = async (storeId) => {
         )
       `,
       )
-      .eq("is_active", true)
-      .filter("stock", "lte", "min_stock");
+      .eq("is_active", true);
 
     if (storeId) {
       query = query.eq("store_id", storeId);
     }
 
-    const { data: products, error } = await query.order("stock", {
+    const { data: products, error } = await query.order("stock_quantity", {
       ascending: true,
     });
 
@@ -313,7 +312,8 @@ const getLowStockProducts = async (storeId) => {
       );
     }
 
-    return products || [];
+    const filtered = (products || []).filter((p) => (p.stock_quantity ?? 0) <= (p.min_stock ?? 0));
+    return filtered;
   } catch (error) {
     throw error;
   }

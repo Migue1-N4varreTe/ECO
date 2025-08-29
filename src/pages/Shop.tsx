@@ -2,6 +2,8 @@ import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import GuestShoppingBanner from "@/components/GuestShoppingBanner";
 import ProductCard from "@/components/ProductCard";
+import ProductCardSkeleton from "@/components/ProductCardSkeleton";
+import { useDebounce } from "@/hooks/use-debounce";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -54,6 +56,15 @@ const Shop = () => {
     resultCount,
   } = useProductFilters();
 
+  const [typedQuery, setTypedQuery] = useState(searchQuery);
+  const debouncedQuery = useDebounce(typedQuery, 300);
+
+  useEffect(() => {
+    if (debouncedQuery !== searchQuery) {
+      updateSearchQuery(debouncedQuery);
+    }
+  }, [debouncedQuery]);
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
@@ -81,8 +92,9 @@ const Shop = () => {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
             <Input
               placeholder="Buscar productos..."
-              value={searchQuery}
-              onChange={(e) => updateSearchQuery(e.target.value)}
+              aria-label="Buscar productos"
+              value={typedQuery}
+              onChange={(e) => setTypedQuery(e.target.value)}
               className="pl-10 pr-4 h-12 text-base"
             />
           </div>
@@ -247,7 +259,18 @@ const Shop = () => {
         </div>
 
         {/* Products Grid/List */}
-        {filteredProducts.length > 0 ? (
+        {typedQuery !== debouncedQuery ? (
+          <div className={cn(
+            "gap-6",
+            viewMode === "grid"
+              ? "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
+              : "space-y-4",
+          )}>
+            {Array.from({ length: viewMode === "grid" ? 10 : 6 }).map((_, i) => (
+              <ProductCardSkeleton key={i} />
+            ))}
+          </div>
+        ) : filteredProducts.length > 0 ? (
           <div
             className={cn(
               "gap-6",

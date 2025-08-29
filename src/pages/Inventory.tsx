@@ -74,6 +74,7 @@ const InventoryPage = () => {
   const [showProductForm, setShowProductForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [showCategories, setShowCategories] = useState(false);
+  const [selected, setSelected] = useState<string[]>([]);
   const { toast } = useToast();
 
   const ITEMS_PER_PAGE = 20;

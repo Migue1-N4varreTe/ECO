@@ -369,7 +369,7 @@ const createCategory = async (categoryData, user) => {
 
 const updateCategory = async (categoryId, updateData, user) => {
   try {
-    const allowedFields = ["name", "description", "aisle", "icon", "is_active"];
+    const allowedFields = ["name", "description", "icon", "is_active"];
     const filteredData = {};
 
     for (const field of allowedFields) {

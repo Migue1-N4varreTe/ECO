@@ -42,19 +42,11 @@ router.post(
   authenticateToken,
   requirePermission(PERMISSIONS.SALES.PROCESS_PAYMENT),
   [
-    body("items").isArray().withMessage("Items requeridos"),
-    body("items.*.product_id")
-      .notEmpty()
-      .withMessage("ID de producto requerido"),
-    body("items.*.quantity")
-      .isInt({ min: 1 })
-      .withMessage("Cantidad debe ser mayor a 0"),
     body("payment_method")
-      .isIn(["cash", "card", "transfer"])
+      .isIn(["cash", "card", "transfer", "efectivo", "tarjeta", "transferencia"])
       .withMessage("Método de pago inválido"),
-    body("total")
-      .isFloat({ min: 0 })
-      .withMessage("Total debe ser un número válido"),
+    body("discount_amount").optional().isFloat({ min: 0 }).withMessage("Descuento inválido"),
+    body("client_id").optional().isString(),
   ],
   async (req, res) => {
     const errors = validationResult(req);
@@ -63,7 +55,15 @@ router.post(
     }
 
     try {
-      const sale = await createSale(req.body, req.user);
+      const pmMap = { efectivo: "cash", tarjeta: "card", transferencia: "transfer" };
+      const mappedPM = pmMap[req.body.payment_method] || req.body.payment_method;
+      const payload = {
+        payment_method: mappedPM,
+        discount: Number(req.body.discount_amount || 0),
+        tax: 0,
+        customer_id: req.body.client_id || null,
+      };
+      const sale = await createSale(payload, req.user);
       res.json(sale);
     } catch (error) {
       res.status(400).json({ error: error.message });
@@ -103,6 +103,21 @@ router.post(
 // Generate receipt/ticket
 router.get(
   "/ticket/:saleId",
+  authenticateToken,
+  requirePermission(PERMISSIONS.SALES.VIEW_SALES),
+  async (req, res) => {
+    try {
+      const receipt = await generateReceipt(req.params.saleId);
+      res.json(receipt);
+    } catch (error) {
+      res.status(404).json({ error: error.message });
+    }
+  },
+);
+
+// Alias for frontend expectation
+router.get(
+  "/receipt/:saleId",
   authenticateToken,
   requirePermission(PERMISSIONS.SALES.VIEW_SALES),
   async (req, res) => {

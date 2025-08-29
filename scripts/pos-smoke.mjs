@@ -69,8 +69,8 @@ async function api(path, opts = {}) {
 }
 
 async function run() {
-  console.log('> POS smoke: ensuring auth user...');
-  const token = await ensureAuthUser();
+  console.log('> POS smoke: obtaining backend JWT...');
+  const token = await ensureBackendJwt();
   console.log('> POS smoke: ensuring product...');
   const productId = await ensureProduct();
 

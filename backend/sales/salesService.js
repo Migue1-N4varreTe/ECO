@@ -43,11 +43,25 @@ const createSale = async (saleData, user) => {
       customer_id = null,
     } = saleData;
 
+    // Build items list: from request or from user's cart
+    let sourceItems = Array.isArray(items) && items.length > 0 ? items : null;
+    if (!sourceItems) {
+      const { data: cart } = await supabase
+        .from("carts")
+        .select("items")
+        .eq("user_id", user.id)
+        .single();
+      if (!cart || !Array.isArray(cart.items) || cart.items.length === 0) {
+        throw new Error("Carrito vacío");
+      }
+      sourceItems = cart.items.map((ci) => ({ product_id: ci.product_id, quantity: ci.quantity }));
+    }
+
     // Validate items and check stock
     let calculatedTotal = 0;
     const validatedItems = [];
 
-    for (const item of items) {
+    for (const item of sourceItems) {
       const { data: product, error } = await supabase
         .from("products")
         .select("*")
@@ -89,12 +103,12 @@ const createSale = async (saleData, user) => {
     // Apply discount
     const finalTotal = calculatedTotal - discount + tax;
 
-    // Verify total matches
-    if (Math.abs(finalTotal - total) > 0.01) {
+    // If client sent total, verify within tolerance
+    if (total !== undefined && Math.abs(finalTotal - total) > 0.01) {
       throw new Error("El total calculado no coincide con el total enviado");
     }
 
-    // Create sale record
+    // Create order
     const orderNumber = `ORD-${Date.now()}`;
     const { data: order, error: orderError } = await supabase
       .from("orders")
@@ -120,7 +134,7 @@ const createSale = async (saleData, user) => {
       throw new Error("Error al crear orden: " + orderError.message);
     }
 
-    // Create sale items
+    // Create order items
     const orderItems = validatedItems.map((item) => ({
       order_id: order.id,
       product_id: item.product_id,
@@ -146,21 +160,14 @@ const createSale = async (saleData, user) => {
         .single();
 
       const newQty = Math.max(0, Number(current?.stock_quantity ?? 0) - item.quantity);
-      const { error: stockError } = await supabase
+      await supabase
         .from("products")
-        .update({
-          stock_quantity: newQty,
-          updated_at: new Date().toISOString(),
-        })
+        .update({ stock_quantity: newQty, updated_at: new Date().toISOString() })
         .eq("id", item.product_id);
-
-      if (stockError) {
-        console.error(
-          `Error updating stock for product ${item.product_id}:`,
-          stockError,
-        );
-      }
     }
+
+    // Clear cart after successful order
+    await supabase.from("carts").update({ items: [], updated_at: new Date().toISOString() }).eq("user_id", user.id);
 
     // Log sale
     await supabase.from("audit_logs").insert([
@@ -172,7 +179,7 @@ const createSale = async (saleData, user) => {
         details: {
           order_id: order.id,
           total: finalTotal,
-          items_count: items.length,
+          items_count: validatedItems.length,
           payment_method,
         },
         created_at: new Date().toISOString(),

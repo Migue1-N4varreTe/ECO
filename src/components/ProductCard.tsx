@@ -88,6 +88,8 @@ const ProductCard = ({ product, className }: ProductCardProps) => {
       )
     : 0;
 
+  const displayName = prettifyProductName(product.name, product.id, product.category);
+
   return (
     <Card
       className={cn(
@@ -102,9 +104,9 @@ const ProductCard = ({ product, className }: ProductCardProps) => {
         <div className="relative aspect-square overflow-hidden bg-gray-50">
           <img
             src={product.image && product.image.includes("placeholder")
-              ? `https://via.placeholder.com/400x300/f3f4f6/9ca3af?text=${encodeURIComponent(product.name)}`
+              ? `https://via.placeholder.com/400x300/f3f4f6/9ca3af?text=${encodeURIComponent(displayName)}`
               : product.image}
-            alt={product.name}
+            alt={displayName}
             className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
           />
 
@@ -170,7 +172,7 @@ const ProductCard = ({ product, className }: ProductCardProps) => {
 
           {/* Name */}
           <h3 className="font-medium text-sm sm:text-base text-gray-900 line-clamp-2 mb-2 leading-tight">
-            {product.name}
+            {displayName}
           </h3>
 
           {/* Rating & Reviews */}

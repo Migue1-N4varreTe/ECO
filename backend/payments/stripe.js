@@ -3,18 +3,19 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2023-10-16",
-});
+const STRIPE_SECRET = process.env.STRIPE_SECRET_KEY;
+let stripe = null;
+if (STRIPE_SECRET) {
+  stripe = new Stripe(STRIPE_SECRET, { apiVersion: "2023-10-16" });
+} else {
+  console.warn("⚠️ STRIPE_SECRET_KEY not set. Payments disabled.");
+}
 
 export class StripePaymentService {
-  constructor() {
-    if (!process.env.STRIPE_SECRET_KEY) {
-      throw new Error("STRIPE_SECRET_KEY is required");
-    }
-  }
+  constructor() {}
 
   async createPaymentIntent({ amount, currency = "mxn", metadata = {} }) {
+    if (!stripe) throw new Error("Stripe no está configurado");
     try {
       const paymentIntent = await stripe.paymentIntents.create({
         amount: Math.round(amount * 100), // Convert to cents
@@ -41,6 +42,7 @@ export class StripePaymentService {
   }
 
   async confirmPayment(paymentIntentId) {
+    if (!stripe) throw new Error("Stripe no está configurado");
     try {
       const paymentIntent =
         await stripe.paymentIntents.retrieve(paymentIntentId);
@@ -52,6 +54,7 @@ export class StripePaymentService {
   }
 
   async createCustomer({ email, name, phone }) {
+    if (!stripe) throw new Error("Stripe no está configurado");
     try {
       const customer = await stripe.customers.create({
         email,
@@ -74,6 +77,7 @@ export class StripePaymentService {
     amount = null,
     reason = "requested_by_customer",
   ) {
+    if (!stripe) throw new Error("Stripe no está configurado");
     try {
       const refund = await stripe.refunds.create({
         payment_intent: paymentIntentId,
@@ -92,6 +96,7 @@ export class StripePaymentService {
   }
 
   async handleWebhook(rawBody, signature) {
+    if (!stripe) throw new Error("Stripe no está configurado");
     try {
       const event = stripe.webhooks.constructEvent(
         rawBody,

@@ -25,6 +25,7 @@ import {
 } from "@/lib/data";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import EmptyState from "@/components/ui/empty-state";
 
 const Categories = () => {
   const [searchQuery, setSearchQuery] = useState("");

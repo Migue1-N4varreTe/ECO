@@ -82,6 +82,7 @@ const DroneDelivery = lazy(() => import("./pages/DroneDelivery"));
 
 const Gramaje = lazy(() => import("./pages/Gramaje"));
 const Tickets = lazy(() => import("./pages/Tickets"));
+const Celebration = lazy(() => import("./pages/Celebration"));
 
 
 const queryClient = new QueryClient();

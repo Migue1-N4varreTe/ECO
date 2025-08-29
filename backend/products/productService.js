@@ -106,7 +106,7 @@ const createProduct = async (productData, user) => {
           sku,
           barcode,
           category_id,
-          stock,
+          stock_quantity: stock,
           min_stock,
           brand,
           image_url,

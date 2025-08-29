@@ -373,18 +373,12 @@ const Offers = () => {
           </div>
         ) : (
           /* Empty State */
-          <div className="text-center py-16">
-            <div className="text-6xl mb-4">🏷️</div>
-            <h3 className="font-semibold text-lg text-gray-900 mb-2">
-              No encontramos ofertas
-            </h3>
-            <p className="text-gray-600 mb-6 max-w-md mx-auto">
-              No hay ofertas que coincidan con tus filtros de búsqueda
-            </p>
-            <Button onClick={clearFilters} variant="outline">
-              Mostrar todas las ofertas
-            </Button>
-          </div>
+          <EmptyState
+            icon={<span>🏷️</span>}
+            title="No encontramos ofertas"
+            description="No hay ofertas que coincidan con tus filtros de búsqueda"
+            action={<Button onClick={clearFilters} variant="outline">Mostrar todas las ofertas</Button>}
+          />
         )}
 
         {/* More Offers CTA */}

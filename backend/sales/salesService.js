@@ -187,16 +187,18 @@ const createSale = async (saleData, user) => {
     ]);
 
     return {
-      id: order.id,
-      order_number: order.order_number,
-      subtotal: order.subtotal,
-      discount: order.discount_amount,
-      tax: order.tax_amount,
-      total: order.total_amount,
-      payment_method: order.payment_method,
-      status: order.status,
-      created_at: order.created_at,
-      items: orderItems,
+      sale: {
+        id: order.id,
+        sale_number: order.order_number,
+        subtotal: order.subtotal,
+        discount: order.discount_amount,
+        tax: order.tax_amount,
+        total: order.total_amount,
+        payment_method: order.payment_method,
+        status: order.status,
+        created_at: order.created_at,
+        items: orderItems,
+      },
     };
   } catch (error) {
     throw error;

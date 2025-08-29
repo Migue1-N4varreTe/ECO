@@ -29,6 +29,7 @@ import { cn } from "@/lib/utils";
 import { useDebugProducts } from "@/hooks/use-debug";
 import { useProductFilters } from "@/hooks/use-search";
 import ProductDiagnostic from "@/components/ProductDiagnostic";
+import EmptyState from "@/components/ui/empty-state";
 
 const Shop = () => {
   // Debug products on development

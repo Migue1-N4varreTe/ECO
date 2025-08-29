@@ -326,7 +326,6 @@ const getAllCategories = async () => {
       .from("categories")
       .select("*")
       .eq("is_active", true)
-      .order("aisle")
       .order("name");
 
     if (error) {

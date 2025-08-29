@@ -4,6 +4,19 @@ import { hasPermission } from "../users/permissions.js";
 import { ROLES } from "../users/roles.js";
 
 const authenticateToken = async (req, res, next) => {
+  // Dev-only internal smoke bypass
+  const smokeSecret = process.env.INTERNAL_SMOKE_SECRET;
+  if (process.env.NODE_ENV !== "production" && smokeSecret && req.headers["x-internal-secret"] === smokeSecret) {
+    req.user = {
+      id: "smoke-user",
+      email: "smoke@example.com",
+      role: ROLES.CASHIER,
+      level: 1,
+      store_id: null,
+    };
+    return next();
+  }
+
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
 

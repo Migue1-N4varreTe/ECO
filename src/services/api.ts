@@ -66,9 +66,27 @@ class ApiService {
     options: RequestInit = {},
   ): Promise<T> {
     const url = `${this.baseURL}${endpoint}`;
+
+    // Build headers with preference: explicit backend JWT -> Supabase access token
+    const headers: Record<string, string> = { ...this.getBaseHeaders(), ...(options.headers as any) };
+
+    if (!this.token && supabase) {
+      try {
+        const { data } = await supabase.auth.getSession();
+        const accessToken = data.session?.access_token;
+        if (accessToken) {
+          headers.Authorization = `Bearer ${accessToken}`;
+        }
+      } catch (e) {
+        // ignore
+      }
+    } else if (this.token) {
+      headers.Authorization = `Bearer ${this.token}`;
+    }
+
     const config: RequestInit = {
-      headers: this.getHeaders(),
       ...options,
+      headers,
     };
 
     try {

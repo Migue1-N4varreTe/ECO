@@ -117,33 +117,39 @@ const Cart: React.FC<CartProps> = ({
 
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-1">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() =>
-                          onUpdateQuantity(item.id, item.quantity - 1)
-                        }
-                        disabled={item.quantity <= 1}
-                        className="h-7 w-7 p-0"
-                      >
-                        <Minus className="w-3 h-3" />
-                      </Button>
+                      {(() => {
+                        const isKg = (item.products.unit || '').toLowerCase() === 'kg';
+                        const step = isKg ? 0.1 : 1;
+                        const min = isKg ? 0.1 : 1;
+                        const dec = (n: number) => (isKg ? Number(n.toFixed(2)) : Math.round(n));
+                        return (
+                          <>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => onUpdateQuantity(item.id, dec(Math.max(min, item.quantity - step)))}
+                              disabled={item.quantity <= min}
+                              className="h-7 w-7 p-0"
+                            >
+                              <Minus className="w-3 h-3" />
+                            </Button>
 
-                      <span className="w-8 text-center text-sm font-medium">
-                        {item.quantity}
-                      </span>
+                            <span className="w-14 text-center text-sm font-medium">
+                              {isKg ? item.quantity.toFixed(2) : item.quantity}
+                            </span>
 
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() =>
-                          onUpdateQuantity(item.id, item.quantity + 1)
-                        }
-                        disabled={item.quantity >= item.products.stock_quantity}
-                        className="h-7 w-7 p-0"
-                      >
-                        <Plus className="w-3 h-3" />
-                      </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => onUpdateQuantity(item.id, dec(item.quantity + step))}
+                              disabled={item.quantity >= item.products.stock_quantity}
+                              className="h-7 w-7 p-0"
+                            >
+                              <Plus className="w-3 h-3" />
+                            </Button>
+                          </>
+                        );
+                      })()}
                     </div>
 
                     <div className="text-right">

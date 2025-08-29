@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import type React from "react";
 
 interface SmartImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   sizes?: string;

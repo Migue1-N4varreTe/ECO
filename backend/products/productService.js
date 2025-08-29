@@ -340,6 +340,47 @@ const getAllCategories = async () => {
   }
 };
 
+const getCategoriesWithStats = async () => {
+  try {
+    const { data: categories, error: catErr } = await supabase
+      .from("categories")
+      .select("*")
+      .eq("is_active", true)
+      .order("name");
+
+    if (catErr) throw new Error("Error al obtener categorías: " + catErr.message);
+
+    const { data: products, error: prodErr } = await supabase
+      .from("products")
+      .select("id, category_id, stock_quantity, price")
+      .eq("is_active", true);
+
+    if (prodErr) throw new Error("Error al obtener productos: " + prodErr.message);
+
+    const stats = new Map();
+    for (const p of products || []) {
+      const cid = p.category_id;
+      if (!cid) continue;
+      const entry = stats.get(cid) || { product_count: 0, total_stock: 0, total_value: 0 };
+      const qty = Number(p.stock_quantity ?? 0);
+      const price = Number(p.price ?? 0);
+      entry.product_count += 1;
+      entry.total_stock += qty;
+      entry.total_value += qty * price;
+      stats.set(cid, entry);
+    }
+
+    const enriched = (categories || []).map((c) => ({
+      ...c,
+      ...(stats.get(c.id) || { product_count: 0, total_stock: 0, total_value: 0 }),
+    }));
+
+    return enriched;
+  } catch (error) {
+    throw error;
+  }
+};
+
 const createCategory = async (categoryData, user) => {
   try {
     const { name, description, icon } = categoryData;
@@ -461,6 +502,7 @@ export {
   deleteProduct,
   getLowStockProducts,
   getAllCategories,
+  getCategoriesWithStats,
   createCategory,
   updateCategory,
   deleteCategory,

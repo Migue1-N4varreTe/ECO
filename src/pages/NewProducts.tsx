@@ -165,25 +165,21 @@ const NewProducts = () => {
             ))}
           </div>
         ) : (
-          <div className="text-center py-16">
-            <div className="text-6xl mb-4">📦</div>
-            <h3 className="font-semibold text-xl text-gray-900 mb-2">
-              No hay productos nuevos
-            </h3>
-            <p className="text-gray-600 mb-6">
-              {searchQuery
-                ? "No encontramos productos nuevos que coincidan con tu búsqueda"
-                : "No hay productos nuevos en este momento"}
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button variant="outline" asChild>
-                <Link to="/shop">Ver todos los productos</Link>
-              </Button>
-              <Button asChild>
-                <Link to="/">Volver al inicio</Link>
-              </Button>
-            </div>
-          </div>
+          <EmptyState
+            icon={<span>📦</span>}
+            title="No hay productos nuevos"
+            description={searchQuery ? "No encontramos productos nuevos que coincidan con tu búsqueda" : "No hay productos nuevos en este momento"}
+            action={(
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button variant="outline" asChild>
+                  <Link to="/shop">Ver todos los productos</Link>
+                </Button>
+                <Button asChild>
+                  <Link to="/">Volver al inicio</Link>
+                </Button>
+              </div>
+            )}
+          />
         )}
       </div>
     </div>

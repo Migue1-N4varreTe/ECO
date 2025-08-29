@@ -68,6 +68,16 @@ const Navbar: React.FC = () => {
     }).catch(() => {});
   }, []);
 
+  // Global API error toasts
+  useEffect(() => {
+    const handler = (e: any) => {
+      const { message, endpoint } = e.detail || {};
+      toast.error(message || 'Error de solicitud', { description: endpoint });
+    };
+    window.addEventListener('api:error', handler as any);
+    return () => window.removeEventListener('api:error', handler as any);
+  }, []);
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {

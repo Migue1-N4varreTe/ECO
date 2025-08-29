@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Category } from "@/lib/data";
 import { cn } from "@/lib/utils";
 import SmartImage from "@/components/ui/smart-image";
+import { memo } from "react";
 
 interface CategoryCardProps {
   category: Category;

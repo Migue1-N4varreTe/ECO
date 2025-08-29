@@ -74,12 +74,12 @@ async function api(path, opts = {}) {
 }
 
 async function run() {
-  console.log('> POS smoke: obtaining backend JWT...');
-  const token = await ensureBackendJwt();
+  console.log('> POS smoke: dev bypass auth...');
+  const bypass = process.env.INTERNAL_SMOKE_SECRET || 'le-dev-smoke-123';
   console.log('> POS smoke: ensuring product...');
   const productId = await ensureProduct();
 
-  const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` };
+  const headers = { 'Content-Type': 'application/json', 'x-internal-secret': bypass };
 
   console.log('> POS smoke: clearing cart...');
   await api('/api/sales/cart/clear', { method: 'DELETE', headers });

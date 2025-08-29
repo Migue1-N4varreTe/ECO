@@ -47,16 +47,8 @@ class ApiService {
     this.token = localStorage.getItem("auth_token");
   }
 
-  private getHeaders(): Record<string, string> {
-    const headers: Record<string, string> = {
-      "Content-Type": "application/json",
-    };
-
-    if (this.token) {
-      headers.Authorization = `Bearer ${this.token}`;
-    }
-
-    return headers;
+  private getBaseHeaders(): Record<string, string> {
+    return { "Content-Type": "application/json" };
   }
 
   setToken(token: string) {

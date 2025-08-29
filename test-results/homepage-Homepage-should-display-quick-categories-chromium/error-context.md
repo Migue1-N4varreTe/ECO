@@ -1,0 +1,181 @@
+# Page snapshot
+
+```yaml
+- region "Notifications alt+T"
+- navigation:
+  - link "La Económica":
+    - /url: /
+    - img
+    - text: La Económica
+  - link "Inicio":
+    - /url: /
+  - link "Tienda":
+    - /url: /shop
+  - link "Categorías":
+    - /url: /categories
+  - link "Ofertas":
+    - /url: /offers
+  - img
+  - textbox "Buscar productos"
+  - link:
+    - /url: /favorites
+    - img
+  - button "Ajustar tamaño de letra":
+    - img
+    - text: Texto
+  - link:
+    - /url: /cart
+    - img
+  - link "Iniciar Sesión":
+    - /url: /login
+    - button "Iniciar Sesión"
+  - link "Registrarse":
+    - /url: /register
+    - button "Registrarse"
+- img
+- text: "Entregando en: Centro, Ciudad de México"
+- button "Cambiar"
+- text: 🚀 Entrega en 15 minutos
+- heading "Todo lo que necesitas, al alcance de tu mano" [level=1]
+- paragraph: Convenience store digital con entrega ultrarrápida. Miles de productos, inventario en tiempo real.
+- link "Explorar tienda":
+  - /url: /shop
+  - text: Explorar tienda
+  - img
+- link "Ver favoritos":
+  - /url: /favorites
+  - img
+  - text: Ver favoritos
+- text: 15min Entrega promedio 2000+ Productos 4.8★ Calificación
+- link "🏷️ Ofertas":
+  - /url: /shop
+- link "✨ Nuevos":
+  - /url: /shop
+- link "🔥 Más vendidos":
+  - /url: /shop
+- link "⚡ Delivery rápido":
+  - /url: /shop
+  - text: ⚡
+  - paragraph: Delivery rápido
+- link "🕘 Disponible ahora":
+  - /url: /shop
+- heading "¿Cómo quieres recibir tu pedido?" [level=2]
+- paragraph: Elige la opción que mejor se adapte a tus necesidades
+- text: ⚡
+- heading "Express" [level=3]
+- paragraph: Lo más rápido posible
+- img
+- text: 15-20 min $25 🚗
+- heading "Estándar" [level=3]
+- paragraph: Entrega regular
+- img
+- text: 30-45 min $15 🏪
+- heading "Recoger en tienda" [level=3]
+- paragraph: Sin costo de envío
+- img
+- text: 10-15 min Gratis
+- heading "Explora por categorías" [level=2]
+- paragraph: Encuentra exactamente lo que buscas
+- link "Ver todas":
+  - /url: /shop
+  - text: Ver todas
+  - img
+- link "Frutas y Verduras 🥬 75 productos Frutas y Verduras":
+  - /url: /shop?category=frutas-verduras
+  - img "Frutas y Verduras"
+  - text: 🥬 75 productos
+  - heading "Frutas y Verduras" [level=3]
+- link "Panadería Bimbo 🍞 45 productos Panadería Bimbo":
+  - /url: /shop?category=panaderia-bimbo
+  - img "Panadería Bimbo"
+  - text: 🍞 45 productos
+  - heading "Panadería Bimbo" [level=3]
+- link "Cremería 🥩 36 productos Cremería":
+  - /url: /shop?category=carniceria-cremeria
+  - img "Cremería"
+  - text: 🥩 36 productos
+  - heading "Cremería" [level=3]
+- link "Lácteos y Huevos 🥛 42 productos Lácteos y Huevos":
+  - /url: /shop?category=lacteos-huevos
+  - img "Lácteos y Huevos"
+  - text: 🥛 42 productos
+  - heading "Lácteos y Huevos" [level=3]
+- link "Congelados 🧊 35 productos Congelados":
+  - /url: /shop?category=congelados
+  - img "Congelados"
+  - text: 🧊 35 productos
+  - heading "Congelados" [level=3]
+- link "Abarrotes Básicos 🌾 48 productos Abarrotes Básicos":
+  - /url: /shop?category=abarrotes-basicos
+  - img "Abarrotes Básicos"
+  - text: 🌾 48 productos
+  - heading "Abarrotes Básicos" [level=3]
+- link "Enlatados y Conservas 🥫 40 productos Enlatados y Conservas":
+  - /url: /shop?category=enlatados-conservas
+  - img "Enlatados y Conservas"
+  - text: 🥫 40 productos
+  - heading "Enlatados y Conservas" [level=3]
+- link "Aceites y Condimentos 🫒 32 productos Aceites y Condimentos":
+  - /url: /shop?category=aceites-condimentos
+  - img "Aceites y Condimentos"
+  - text: 🫒 32 productos
+  - heading "Aceites y Condimentos" [level=3]
+- heading "¿Por qué elegir La Economica?" [level=2]
+- paragraph: La experiencia de compra más rápida y confiable para tu día a día
+- img
+- heading "Súper rápido" [level=3]
+- paragraph: Entrega en 15-20 minutos promedio
+- img
+- heading "Inventario real" [level=3]
+- paragraph: Stock actualizado en tiempo real
+- img
+- heading "100% seguro" [level=3]
+- paragraph: Pagos protegidos y productos de calidad
+- img
+- heading "Mejor calidad" [level=3]
+- paragraph: Productos frescos y marcas reconocidas
+- heading "Nuestro Inventario" [level=2]
+- paragraph: Miles de productos disponibles para ti
+- text: 659+ Productos Totales 16 Categorías 15 Pasillos 9-21 Horario
+- heading "¿Listo para tu primer pedido?" [level=2]
+- paragraph: Únete a miles de usuarios que ya disfrutan de la comodidad de La Economica
+- link "Empezar a comprar":
+  - /url: /shop
+  - text: Empezar a comprar
+  - img
+- contentinfo:
+  - text: LE La Economica
+  - paragraph: Tu convenience store digital con entrega ultrarrápida. Todo lo que necesitas, cuando lo necesitas.
+  - heading "Comprar" [level=3]
+  - list:
+    - listitem:
+      - link "Todos los productos":
+        - /url: /shop
+    - listitem:
+      - link "Categorías":
+        - /url: /categories
+    - listitem:
+      - link "Ofertas":
+        - /url: /offers
+    - listitem:
+      - link "Nuevos productos":
+        - /url: /new
+  - heading "Soporte" [level=3]
+  - list:
+    - listitem:
+      - link "Centro de ayuda":
+        - /url: /help
+    - listitem:
+      - link "Contacto":
+        - /url: /contact
+    - listitem:
+      - link "Términos y condiciones":
+        - /url: /terms
+    - listitem:
+      - link "Privacidad":
+        - /url: /privacy
+  - heading "Contacto" [level=3]
+  - paragraph: 📍 CDMX, México
+  - paragraph: 🕒 Lun-Dom 9:00-21:00
+  - text: in Collaboration By MLM Associate & Learn Lab Studio All rights reserved
+```

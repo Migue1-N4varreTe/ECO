@@ -60,32 +60,26 @@ const Login = () => {
 
     setIsSubmitting(true);
 
-    try {
-      await login(formData.email, formData.password);
+    const result = await login(formData.email, formData.password);
+    if (result.success) {
       navigate(from, { replace: true });
-    } catch (error: any) {
-      setErrors({
-        submit: error.message || "Error al iniciar sesión. Intenta nuevamente.",
-      });
-    } finally {
-      setIsSubmitting(false);
+    } else {
+      setErrors({ submit: result.error || "Error al iniciar sesión. Intenta nuevamente." });
     }
+    setIsSubmitting(false);
   };
 
   const quickLogin = async (email: string, password: string) => {
     setFormData({ email, password });
     setIsSubmitting(true);
 
-    try {
-      await login(email, password);
+    const result = await login(email, password);
+    if (result.success) {
       navigate(from, { replace: true });
-    } catch (error: any) {
-      setErrors({
-        submit: error.message || "Error al iniciar sesión. Intenta nuevamente.",
-      });
-    } finally {
-      setIsSubmitting(false);
+    } else {
+      setErrors({ submit: result.error || "Error al iniciar sesión. Intenta nuevamente." });
     }
+    setIsSubmitting(false);
   };
 
   return (

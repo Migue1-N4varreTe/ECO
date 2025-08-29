@@ -186,6 +186,9 @@ const Navbar: React.FC = () => {
                   <Search className="h-5 w-5 text-gray-400" />
                 </div>
                 <Input
+                  ref={(el) => {
+                    (window as any).__searchInput = el;
+                  }}
                   type="text"
                   placeholder="Buscar productos..."
                   aria-label="Buscar productos"
